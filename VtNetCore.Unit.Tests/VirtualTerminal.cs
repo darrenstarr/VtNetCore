@@ -213,7 +213,7 @@ namespace VtNetCore.Unit.Tests
             t.NewLine();
 
             string text = t.GetScreenText();
-            Assert.Equal(ExpectedScrollRegionUp, text);
+            Assert.Equal(ExpectedScrollRegionDown, text);
         }
 
         public readonly string ExpectedScrollUp =
@@ -332,6 +332,111 @@ namespace VtNetCore.Unit.Tests
             t.InsertLines(1);
             Assert.Equal(ExpectedScrollInsertLineFullTop, t.GetScreenText());
         }
+
+        public readonly string ExpectedScrollInsertLineUpperRegionTop =
+            "     \n" +
+            "     \n" +
+            "AAAAA\n" +
+            "DDDDD\n" +
+            "EEEEE";
+
+        [Fact]
+        public void InsertLineUpperRegionTop()
+        {
+            var t = new VirtualTerminalController();
+            var d = new DataConsumer(t);
+
+            t.ResizeView(5, 5);
+            t.ScreenAlignmentTest();
+
+            PushToTerminal(d, "AAAAABBBBBCCCCCDDDDDEEEEE");
+            t.SetScrollingRegion(1, 3);
+            t.SetCursorPosition(1, 1);
+            t.InsertLines(2);
+
+            Assert.Equal(ExpectedScrollInsertLineUpperRegionTop, t.GetScreenText());
+            Assert.Equal(5, t.Buffer.Count);
+        }
+
+        public readonly string ExpectedScrollInsertLineMiddleRegionTop =
+            "AAAAA\n" +
+            "     \n" +
+            "     \n" +
+            "BBBBB\n" +
+            "EEEEE";
+
+        [Fact]
+        public void InsertLineMiddleRegionTop()
+        {
+            var t = new VirtualTerminalController();
+            var d = new DataConsumer(t);
+
+            t.ResizeView(5, 5);
+            t.ScreenAlignmentTest();
+
+            PushToTerminal(d, "AAAAABBBBBCCCCCDDDDDEEEEE");
+            t.SetScrollingRegion(2, 4);
+            t.EnableOriginMode(true);
+            t.SetCursorPosition(1, 1);
+            t.InsertLines(2);
+
+            string text = t.GetScreenText();
+            Assert.Equal(ExpectedScrollInsertLineMiddleRegionTop, text);
+            Assert.Equal(5, t.Buffer.Count);
+        }
+
+        public readonly string ExpectedScrollInsertLineLowerRegionTop =
+            "AAAAA\n" +
+            "BBBBB\n" +
+            "     \n" +
+            "     \n" +
+            "CCCCC";
+
+        [Fact]
+        public void InsertLineLowerRegionTop()
+        {
+            var t = new VirtualTerminalController();
+            var d = new DataConsumer(t);
+
+            t.ResizeView(5, 5);
+            t.ScreenAlignmentTest();
+
+            PushToTerminal(d, "AAAAABBBBBCCCCCDDDDDEEEEE");
+            t.SetScrollingRegion(3, 5);
+            t.EnableOriginMode(true);
+            t.SetCursorPosition(1, 1);
+            t.InsertLines(2);
+
+            string text = t.GetScreenText();
+            Assert.Equal(ExpectedScrollInsertLineLowerRegionTop, text);
+            Assert.Equal(5, t.Buffer.Count);
+        }
+
+        public readonly string ExpectedScrollInsertLineUpperRegionMiddleFull =
+            "AAAAA\n" +
+            "     \n" +
+            "     \n" +
+            "DDDDD\n" +
+            "EEEEE";
+
+        [Fact]
+        public void InsertLineUpperRegionMiddleFull()
+        {
+            var t = new VirtualTerminalController();
+            var d = new DataConsumer(t);
+
+            t.ResizeView(5, 5);
+            t.ScreenAlignmentTest();
+
+            PushToTerminal(d, "AAAAABBBBBCCCCCDDDDDEEEEE");
+            t.SetScrollingRegion(1, 3);
+            t.SetCursorPosition(1, 2);
+            t.InsertLines(5);
+
+            Assert.Equal(ExpectedScrollInsertLineUpperRegionMiddleFull, t.GetScreenText());
+            Assert.Equal(5, t.Buffer.Count);
+        }
+
 
     }
 }

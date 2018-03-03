@@ -16,7 +16,7 @@
         public int alternativeBufferTopRow = 0;
         public int normalBufferTopRow = 0;
 
-        internal TerminalLines Buffer { get; set; }
+        public TerminalLines Buffer { get; set; }
         private EActiveBuffer ActiveBuffer { get; set; } = EActiveBuffer.Normal;
 
         internal int TopRow { get; set; } = 0;
@@ -879,15 +879,22 @@
 
         public void InsertLines(int count)
         {
-            LogController("Unimplemented: InsertLines(count:" + count.ToString() + ")");
+            LogController("InsertLines(count:" + count.ToString() + ")");
 
             if ((CursorState.CurrentRow + TopRow) >= Buffer.Count)
                 return;
 
-            while((count--) > 0)
-                Buffer.Insert((CursorState.CurrentRow + TopRow), new TerminalLine());
+            int lineToRemove = TopRow + VisibleRows;
+            if (CursorState.ScrollBottom != -1)
+                lineToRemove = TopRow + CursorState.ScrollBottom;
 
-            // TODO : Remove last line of the buffer so that scrolling works
+            while ((count--) > 0)
+            {
+                if (lineToRemove < Buffer.Count)
+                    Buffer.RemoveAt(lineToRemove);
+
+                Buffer.Insert((CursorState.CurrentRow + TopRow), new TerminalLine());
+            }
         }
 
         public void EraseAll()
