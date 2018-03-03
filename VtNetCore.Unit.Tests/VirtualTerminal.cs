@@ -165,6 +165,82 @@ namespace VtNetCore.Unit.Tests
             Assert.Equal(ExpectedScrollFull, t.GetScreenText());
         }
 
+        public readonly string ExpectedScrollRegionUp =
+            "BBBBB\n" +
+            "     \n" +
+            "CCCCC\n" +
+            "DDDDD\n" +
+            "FFFF ";
+
+        [Fact]
+        public void ScrollRegionUp()
+        {
+            var t = new VirtualTerminalController();
+            var d = new DataConsumer(t);
+
+            t.ResizeView(5, 5);
+            t.ScreenAlignmentTest();
+
+            PushToTerminal(d, "AAAAABBBBBCCCCCDDDDDEEEEEFFFF");
+            t.SetScrollingRegion(2, 4);
+            t.EnableOriginMode(true);
+            t.ReverseIndex();
+
+            Assert.Equal(ExpectedScrollRegionUp, t.GetScreenText());
+        }
+
+        public readonly string ExpectedScrollRegionDown =
+            "AAAAA\n" +
+            "CCCCC\n" +
+            "DDDDD\n" +
+            "     \n" +
+            "EEEEE";
+
+        [Fact]
+        public void ScrollRegionDown()
+        {
+            var t = new VirtualTerminalController();
+            var d = new DataConsumer(t);
+
+            t.ResizeView(5, 5);
+            t.ScreenAlignmentTest();
+
+            PushToTerminal(d, "AAAAABBBBBCCCCCDDDDDEEEEE");
+            t.SetScrollingRegion(2, 4);
+            t.EnableOriginMode(true);
+            t.NewLine();
+            t.NewLine();
+            t.NewLine();
+
+            string text = t.GetScreenText();
+            Assert.Equal(ExpectedScrollRegionUp, text);
+        }
+
+        public readonly string ExpectedScrollUp =
+            "     \n" +
+            "BBBBB\n" +
+            "CCCCC\n" +
+            "DDDDD\n" +
+            "EEEEE";
+
+        [Fact]
+        public void ScrollFullUp()
+        {
+            var t = new VirtualTerminalController();
+            var d = new DataConsumer(t);
+
+            t.ResizeView(5, 5);
+            t.ScreenAlignmentTest();
+
+            PushToTerminal(d, "AAAAABBBBBCCCCCDDDDDEEEEEFFFF");
+            t.ReverseIndex();
+            t.ReverseIndex();
+            t.ReverseIndex();
+            t.ReverseIndex();
+            t.ReverseIndex();
+            Assert.Equal(ExpectedScrollUp, t.GetScreenText());
+        }
+
         public readonly string ExpectedRIND =
             "BBBBG\n" +
             "GGCCC\n" +
@@ -234,5 +310,28 @@ namespace VtNetCore.Unit.Tests
 
             Assert.Equal(Expected132ColumnMode, t.GetScreenText());
         }
+
+        public readonly string ExpectedScrollInsertLineFullTop =
+            "     \n" +
+            "AAAAA\n" +
+            "BBBBB\n" +
+            "CCCCC\n" +
+            "DDDDD";
+
+        [Fact]
+        public void InsertLineFullTop()
+        {
+            var t = new VirtualTerminalController();
+            var d = new DataConsumer(t);
+
+            t.ResizeView(5, 5);
+            t.ScreenAlignmentTest();
+
+            PushToTerminal(d, "AAAAABBBBBCCCCCDDDDDEEEEE");
+            t.SetCursorPosition(1, 1);
+            t.InsertLines(1);
+            Assert.Equal(ExpectedScrollInsertLineFullTop, t.GetScreenText());
+        }
+
     }
 }

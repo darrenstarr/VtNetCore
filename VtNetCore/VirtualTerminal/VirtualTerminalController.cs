@@ -36,6 +36,24 @@
 
         public bool Debugging { get; set; }
 
+        public string DebugText
+        {
+            get
+            {
+                return
+                    "TopRow: " + TopRow.ToString() + "\n" +
+                    "Columns: " + Columns.ToString() + "\n" +
+                    "Rows: " + Rows.ToString() + "\n" +
+                    "VisibleColumns: " + VisibleColumns.ToString() + "\n" +
+                    "VisibleRows: " + VisibleRows.ToString() + "\n" +
+                    "HighlightMouseTracking: " + HighlightMouseTracking.ToString() + "\n" +
+                    "CellMotionMouseTracking: " + CellMotionMouseTracking.ToString() + "\n" +
+                    "SgrMouseMode: " + SgrMouseMode.ToString() + "\n" +
+                    "CursorState: " + "\n" + CursorState.ToString()
+                    ;
+            }
+        }
+
         public VirtualTerminalController()
         {
             Buffer = normalBuffer;
@@ -43,6 +61,8 @@
         }
 
         public EventHandler<SendDataEventArgs> SendData;
+        public EventHandler<TextEventArgs> WindowTitleChanged;
+
         public int ChangeCount { get; private set; }
 
         public VirtualTerminalViewPort ViewPort { get; private set; }
@@ -394,7 +414,7 @@
                 }
             }
 
-            SetCharacter(CursorState.CurrentColumn, CursorState.CurrentRow, character, CursorState.Attribute);
+            SetCharacter(CursorState.CurrentColumn, CursorState.CurrentRow, character, CursorState.Attributes);
             CursorState.CurrentColumn++;
 
             var lineToClip = Buffer[TopRow + CursorState.CurrentRow];
@@ -407,6 +427,8 @@
         public void SetWindowTitle(string title)
         {
             LogController("SetWindowTitle(t:'" + title + "')");
+
+            WindowTitleChanged.Invoke(this, new TextEventArgs { Text = title });
         }
 
         public void ShiftIn()
@@ -425,74 +447,74 @@
             {
                 case 0:
                     LogController("SetCharacterAttribute(reset)");
-                    CursorState.Attribute.ForegroundColor = ETerminalColor.White;
-                    CursorState.Attribute.BackgroundColor = ETerminalColor.Black;
-                    CursorState.Attribute.Bright = false;
-                    CursorState.Attribute.Standout = false;
-                    CursorState.Attribute.Underscore = false;
-                    CursorState.Attribute.Blink = false;
-                    CursorState.Attribute.Reverse = false;
-                    CursorState.Attribute.Hidden = false;
+                    CursorState.Attributes.ForegroundColor = ETerminalColor.White;
+                    CursorState.Attributes.BackgroundColor = ETerminalColor.Black;
+                    CursorState.Attributes.Bright = false;
+                    CursorState.Attributes.Standout = false;
+                    CursorState.Attributes.Underscore = false;
+                    CursorState.Attributes.Blink = false;
+                    CursorState.Attributes.Reverse = false;
+                    CursorState.Attributes.Hidden = false;
                     break;
 
                 case 1:
                     LogController("SetCharacterAttribute(bright)");
-                    CursorState.Attribute.Bright = true;
+                    CursorState.Attributes.Bright = true;
                     break;
 
                 case 2:
                     LogController("SetCharacterAttribute(dim)");
-                    CursorState.Attribute.Bright = false;
+                    CursorState.Attributes.Bright = false;
                     break;
 
                 case 3:
                     LogController("SetCharacterAttribute(standout)");
-                    CursorState.Attribute.Standout = true;
+                    CursorState.Attributes.Standout = true;
                     break;
 
                 case 4:
                     LogController("SetCharacterAttribute(underscore)");
-                    CursorState.Attribute.Underscore = true;
+                    CursorState.Attributes.Underscore = true;
                     break;
 
                 case 5:
                     LogController("SetCharacterAttribute(blink)");
-                    CursorState.Attribute.Blink = true;
+                    CursorState.Attributes.Blink = true;
                     break;
 
                 case 7:
                     LogController("SetCharacterAttribute(reverse)");
-                    CursorState.Attribute.Reverse = true;
+                    CursorState.Attributes.Reverse = true;
                     break;
 
                 case 8:
                     LogController("SetCharacterAttribute(hidden)");
-                    CursorState.Attribute.Hidden = true;
+                    CursorState.Attributes.Hidden = true;
                     break;
 
                 case 22:
                     LogController("SetCharacterAttribute(not bright)");
-                    CursorState.Attribute.Bright = false;
+                    CursorState.Attributes.Bright = false;
                     break;
 
                 case 24:
                     LogController("SetCharacterAttribute(not underlined)");
-                    CursorState.Attribute.Underscore = false;
+                    CursorState.Attributes.Underscore = false;
                     break;
 
                 case 25:
                     LogController("SetCharacterAttribute(steady)");
-                    CursorState.Attribute.Blink = false;
+                    CursorState.Attributes.Blink = false;
                     break;
 
                 case 27:
                     LogController("SetCharacterAttribute(not reverse)");
-                    CursorState.Attribute.Reverse = false;
+                    CursorState.Attributes.Reverse = false;
                     break;
 
                 case 28:
                     LogController("SetCharacterAttribute(not hidden)");
-                    CursorState.Attribute.Hidden = false;
+                    CursorState.Attributes.Hidden = false;
                     break;
 
                 case 30:
@@ -504,11 +526,11 @@
                 case 36:
                 case 37:
                 case 38:
-                    CursorState.Attribute.ForegroundColor = (ETerminalColor)(parameter - 30);
-                    LogController("SetCharacterAttribute(foreground:" + CursorState.Attribute.ForegroundColor.ToString() + ")");
+                    CursorState.Attributes.ForegroundColor = (ETerminalColor)(parameter - 30);
+                    LogController("SetCharacterAttribute(foreground:" + CursorState.Attributes.ForegroundColor.ToString() + ")");
                     break;
                 case 39:
-                    CursorState.Attribute.ForegroundColor = ETerminalColor.White;
+                    CursorState.Attributes.ForegroundColor = ETerminalColor.White;
                     LogController("SetCharacterAttribute(foreground:default)");
                     break;
                 case 40:
@@ -520,11 +542,11 @@
                 case 46:
                 case 47:
                 case 48:
-                    CursorState.Attribute.BackgroundColor = (ETerminalColor)(parameter - 40);
-                    LogController("SetCharacterAttribute(background:" + CursorState.Attribute.BackgroundColor.ToString() + ")");
+                    CursorState.Attributes.BackgroundColor = (ETerminalColor)(parameter - 40);
+                    LogController("SetCharacterAttribute(background:" + CursorState.Attributes.BackgroundColor.ToString() + ")");
                     break;
                 case 49:
-                    CursorState.Attribute.BackgroundColor = ETerminalColor.Black;
+                    CursorState.Attributes.BackgroundColor = ETerminalColor.Black;
                     LogController("SetCharacterAttribute(background:default)");
                     break;
 
@@ -575,7 +597,7 @@
         {
             for (var y = 0; y < VisibleRows; y++)
                 for (var x = 0; x < VisibleColumns; x++)
-                    SetCharacter(x, y, 'E', CursorState.Attribute);
+                    SetCharacter(x, y, 'E', CursorState.Attributes);
         }
 
         public void SaveCursor()
@@ -765,7 +787,7 @@
             LogController("EraseLine()");
 
             for (var i = 0; i < Columns; i++)
-                SetCharacter(i, CursorState.CurrentRow, ' ', CursorState.Attribute);
+                SetCharacter(i, CursorState.CurrentRow, ' ', CursorState.Attributes);
 
             var line = Buffer[TopRow + CursorState.CurrentRow];
             while (line.Count > Columns)
@@ -779,7 +801,7 @@
             LogController("EraseToEndOfLine()");
 
             for (var i = CursorState.CurrentColumn; i < Columns; i++)
-                SetCharacter(i, CursorState.CurrentRow, ' ', CursorState.Attribute);
+                SetCharacter(i, CursorState.CurrentRow, ' ', CursorState.Attributes);
 
             var line = Buffer[TopRow + CursorState.CurrentRow];
             while (line.Count > Columns)
@@ -793,7 +815,7 @@
             LogController("EraseToStartOfLine()");
 
             for (var i = 0; i < Columns && i <= CursorState.CurrentColumn; i++)
-                SetCharacter(i, CursorState.CurrentRow, ' ', CursorState.Attribute);
+                SetCharacter(i, CursorState.CurrentRow, ' ', CursorState.Attributes);
 
             var line = Buffer[TopRow + CursorState.CurrentRow];
             while (line.Count > Columns)
@@ -810,7 +832,7 @@
             for (var y = CursorState.CurrentRow + 1; y < VisibleRows; y++)
             {
                 for (var x = 0; x < VisibleColumns; x++)
-                    SetCharacter(x, y, ' ', CursorState.Attribute);
+                    SetCharacter(x, y, ' ', CursorState.Attributes);
 
                 var line = Buffer[TopRow + y];
                 while (line.Count > Columns)
@@ -819,7 +841,7 @@
 
 
             for (var x = CursorState.CurrentColumn; x < VisibleColumns; x++)
-                SetCharacter(x, CursorState.CurrentRow, ' ', CursorState.Attribute);
+                SetCharacter(x, CursorState.CurrentRow, ' ', CursorState.Attributes);
         }
 
         public void EraseAbove()
@@ -830,7 +852,7 @@
             for (var y = CursorState.CurrentRow - 1; y >= 0; y--)
             {
                 for (var x = 0; x < VisibleColumns; x++)
-                    SetCharacter(x, y, ' ', CursorState.Attribute);
+                    SetCharacter(x, y, ' ', CursorState.Attributes);
 
                 var line = Buffer[TopRow + y];
                 while (line.Count > Columns)
@@ -838,7 +860,7 @@
             }
 
             for (var x = 0; x <= CursorState.CurrentColumn; x++)
-                SetCharacter(x, CursorState.CurrentRow, ' ', CursorState.Attribute);
+                SetCharacter(x, CursorState.CurrentRow, ' ', CursorState.Attributes);
         }
 
         public void DeleteLines(int count)
@@ -940,7 +962,7 @@
         {
             LogController("EnableOriginMode(enable:" + enable.ToString() + ")");
             CursorState.OriginMode = enable;
-            SetCursorPosition(0, 0);
+            SetCursorPosition(1, 1);
         }
 
         public void EnableWrapAroundMode(bool enable)
@@ -1036,7 +1058,7 @@
 
             var line = Buffer[currentRow + TopRow];
             while (line.Count < (currentColumn + 1))
-                line.Add(new TerminalCharacter { Char = ' ', Attributes = CursorState.Attribute });
+                line.Add(new TerminalCharacter { Char = ' ', Attributes = CursorState.Attributes });
 
             var character = line[currentColumn];
             character.Char = ch;

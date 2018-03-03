@@ -28,7 +28,7 @@
         /// <summary>
         /// The current drawing attribute for text.
         /// </summary>
-        public TerminalAttribute Attribute { get; set; } = new TerminalAttribute();
+        public TerminalAttribute Attributes { get; set; } = new TerminalAttribute();
 
         /// <summary>
         /// Specifies whether to show the text cursor
@@ -92,7 +92,7 @@
                 CurrentColumn = CurrentColumn,
                 CurrentRow = CurrentRow,
                 ApplicationCursorKeysMode = ApplicationCursorKeysMode,
-                Attribute = Attribute.Clone(),
+                Attributes = Attributes.Clone(),
                 TabStops = TabStops.ToList(),
                 WordWrap = WordWrap,
                 ReverseVideoMode = ReverseVideoMode,
@@ -103,6 +103,29 @@
                 ShowCursor = ShowCursor,
                 BlinkingCursor = BlinkingCursor
             };
+        }
+
+        /// <summary>
+        /// Creates a debug string for spamming the display with too much information
+        /// </summary>
+        /// <returns>A formatted debug string</returns>
+        public override string ToString()
+        {
+            return
+                "CurrentColumn: " + CurrentColumn.ToString() + "\n" +
+                "CurrentRow:" + CurrentRow.ToString() + "\n" +
+                "ApplicationCursorKeysMode:" + ApplicationCursorKeysMode.ToString() + "\n" +
+                "Attribute:\n" + Attributes.ToString() + "\n" +
+                "TabStops:" + string.Join(",", TabStops.Select(x => x.ToString()).ToList()) + "\n" +
+                "WordWrap:" + WordWrap.ToString() + "\n" +
+                "ReverseVideoMode:" + ReverseVideoMode.ToString() + "\n" +
+                "ScrollTop:" + ScrollTop.ToString() + "\n" +
+                "ScrollBottom:" + ScrollBottom.ToString() + "\n" +
+                "OriginMode:" + OriginMode.ToString() + "\n" +
+                "InsertMode:" + InsertMode.ToString() + "\n" +
+                "ShowCursor:" + ShowCursor.ToString() + "\n" +
+                "BlinkingCursor:" + BlinkingCursor.ToString()
+                ;
         }
     }
 }

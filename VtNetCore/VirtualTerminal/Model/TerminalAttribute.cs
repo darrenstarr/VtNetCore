@@ -62,5 +62,23 @@
                 Hidden = Hidden
             };
         }
+
+        /// <summary>
+        /// Returns a verbose indented string for debugging
+        /// </summary>
+        /// <returns>a debugging string</returns>
+        public override string ToString()
+        {
+            return
+                "  ForegroundColor: " + ForegroundColor.ToString() + "\n" +
+                "  BackgroundColor: " + BackgroundColor.ToString() + "\n" +
+                "  Bright: " + Bright.ToString() + "\n" +
+                "  Standout: " + Standout.ToString() + "\n" +
+                "  Underscore: " + Underscore.ToString() + "\n" +
+                "  Blink: " + Blink.ToString() + "\n" +
+                "  Reverse: " + Reverse.ToString() + "\n" +
+                "  Hidden: " + Hidden.ToString()
+                ;
+        }
     }
 }
