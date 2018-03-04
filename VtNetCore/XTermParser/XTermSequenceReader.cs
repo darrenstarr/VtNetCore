@@ -36,7 +36,7 @@
                 {
                     if (currentParameter == -1)
                     {
-                        currentParameter = 0;
+                        currentParameter = 1;       // ctrlseqs.txt seems to always default to 1 here. Might not be a great idea
                         atStart = false;
                         //throw new EscapeSequenceException("Invalid position for ';' in CSI", stream.Stacked);
                     }

@@ -41,6 +41,7 @@
         void EraseAbove();
         void EraseAll();
         void EraseBelow();
+        void EraseCharacter(int count);
         void EraseLine();
         void EraseToEndOfLine();
         void EraseToStartOfLine();

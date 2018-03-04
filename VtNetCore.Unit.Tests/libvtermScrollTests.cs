@@ -153,6 +153,7 @@ namespace VtNetCoreUnitTests
         [Fact]
         void LinefeedInDECSTBM()
         {
+            var x = "".STBM(1, 10);
             var s = RunScrollTest(string.Empty.STBM(1, 10).LF(10));
             Assert.Equal(ExpectedLinefeedInDECSTBM, s);
         }

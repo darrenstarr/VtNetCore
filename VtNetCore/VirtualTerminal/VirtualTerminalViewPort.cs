@@ -53,7 +53,7 @@
                 return new TextPosition
                 {
                     Column = column,
-                    Row = Parent.CursorState.CurrentRow - TopRow
+                    Row = Parent.CursorState.CurrentRow
                 };
             }
         }

@@ -165,6 +165,7 @@
         {
             alternativeBufferTopRow = alternativeBuffer.Count;
             normalBufferTopRow = normalBuffer.Count;
+            TopRow = normalBufferTopRow;
 
             ActiveBuffer = EActiveBuffer.Normal;
 
@@ -282,6 +283,11 @@
                     SetCharacter(x, y, ch, attr);
         }
 
+        private TerminalLine GetCurrentLine()
+        {
+            return GetLine(CursorState.CurrentRow);
+        }
+
         private TerminalLine GetLine(int y)
         {
             if (y >= Buffer.Count)
@@ -341,7 +347,7 @@
                 for (var i = 0; i < height - count; i++)
                     MoveCharacters(x1, x2, y2 - i - count, y2 - i);
 
-                FillVisualRect(x1, y1, x2, y2 - height + count, ' ', CursorState.Attributes);
+                FillVisualRect(x1, y1, x2, y1 + count - 1, ' ', CursorState.Attributes);
             }
         }
 
@@ -551,7 +557,16 @@
 
         public void InsertBlanks(int count)
         {
-            LogExtreme("InsertBlank()");
+            LogController("InsertBlank(count:" + count.ToString() + ")");
+
+            if (
+                CursorState.LeftAndRightMarginEnabled &&
+                (
+                    CursorState.CurrentColumn < CursorState.LeftMargin ||
+                    CursorState.CurrentColumn > CursorState.RightMargin
+                )
+            )
+                return;
 
             while (Buffer.Count <= (TopRow + CursorState.CurrentRow))
                 Buffer.Add(new TerminalLine());
@@ -560,11 +575,68 @@
             while (line.Count < CursorState.CurrentColumn)
                 line.Add(new TerminalCharacter());
 
-            while ((count--) > 0)
+            var removeAt = Columns;
+            if (CursorState.LeftAndRightMarginEnabled)
+                removeAt = CursorState.RightMargin + 1;
+
+            for (var i = 0; i < count; i++)
+            {
                 line.Insert(CursorState.CurrentColumn, new TerminalCharacter());
 
-            while (line.Count > Columns)
-                line.RemoveAt(line.Count - 1);
+                if (removeAt < line.Count)
+                    line.RemoveAt(removeAt);
+            }
+        }
+
+        public void EraseCharacter(int count)
+        {
+            LogController("EraseCharacter(count:" + count.ToString() + ")");
+
+            for(var i=0; i<count; i++)
+                SetCharacter(CursorState.CurrentColumn + i, CursorState.CurrentRow + TopRow, ' ', CursorState.Attributes);
+        }
+
+        public void DeleteCharacter(int count)
+        {
+            LogController("DeleteCharacter(count:" + count.ToString() + ")");
+
+            if (
+                CursorState.LeftAndRightMarginEnabled &&
+                (
+                    CursorState.CurrentColumn < CursorState.LeftMargin ||
+                    CursorState.CurrentColumn > CursorState.RightMargin
+                )
+            )
+                return;
+
+            if (CursorState.CurrentRow >= Buffer.Count)
+                return;
+
+            var line = Buffer[CursorState.CurrentRow];
+
+            var insertAt = Columns + 1;
+            if (CursorState.LeftAndRightMarginEnabled)
+                insertAt = CursorState.RightMargin;
+
+            while (count > 0 && CursorState.CurrentColumn < line.Count)
+            {
+                line.RemoveAt(CursorState.CurrentColumn);
+                count--;
+
+                if (insertAt <= line.Count)
+                {
+                    line.Insert(
+                        insertAt,
+                        new TerminalCharacter
+                        {
+                            Char = ' ',
+                            Attributes = line[insertAt - 1].Attributes
+                        }
+                    );
+                }
+            }
+
+            ChangeCount++;
         }
 
         public void PutChar(char character)
@@ -1073,13 +1145,53 @@
         public void DeleteLines(int count)
         {
             // TODO : Verify it works with scroll range
-            LogController("Unimplemented: DeleteLines(count:" + count.ToString() + ")");
+            LogController("DeleteLines(count:" + count.ToString() + ")");
+
+            if (
+                CursorState.CurrentRow < CursorState.ScrollTop ||
+                (CursorState.ScrollBottom >= 0 && CursorState.CurrentRow > CursorState.ScrollBottom)
+            )
+                return;
+
+            if (
+                CursorState.LeftAndRightMarginEnabled &&
+                (
+                    CursorState.CurrentColumn < CursorState.LeftMargin ||
+                    CursorState.CurrentColumn > CursorState.RightMargin
+                )
+            )
+                return;
 
             if ((CursorState.CurrentRow + TopRow) >= Buffer.Count)
                 return;
 
-            while ((count > 0) && (CursorState.CurrentRow + TopRow) < Buffer.Count)
-                Buffer.RemoveAt(CursorState.CurrentRow);
+            if (CursorState.LeftAndRightMarginEnabled)
+            {
+                var scrollTop = CursorState.CurrentRow;
+                var scrollBottom = CursorState.ScrollBottom;
+                if (scrollBottom == +1)
+                    scrollBottom = Rows - 1;
+
+                if (scrollTop < scrollBottom)
+                    ScrollVisualRect(CursorState.LeftMargin, scrollTop, CursorState.RightMargin, scrollBottom, count);
+            }
+            else
+            {
+                int lineToInsert = TopRow + VisibleRows;
+                if (CursorState.ScrollBottom != -1)
+                    lineToInsert = TopRow + CursorState.ScrollBottom;
+
+                while ((count--) > 0)
+                {
+                    if ((CursorState.CurrentRow + TopRow) < Buffer.Count)
+                    {
+                        Buffer.RemoveAt(CursorState.CurrentRow + TopRow);
+
+                        if (lineToInsert <= Buffer.Count)
+                            Buffer.Insert(lineToInsert, new TerminalLine());
+                    }
+                }
+            }
 
             ChangeCount++;
         }
@@ -1088,20 +1200,50 @@
         {
             LogController("InsertLines(count:" + count.ToString() + ")");
 
+            if (
+                CursorState.CurrentRow < CursorState.ScrollTop ||
+                (CursorState.ScrollBottom >= 0 && CursorState.CurrentRow > CursorState.ScrollBottom)
+            )
+                return;
+
+            if (
+                CursorState.LeftAndRightMarginEnabled &&
+                (
+                    CursorState.CurrentColumn < CursorState.LeftMargin ||
+                    CursorState.CurrentColumn > CursorState.RightMargin
+                )
+            )
+                return;
+
             if ((CursorState.CurrentRow + TopRow) >= Buffer.Count)
                 return;
 
-            int lineToRemove = TopRow + VisibleRows;
-            if (CursorState.ScrollBottom != -1)
-                lineToRemove = TopRow + CursorState.ScrollBottom;
-
-            while ((count--) > 0)
+            if (CursorState.LeftAndRightMarginEnabled)
             {
-                if (lineToRemove < Buffer.Count)
-                    Buffer.RemoveAt(lineToRemove);
+                var scrollTop = CursorState.CurrentRow;
+                var scrollBottom = CursorState.ScrollBottom;
+                if (scrollBottom == +1)
+                    scrollBottom = Rows - 1;
 
-                Buffer.Insert((CursorState.CurrentRow + TopRow), new TerminalLine());
+                if (scrollTop < scrollBottom)
+                    ScrollVisualRect(CursorState.LeftMargin, scrollTop, CursorState.RightMargin, scrollBottom, -count);
             }
+            else
+            {
+                int lineToRemove = TopRow + VisibleRows;
+                if (CursorState.ScrollBottom != -1)
+                    lineToRemove = TopRow + CursorState.ScrollBottom;
+
+                while ((count--) > 0)
+                {
+                    if (lineToRemove < Buffer.Count)
+                        Buffer.RemoveAt(lineToRemove);
+
+                    Buffer.Insert((CursorState.CurrentRow + TopRow), new TerminalLine());
+                }
+            }
+
+            ChangeCount++;
         }
 
         public void EraseAll()
@@ -1114,24 +1256,6 @@
             SetCursorPosition(1, 1);
             Columns = VisibleColumns;
             Rows = VisibleRows;
-
-            ChangeCount++;
-        }
-
-        public void DeleteCharacter(int count)
-        {
-            LogController("DeleteCharacter(count:" + count.ToString() + ")");
-
-            if (CursorState.CurrentRow >= Buffer.Count)
-                return;
-
-            var line = Buffer[CursorState.CurrentRow];
-
-            while (count > 0 && CursorState.CurrentColumn < line.Count)
-            {
-                line.RemoveAt(CursorState.CurrentColumn);
-                count--;
-            }
 
             ChangeCount++;
         }
@@ -1280,6 +1404,19 @@
             for (var y = 0; y < Rows; y++)
                 for (var x = 0; x < Columns; x++)
                     SetCharacter(x, y, (char)('A' + y), CursorState.Attributes);
+        }
+
+        public void TestPatternScrollingLower()
+        {
+            for (var y = 0; y < Rows; y++)
+                for (var x = 0; x < Columns; x++)
+                    SetCharacter(x, y, (char)('a' + y), CursorState.Attributes);
+        }
+        public void TestPatternScrollingDiagonalLower()
+        {
+            for (var y = 0; y < Rows; y++)
+                for (var x = 0; x < Columns; x++)
+                    SetCharacter(x, y, (char)('a' + Math.Abs(x - y) % 26), CursorState.Attributes);
         }
 
         private void Send(byte[] v)

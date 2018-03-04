@@ -90,8 +90,9 @@
                     InputBuffer.PopAllStates();
                     break;
                 }
-                catch (ArgumentException)
+                catch (ArgumentException e)
                 {
+                    System.Diagnostics.Debug.WriteLine("Argument exception : " + e.ToString());
                     // We've reached an invalid state of the stream.
                     InputBuffer.ReadRaw();
                     InputBuffer.Commit();

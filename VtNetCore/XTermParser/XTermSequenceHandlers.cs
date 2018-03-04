@@ -703,7 +703,7 @@
             },
             new SequenceHandler
             {
-                Description = "Set Scrolling Region [top;bottom] (default = full size of window)",
+                Description = "Set Scrolling Region [top;bottom] (default = full size of window)  (DECSTBM).",
                 SequenceType = SequenceHandler.ESequenceType.CSI,
                 CsiCommand = "r",
                 ExactParameterCountOrDefault = 2,
@@ -1063,6 +1063,17 @@
                 Handler = (sequence, controller) =>
                 {
                     controller.Scroll(-((sequence.Parameters == null || sequence.Parameters.Count == 0) ? 1 : sequence.Parameters[0]));
+                }
+            },
+            new SequenceHandler
+            {
+                Description = "CSI Ps X  Erase Ps Character(s) (default = 1) (ECH).",
+                SequenceType = SequenceHandler.ESequenceType.CSI,
+                CsiCommand = "X",
+                ExactParameterCountOrDefault = 1,
+                Handler = (sequence, controller) => {
+                    var count = ((sequence.Parameters == null || sequence.Parameters.Count == 0 || sequence.Parameters[0] == 0) ? 1 : sequence.Parameters[0]);
+                    controller.EraseCharacter(count);
                 }
             },
             new SequenceHandler

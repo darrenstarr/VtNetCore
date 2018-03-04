@@ -23,6 +23,9 @@ namespace VtNetCoreUnitTests
 
         private static string Command(this string x, int a, int b, char c)
         {
+            if(a == 1)
+                return x + ";" + b.ToString() + c;
+
             return x + a.ToString() + ";" + b.ToString() + c;
         }
 
@@ -39,9 +42,14 @@ namespace VtNetCoreUnitTests
             return x + "?";
         }
 
-        public static string LF(this string x, int count=1)
+        public static string LF(this string x, int count = 1)
         {
             return x + string.Empty.PadLeft(count, '\n');
+        }
+
+        public static string CR(this string x, int count = 1)
+        {
+            return x + string.Empty.PadLeft(count, '\r');
         }
 
         // CSI Ps ; Ps r
@@ -219,6 +227,42 @@ namespace VtNetCoreUnitTests
         public static string CBT(this string x, int count = 1)
         {
             return x.CSI().Command(count, 'Z');
+        }
+
+        // ESC c     Full Reset (RIS).
+        public static string RIS(this string x)
+        {
+            return x + ESC() + "c";
+        }
+
+        // CSI Ps @  Insert Ps (Blank) Character(s) (default = 1) (ICH).
+        public static string ICH(this string x, int count = 1)
+        {
+            return x.CSI().Command(count, '@');
+        }
+
+        // CSI Ps P  Delete Ps Character(s) (default = 1) (DCH).
+        public static string DCH(this string x, int count = 1)
+        {
+            return x.CSI().Command(count, 'P');
+        }
+
+        // CSI Ps X  Erase Ps Character(s) (default = 1) (ECH).
+        public static string ECH(this string x, int count = 1)
+        {
+            return x.CSI().Command(count, 'X');
+        }
+
+        // CSI Ps L  Insert Ps Line(s) (default = 1) (IL).
+        public static string IL(this string x, int count = 1)
+        {
+            return x.CSI().Command(count, 'L');
+        }
+
+        // CSI Ps M  Delete Ps Line(s) (default = 1) (DL).
+        public static string DL(this string x, int count = 1)
+        {
+            return x.CSI().Command(count, 'M');
         }
     }
 }
