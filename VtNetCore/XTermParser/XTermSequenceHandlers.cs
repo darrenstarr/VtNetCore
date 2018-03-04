@@ -806,6 +806,19 @@
             },
             new SequenceHandler
             {
+                Description = "Cursor Next Line Ps Times (default = 1)",
+                SequenceType = SequenceHandler.ESequenceType.CSI,
+                CsiCommand = "E",
+                ExactParameterCountOrDefault = 1,
+                Handler = (sequence, controller) => {
+                    var count = ((sequence.Parameters == null || sequence.Parameters.Count == 0 || sequence.Parameters[0] == 0) ? 1 : sequence.Parameters[0]);
+                    controller.CarriageReturn();
+                    while((count--) > 0)
+                        controller.NewLine();
+                }
+            },
+            new SequenceHandler
+            {
                 Description = "Cursor Position [row;column] (default = [1,1])",
                 SequenceType = SequenceHandler.ESequenceType.CSI,
                 CsiCommand = "H",

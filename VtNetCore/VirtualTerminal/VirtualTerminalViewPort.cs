@@ -27,5 +27,35 @@
         {
             Parent.TopRow = top;
         }
+
+        /// <summary>
+        /// Returns the cursor position in terms of base-1 relative to the view port
+        /// </summary>
+        public TextPosition ScreenCursorPosition
+        {
+            get
+            {
+                return CursorPosition.OffsetBy(1, 1);
+            }
+        }
+
+        /// <summary>
+        /// Returns the cursor position in terms of base-0 relative to the view port
+        /// </summary>
+        public TextPosition CursorPosition
+        {
+            get
+            {
+                var column = Parent.CursorState.CurrentColumn;
+                if (Parent.CursorState.WordWrap && column >= Parent.Columns)
+                    column = Parent.Columns - 1;
+
+                return new TextPosition
+                {
+                    Column = column,
+                    Row = Parent.CursorState.CurrentRow - TopRow
+                };
+            }
+        }
     }
 }

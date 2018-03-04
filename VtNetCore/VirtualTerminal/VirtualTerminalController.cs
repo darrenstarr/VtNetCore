@@ -327,6 +327,9 @@
 
             if (CursorState.CurrentColumn > 0)
             {
+                if (CursorState.WordWrap && CursorState.CurrentColumn >= Columns)
+                    CursorState.CurrentColumn = Columns - 1;
+
                 CursorState.CurrentColumn--;
 
                 ChangeCount++;

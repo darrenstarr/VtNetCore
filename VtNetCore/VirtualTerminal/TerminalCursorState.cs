@@ -45,7 +45,7 @@
         /// </summary>
         public List<int> TabStops = new List<int>
         {
-            8, 16, 24, 32, 40, 48, 56, 64, 72, 80
+            0, 9, 17, 25, 33, 41, 49, 57, 65, 73, 81
         };
 
         /// <summary>
