@@ -30,6 +30,7 @@
         void EnableApplicationCursorKeys(bool enable);
         void EnableAutoRepeatKeys(bool enable);
         void EnableBlinkingCursor(bool enable);
+        void EnableLeftAndRightMarginMode(bool enable);
         void EnableNormalBuffer();
         void EnableOriginMode(bool enable);
         void EnableReverseVideoMode(bool enable);
@@ -68,6 +69,7 @@
         void SaveEnableSgrMouseMode();
         void SaveUseCellMotionMouseTracking();
         void SaveUseHighlightMouseTracking();
+        void Scroll(int rows);
         void SendDeviceAttributes();
         void SendDeviceAttributesSecondary();
         void SetAbsoluteRow(int line);
@@ -78,6 +80,7 @@
         void SetCursorPosition(int column, int row);
         void SetInsertReplaceMode(EInsertReplaceMode mode);
         void SetLatin1();
+        void SetLeftAndRightMargins(int left, int right);
         void SetKeypadType(EKeypadType type);
         void SetWindowTitle(string title);
         void SetScrollingRegion(int top, int bottom);

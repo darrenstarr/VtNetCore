@@ -274,31 +274,149 @@
             ChangeCount++;
         }
 
+        private void FillVisualRect(int x1, int y1, int x2, int y2, char ch, TerminalAttribute attr)
+        {
+            LogController("FillVisualRect(x1:" + x1.ToString() + ",y1:" + y1.ToString() + ",x2:" + x2.ToString() + ",y2:" + y2.ToString() + ")");
+            for (var y = y1; y <= y2; y++)
+                for (var x = x1; x <= x2; x++)
+                    SetCharacter(x, y, ch, attr);
+        }
+
+        private TerminalLine GetLine(int y)
+        {
+            if (y >= Buffer.Count)
+                return null;
+
+            return Buffer[y];
+        }
+
+        private TerminalLine GetVisualLine(int y)
+        {
+            return GetLine(y + TopRow);
+        }
+
+        private TerminalCharacter GetCharacter(int x, int y)
+        {
+            var line = GetVisualLine(y);
+            if (line == null || x >= line.Count)
+                return new TerminalCharacter
+                {
+                    Char = ' ',
+                    Attributes = CursorState.Attributes
+                };
+
+            return line[x];
+        }
+
+        private void MoveCharacters(int x1, int x2, int fromLine, int toLine)
+        {
+            for (int x = x1; x <= x2; x++)
+            {
+                var ch = GetCharacter(x, fromLine);
+                SetCharacter(x, toLine, ch.Char, ch.Attributes);
+            }
+        }
+
+        private void ScrollVisualRect(int x1, int y1, int x2, int y2, int count)
+        {
+            LogController("ScrollVisualRect(x1:" + x1.ToString() + ",y1:" + y1.ToString() + ",x2:" + x2.ToString() + ",y2:" + y2.ToString() + ",count:" + count.ToString() + ")");
+
+            int height = y2 - y1 + 1;
+            if (Math.Abs(count) >= height)
+            {
+                FillVisualRect(x1, y1, x2, y2, ' ', CursorState.Attributes);
+                return;
+            }
+
+            if (count > 0)
+            {
+                for (var i = 0; i < height - count; i++)
+                    MoveCharacters(x1, x2, y1 + i + count, y1 + i);
+
+                FillVisualRect(x1, y1 + height - count, x2, y2, ' ', CursorState.Attributes);
+            }
+            else
+            {
+                count = Math.Abs(count);
+                for (var i = 0; i < height - count; i++)
+                    MoveCharacters(x1, x2, y2 - i - count, y2 - i);
+
+                FillVisualRect(x1, y1, x2, y2 - height + count, ' ', CursorState.Attributes);
+            }
+        }
+
+        public void Scroll(int rows)
+        {
+            if (CursorState.LeftAndRightMarginEnabled && CursorState.CurrentColumn >= CursorState.LeftMargin && CursorState.CurrentColumn <= CursorState.RightMargin)
+            {
+                ScrollVisualRect(
+                    CursorState.LeftMargin,
+                    CursorState.ScrollTop,
+                    CursorState.RightMargin,
+                    CursorState.ScrollBottom == -1 ? Rows - 1 : CursorState.ScrollBottom,
+                    rows
+                );
+            }
+            else
+            {
+                ScrollVisualRect(
+                   0,
+                   CursorState.ScrollTop,
+                   VisibleColumns - 1,
+                   CursorState.ScrollBottom == -1 ? Rows - 1 : CursorState.ScrollBottom,
+                   rows
+               );
+            }
+        }
+
         public void NewLine()
         {
             LogExtreme("NewLine()");
 
-            CursorState.CurrentRow++;
-
-            if (CursorState.ScrollBottom == -1 && CursorState.CurrentRow >= VisibleRows)
+            if (CursorState.LeftAndRightMarginEnabled && CursorState.CurrentColumn >= CursorState.LeftMargin && CursorState.CurrentColumn <= CursorState.RightMargin)
             {
-                LogController("Scroll all (before:" + TopRow.ToString() + ",after:" + (TopRow + 1).ToString() + ")");
-                TopRow++;
-                CursorState.CurrentRow--;
+                CursorState.CurrentRow++;
+                if (
+                    (CursorState.ScrollBottom == -1 && CursorState.CurrentRow >= VisibleRows) ||
+                    (CursorState.ScrollBottom >= 0 && CursorState.CurrentRow == CursorState.ScrollBottom + 1)
+                )
+                {
+                    ScrollVisualRect(
+                        CursorState.LeftMargin,
+                        CursorState.ScrollTop,
+                        CursorState.RightMargin,
+                        CursorState.ScrollBottom == -1 ? Rows - 1 : CursorState.ScrollBottom,
+                        1
+                    );
+                    CursorState.CurrentRow--;
+                }
             }
-            else if (CursorState.ScrollBottom >= 0 && CursorState.CurrentRow > CursorState.ScrollBottom)
+            else
             {
-                LogController("Scroll region");
+                CursorState.CurrentRow++;
 
-                if (Buffer.Count > (CursorState.ScrollBottom + TopRow))
-                    Buffer.Insert(CursorState.ScrollBottom + TopRow + 1, new TerminalLine());
+                if (CursorState.ScrollBottom == -1 && CursorState.CurrentRow >= VisibleRows)
+                {
+                    LogController("Scroll all (before:" + TopRow.ToString() + ",after:" + (TopRow + 1).ToString() + ")");
+                    TopRow++;
+                    CursorState.CurrentRow--;
+                }
+                else if (CursorState.ScrollBottom >= 0 && CursorState.CurrentRow == CursorState.ScrollBottom + 1)
+                {
+                    LogController("Scroll region");
 
-                Buffer.RemoveAt(CursorState.ScrollTop + TopRow);
+                    if (Buffer.Count > (CursorState.ScrollBottom + TopRow))
+                        Buffer.Insert(CursorState.ScrollBottom + TopRow + 1, new TerminalLine());
 
-                CursorState.CurrentRow--;
+                    Buffer.RemoveAt(CursorState.ScrollTop + TopRow);
+
+                    CursorState.CurrentRow--;
+                }
+                else if (CursorState.CurrentRow >= VisibleRows)
+                    CursorState.CurrentRow--;
+
+                ChangeCount++;
             }
-
-            ChangeCount++;
         }
 
         public void VerticalTab()
@@ -317,21 +435,46 @@
         {
             LogController("ReverseIndex()");
 
-            CursorState.CurrentRow--;
-            if (CursorState.CurrentRow < CursorState.ScrollTop)
+            if (CursorState.LeftAndRightMarginEnabled && CursorState.CurrentColumn >= CursorState.LeftMargin && CursorState.CurrentColumn <= CursorState.RightMargin)
             {
-                var scrollBottom = 0;
-                if (CursorState.ScrollBottom == -1)
-                    scrollBottom = TopRow + VisibleRows - 1;
-                else
-                    scrollBottom = TopRow + CursorState.ScrollBottom;
+                CursorState.CurrentRow--;
+                if (CursorState.CurrentRow == (CursorState.ScrollTop - 1))
+                {
+                    var scrollBottom = 0;
+                    if (CursorState.ScrollBottom == -1)
+                        scrollBottom = TopRow + VisibleRows - 1;
+                    else
+                        scrollBottom = TopRow + CursorState.ScrollBottom;
 
-                if (Buffer.Count > scrollBottom)
-                    Buffer.RemoveAt(scrollBottom);
+                    ScrollVisualRect(
+                        CursorState.LeftMargin,
+                        CursorState.ScrollTop,
+                        CursorState.RightMargin,
+                        scrollBottom,
+                        -1
+                    );
+                    CursorState.CurrentRow++;
+                }
+            }
+            else
+            {
+                CursorState.CurrentRow--;
 
-                Buffer.Insert(TopRow + CursorState.ScrollTop, new TerminalLine());
+                if (CursorState.CurrentRow == (CursorState.ScrollTop - 1))
+                {
+                    var scrollBottom = 0;
+                    if (CursorState.ScrollBottom == -1)
+                        scrollBottom = TopRow + VisibleRows - 1;
+                    else
+                        scrollBottom = TopRow + CursorState.ScrollBottom;
 
-                CursorState.CurrentRow++;
+                    if (Buffer.Count > scrollBottom)
+                        Buffer.RemoveAt(scrollBottom);
+
+                    Buffer.Insert(TopRow + CursorState.ScrollTop, new TerminalLine());
+
+                    CursorState.CurrentRow++;
+                }
             }
         }
 
@@ -381,9 +524,19 @@
             LogController("SetCursorPosition(column:" + column.ToString() + ",row:" + row.ToString() + ")");
 
             CursorState.CurrentColumn = column - 1;
+            if(CursorState.LeftAndRightMarginEnabled)
+            {
+                if(CursorState.OriginMode && CursorState.CurrentColumn < CursorState.LeftMargin)
+                    CursorState.CurrentColumn = CursorState.LeftMargin;
+                if (CursorState.CurrentColumn >= CursorState.RightMargin)
+                    CursorState.RightMargin = CursorState.RightMargin;
+            }
 
             CursorState.CurrentRow = row - 1 + (CursorState.OriginMode ? CursorState.ScrollTop : 0);
-            if (CursorState.ScrollBottom > -1 && CursorState.CurrentRow > CursorState.ScrollBottom)
+            if (CursorState.CurrentRow < 0)
+                CursorState.CurrentRow = 0;
+
+            if (CursorState.OriginMode && CursorState.ScrollBottom > -1 && CursorState.CurrentRow > CursorState.ScrollBottom)
                 CursorState.CurrentRow = CursorState.ScrollBottom;
             else if (CursorState.ScrollBottom == -1 && CursorState.CurrentRow >= VisibleRows)
                 CursorState.CurrentRow = TopRow + VisibleRows - 1;
@@ -795,6 +948,9 @@
         {
             LogController("SetScrollingRegion(top:" + top.ToString() + ",bottom:" + bottom.ToString() + ")");
 
+            if (bottom < top)
+                return;
+
             if (top == 1 && bottom == VisibleRows)
                 ClearScrollingRegion();
             else
@@ -805,6 +961,20 @@
                 if (CursorState.OriginMode)
                     CursorState.CurrentRow = CursorState.ScrollTop;
             }
+        }
+
+        public void SetLeftAndRightMargins(int left, int right)
+        {
+            LogController("SetLeftAndRightMargins(left:" + left.ToString() + ",right:" + right.ToString() + ")");
+
+            if (!CursorState.LeftAndRightMarginEnabled)
+                return;
+
+            CursorState.LeftMargin = left - 1;
+            CursorState.RightMargin = right - 1;
+
+            if (CursorState.OriginMode)
+                SetCursorPosition(1, 1);
         }
 
         public void EraseLine()
@@ -1020,6 +1190,21 @@
             LogController("Unimplemented: EnableReverseWrapAroundMode(enable:" + enable.ToString() + ")");
         }
 
+        public void EnableLeftAndRightMarginMode(bool enable)
+        {
+            LogController("EnableLeftAndRightMarginMode(enable:" + enable.ToString() + ")");
+
+            if(CursorState.LeftAndRightMarginEnabled != enable)
+            {
+                if(enable)
+                {
+                    CursorState.LeftMargin = 0;
+                    CursorState.RightMargin = Columns;
+                }
+                CursorState.LeftAndRightMarginEnabled = enable;
+            }
+        }
+
         public static readonly byte[] VT102DeviceAttributes = { 0x1B, (byte)'[', (byte)'?', (byte)'6', (byte)'C' };
 
         public void SendDeviceAttributes()
@@ -1076,6 +1261,13 @@
                 TopRow += offset;
                 CursorState.CurrentRow -= offset;
             }
+        }
+
+        public void TestPatternScrolling()
+        {
+            for (var y = 0; y < Rows; y++)
+                for (var x = 0; x < Columns; x++)
+                    SetCharacter(x, y, (char)('A' + y), CursorState.Attributes);
         }
 
         private void Send(byte[] v)

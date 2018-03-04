@@ -82,6 +82,21 @@
         public EInsertReplaceMode InsertMode = EInsertReplaceMode.Replace;
 
         /// <summary>
+        /// When left and right margins are enabled, specifies the left margin
+        /// </summary>
+        public int LeftMargin { get; set; }
+
+        /// <summary>
+        /// When left and right margins are enabled, specifies the left margin
+        /// </summary>
+        public int RightMargin { get; set; }
+
+        /// <summary>
+        /// Configures that left and right margins should be used
+        /// </summary>
+        public bool LeftAndRightMarginEnabled { get; set; }
+
+        /// <summary>
         /// Deep copy
         /// </summary>
         /// <returns>A deep copy of the state</returns>
@@ -101,7 +116,10 @@
                 OriginMode = OriginMode,
                 InsertMode = InsertMode,
                 ShowCursor = ShowCursor,
-                BlinkingCursor = BlinkingCursor
+                BlinkingCursor = BlinkingCursor,
+                LeftAndRightMarginEnabled = LeftAndRightMarginEnabled,
+                LeftMargin = LeftMargin,
+                RightMargin = RightMargin
             };
         }
 
@@ -124,7 +142,10 @@
                 "OriginMode:" + OriginMode.ToString() + "\n" +
                 "InsertMode:" + InsertMode.ToString() + "\n" +
                 "ShowCursor:" + ShowCursor.ToString() + "\n" +
-                "BlinkingCursor:" + BlinkingCursor.ToString()
+                "BlinkingCursor:" + BlinkingCursor.ToString() + "\n" + 
+                "LeftAndRightMarginEnabled: " + LeftAndRightMarginEnabled.ToString() + "\n" +
+                "LeftMargin: " + LeftMargin.ToString() + "\n" + 
+                "RightMargin: " + RightMargin.ToString()
                 ;
         }
     }

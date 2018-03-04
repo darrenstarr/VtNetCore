@@ -372,6 +372,16 @@
             },
             new SequenceHandler
             {
+                Description = "Enable left and right margin mode (DECLRMM)",
+                SequenceType = SequenceHandler.ESequenceType.CSI,
+                CsiCommand = "h",
+                Query = true,
+                ExactParameterCount = 1,
+                Param0 = new int [] { 69 },
+                Handler = (sequence, controller) => controller.EnableLeftAndRightMarginMode(true)
+            },
+            new SequenceHandler
+            {
                 Description = "Use Hilite Mouse Tracking.",
                 SequenceType = SequenceHandler.ESequenceType.CSI,
                 CsiCommand = "h",
@@ -586,6 +596,16 @@
             },
             new SequenceHandler
             {
+                Description = "Disable left and right margin mode (DECLRMM)",
+                SequenceType = SequenceHandler.ESequenceType.CSI,
+                CsiCommand = "l",
+                Query = true,
+                ExactParameterCount = 1,
+                Param0 = new int [] { 69 },
+                Handler = (sequence, controller) => controller.EnableLeftAndRightMarginMode(false)
+            },
+            new SequenceHandler
+            {
                 Description = "Don't use Hilite Mouse Tracking.",
                 SequenceType = SequenceHandler.ESequenceType.CSI,
                 CsiCommand = "l",
@@ -754,6 +774,18 @@
                 ExactParameterCount = 1,
                 Param0 = new int [] { 2004 },
                 Handler = (sequence, controller) => controller.RestoreBracketedPasteMode()
+            },
+            new SequenceHandler
+            {
+                Description = "Set left and right margins (DECSLRM), available only when DECLRMM is enabled",
+                SequenceType = SequenceHandler.ESequenceType.CSI,
+                CsiCommand = "s",
+                ExactParameterCount = 2,
+                Handler = (sequence, controller) =>
+                {
+                    if(sequence.Parameters.Count == 2)
+                        controller.SetLeftAndRightMargins(sequence.Parameters[0], sequence.Parameters[1]);
+                }
             },
             new SequenceHandler
             {
@@ -1009,6 +1041,28 @@
                 Handler = (sequence, controller) =>
                 {
                     controller.DeleteCharacter((sequence.Parameters == null || sequence.Parameters.Count == 0) ? 1 : sequence.Parameters[0]);
+                }
+            },
+            new SequenceHandler
+            {
+                Description = "Scroll up Ps lines (default = 1) (SU)",
+                SequenceType = SequenceHandler.ESequenceType.CSI,
+                CsiCommand = "S",
+                ExactParameterCountOrDefault = 1,
+                Handler = (sequence, controller) =>
+                {
+                    controller.Scroll((sequence.Parameters == null || sequence.Parameters.Count == 0) ? 1 : sequence.Parameters[0]);
+                }
+            },
+            new SequenceHandler
+            {
+                Description = "Scroll down Ps lines (default = 1) (SD).",
+                SequenceType = SequenceHandler.ESequenceType.CSI,
+                CsiCommand = "T",
+                ExactParameterCountOrDefault = 1,
+                Handler = (sequence, controller) =>
+                {
+                    controller.Scroll(-((sequence.Parameters == null || sequence.Parameters.Count == 0) ? 1 : sequence.Parameters[0]));
                 }
             },
             new SequenceHandler
