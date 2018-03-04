@@ -1002,6 +1002,18 @@
             while (line.Count > Columns)
                 line.RemoveAt(line.Count - 1);
 
+            // Filling to the end of the line to adopt attributes for applications like Midnight commander
+            while (line.Count < Columns)
+            {
+                line.Add(
+                    new TerminalCharacter
+                    {
+                        Char = ' ',
+                        Attributes = CursorState.Attributes
+                    }
+                );
+            }
+
             ChangeCount++;
         }
 

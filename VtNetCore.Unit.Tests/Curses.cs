@@ -16,6 +16,11 @@ namespace VtNetCoreUnitTests
             return x + ESC() + '[';
         }
 
+        public static string T(this string x, string text)
+        {
+            return x + text;
+        }
+
         private static string Command(this string x, int a, int b, char c)
         {
             return x + a.ToString() + ";" + b.ToString() + c;
@@ -23,6 +28,9 @@ namespace VtNetCoreUnitTests
 
         private static string Command(this string x, int a, char c)
         {
+            if (a == 1)
+                return x + c;
+
             return x + a.ToString() + c;
         }
 
@@ -66,8 +74,14 @@ namespace VtNetCoreUnitTests
 
         // CSI Ps; Ps H
         //  Cursor Position[row; column] (default = [1,1]) (CUP).
-        public static string CUP(this string x, int row, int column=1)
+        public static string CUP(this string x, int row=1, int column=1)
         {
+            if (column == 1 && row == 1)
+                return x.CSI().T("H");
+
+            if(column == 1)
+                return x.CSI().Command(row, 'H');
+
             return x.CSI().Command(row, column, 'H');
         }
 
@@ -85,6 +99,13 @@ namespace VtNetCoreUnitTests
             return x + ESC() + "D";
         }
 
+        // ESC E
+        //  Next Line(NEL  is 0x85).
+        public static string NEL(this string x)
+        {
+            return x + ESC() + "E";
+        }
+
         // CSI Ps S  Scroll up Ps lines (default = 1) (SU).
         public static string SU(this string x, int rows = 1)
         {
@@ -95,6 +116,109 @@ namespace VtNetCoreUnitTests
         public static string SD(this string x, int rows = 1)
         {
             return x.CSI().Command(rows, 'T');
+        }
+
+        // CSI Ps A  Cursor Up Ps Times (default = 1) (CUU).
+        public static string CUU(this string x, int count = 1)
+        {
+            return x.CSI().Command(count, 'A');
+        }
+
+        // CSI Ps B  Cursor Down Ps Times (default = 1) (CUD).
+        public static string CUD(this string x, int count = 1)
+        {
+            return x.CSI().Command(count, 'B');
+        }
+
+        // CSI Ps C  Cursor Forward Ps Times (default = 1) (CUF).
+        public static string CUF(this string x, int count = 1)
+        {
+            return x.CSI().Command(count, 'C');
+        }
+
+        // CSI Ps D  Cursor Backward Ps Times (default = 1) (CUB).
+        public static string CUB(this string x, int count = 1)
+        {
+            return x.CSI().Command(count, 'D');
+        }
+
+        // CSI Ps E  Cursor Next Line Ps Times (default = 1) (CNL).
+        public static string CNL(this string x, int count = 1)
+        {
+            return x.CSI().Command(count, 'E');
+        }
+
+        // CSI Ps F  Cursor Preceding Line Ps Times (default = 1) (CPL).
+        public static string CPL(this string x, int count = 1)
+        {
+            return x.CSI().Command(count, 'F');
+        }
+
+        // CSI Ps G  Cursor Character Absolute  [column] (default = [row,1]) (CHA).
+        public static string CHA(this string x, int count = 1)
+        {
+            return x.CSI().Command(count, 'G');
+        }
+
+        // CSI Pm `  Character Position Absolute  [column] (default = [row,1])
+        public static string HPA(this string x, int count = 1)
+        {
+            return x.CSI().Command(count, '`');
+        }
+
+        // Character Position Relative  [columns] (default = [row,col+1]) (HPR).
+        public static string HPR(this string x, int count = 1)
+        {
+            return x.CSI().Command(count, 'a');
+        }
+
+        // Character Position Backward [columns] (default = [row,col+1]) (HPB).
+        public static string HPB(this string x, int count = 1)
+        {
+            return x.CSI().Command(count, 'j');
+        }
+
+        // CSI Ps ; Ps f
+        //  Horizontal and Vertical Position[row; column] (default = [1,1]) (HVP).
+        public static string HVP(this string x, int row = 1, int column = 1)
+        {
+            if (column == 1 && row == 1)
+                return x.CSI().T("f");
+
+            if (column == 1)
+                return x.CSI().Command(row, 'f');
+
+            return x.CSI().Command(row, column, 'f');
+        }
+
+        // CSI Pm d  Line Position Absolute  [row] (default = [1,column]) (VPA).
+        public static string VPA(this string x, int count = 1)
+        {
+            return x.CSI().Command(count, 'd');
+        }
+
+        // CSI Pm e  Line Position Relative  [rows] (default = [row+1,column]) (VPR).
+        public static string VPR(this string x, int count = 1)
+        {
+            return x.CSI().Command(count, 'e');
+        }
+
+        // CSI Pm k  Line Position Backward [rows] (default = [row+1,column]) (VPB).
+        public static string VPB(this string x, int count = 1)
+        {
+            return x.CSI().Command(count, 'k');
+        }
+
+        // CSI Ps I  Cursor Forward Tabulation Ps tab stops (default = 1) (CHT).
+        public static string CHT(this string x, int count = 1)
+        {
+            return x.CSI().Command(count, 'I');
+        }
+
+        // CSI Ps Z  Cursor Backward Tabulation Ps tab stops (default = 1) (CBT).
+        public static string CBT(this string x, int count = 1)
+        {
+            return x.CSI().Command(count, 'Z');
         }
     }
 }

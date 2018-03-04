@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Text;
 using VtNetCore.VirtualTerminal;
 using VtNetCore.XTermParser;
 using Xunit;
 
 namespace VtNetCoreUnitTests
 {
-    public class libvtermScrollTests
+    public class LibvtermScrollTests
     {
         private void Push(DataConsumer d, string s)
         {
