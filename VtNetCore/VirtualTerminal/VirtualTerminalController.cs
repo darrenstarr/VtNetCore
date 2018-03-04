@@ -230,6 +230,20 @@
                 SetCursorPosition(tabStops[index], CursorState.CurrentRow + 1);
         }
 
+        public void ReverseTab()
+        {
+            var current = CursorState.CurrentColumn + 1;
+            LogController("ReverseTab() [cursorX=" + current.ToString() + "]");
+
+            var tabStops = CursorState.TabStops;
+            int index = tabStops.Count - 1;
+            while (index >= 0 && tabStops[index] >= current)
+                index--;
+            
+            if (index >= 0)
+                SetCursorPosition(tabStops[index], CursorState.CurrentRow + 1);
+        }
+
         public void ClearTabs()
         {
             LogController("ClearTabs()");
@@ -367,11 +381,19 @@
             LogController("SetCursorPosition(column:" + column.ToString() + ",row:" + row.ToString() + ")");
 
             CursorState.CurrentColumn = column - 1;
+
             CursorState.CurrentRow = row - 1 + (CursorState.OriginMode ? CursorState.ScrollTop : 0);
             if (CursorState.ScrollBottom > -1 && CursorState.CurrentRow > CursorState.ScrollBottom)
                 CursorState.CurrentRow = CursorState.ScrollBottom;
+            else if (CursorState.ScrollBottom == -1 && CursorState.CurrentRow >= VisibleRows)
+                CursorState.CurrentRow = TopRow + VisibleRows - 1;
 
             ChangeCount++;
+        }
+
+        public void SetAbsoluteRow(int row)
+        {
+            SetCursorPosition(CursorState.CurrentColumn + 1, row);
         }
 
         public void InsertBlanks(int count)

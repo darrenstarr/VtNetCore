@@ -56,6 +56,10 @@
         void RestoreEnableSgrMouseMode();
         void RestoreUseCellMotionMouseTracking();
         void RestoreUseHighlightMouseTracking();
+        void RestoreBracketedPasteMode();
+        void RestoreCursorKeys();
+        void ReverseIndex();
+        void ReverseTab();
         void SetAutomaticNewLine(bool enable);
         void SaveBracketedPasteMode();
         void SaveCursor();
@@ -66,6 +70,7 @@
         void SaveUseHighlightMouseTracking();
         void SendDeviceAttributes();
         void SendDeviceAttributesSecondary();
+        void SetAbsoluteRow(int line);
         void SetBracketedPasteMode(bool enable);
         void SetCharacterAttribute(int parameter);
         void SetCharacterSet(ECharacterSet characterSet);
@@ -80,13 +85,10 @@
         void ShiftIn();
         void ShiftOut();
         void ShowCursor(bool show);
+        void Tab();
+        void TabSet();
         void UseCellMotionMouseTracking(bool enable);
         void UseHighlightMouseTracking(bool enable);
         void VerticalTab();
-        void RestoreBracketedPasteMode();
-        void RestoreCursorKeys();
-        void ReverseIndex();
-        void TabSet();
-        void Tab();
     }
 }

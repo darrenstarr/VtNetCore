@@ -146,6 +146,17 @@
             },
             new SequenceHandler
             {
+                Description = "Character Position Relative  [columns] (default = [row,col+1])",
+                SequenceType = SequenceHandler.ESequenceType.CSI,
+                CsiCommand = "a",
+                ExactParameterCountOrDefault = 1,
+                Handler = (sequence, controller) => {
+                    var count = ((sequence.Parameters == null || sequence.Parameters.Count == 0 || sequence.Parameters[0] == 0) ? 1 : sequence.Parameters[0]);
+                    controller.MoveCursorRelative(count, 0);
+                }
+            },
+            new SequenceHandler
+            {
                 Description = "Send Device Attributes (Secondary DA).",
                 SequenceType = SequenceHandler.ESequenceType.CSI,
                 Send = true,
@@ -162,6 +173,28 @@
                 ExactParameterCountOrDefault = 1,
                 Param0 = new int [] { 0 },
                 Handler = (sequence, controller) => controller.SendDeviceAttributes()
+            },
+            new SequenceHandler
+            {
+                Description = "Line Position Absolute  [row] (default = [1,column])",
+                SequenceType = SequenceHandler.ESequenceType.CSI,
+                CsiCommand = "d",
+                ExactParameterCountOrDefault = 1,
+                Handler = (sequence, controller) => {
+                    var value = ((sequence.Parameters == null || sequence.Parameters.Count == 0 || sequence.Parameters[0] == 0) ? 1 : sequence.Parameters[0]);
+                    controller.SetAbsoluteRow(value);
+                }
+            },
+            new SequenceHandler
+            {
+                Description = "Line Position Relative  [rows] (default = [row+1,column])",
+                SequenceType = SequenceHandler.ESequenceType.CSI,
+                CsiCommand = "e",
+                ExactParameterCountOrDefault = 1,
+                Handler = (sequence, controller) => {
+                    var count = ((sequence.Parameters == null || sequence.Parameters.Count == 0 || sequence.Parameters[0] == 0) ? 1 : sequence.Parameters[0]);
+                    controller.MoveCursorRelative(0, count);
+                }
             },
             new SequenceHandler
             {
@@ -390,6 +423,28 @@
                 ExactParameterCount = 1,
                 Param0 = new int [] { 2004 },
                 Handler = (sequence, controller) => controller.SetBracketedPasteMode(true)
+            },
+            new SequenceHandler
+            {
+                Description = "Character Position Relative Backwards [columns] (default = [row,col-1])",
+                SequenceType = SequenceHandler.ESequenceType.CSI,
+                CsiCommand = "j",
+                ExactParameterCountOrDefault = 1,
+                Handler = (sequence, controller) => {
+                    var count = ((sequence.Parameters == null || sequence.Parameters.Count == 0 || sequence.Parameters[0] == 0) ? 1 : sequence.Parameters[0]);
+                    controller.MoveCursorRelative(-count, 0);
+                }
+            },
+            new SequenceHandler
+            {
+                Description = "Vertical position backwards",
+                SequenceType = SequenceHandler.ESequenceType.CSI,
+                CsiCommand = "k",
+                ExactParameterCountOrDefault = 1,
+                Handler = (sequence, controller) => {
+                    var count = ((sequence.Parameters == null || sequence.Parameters.Count == 0 || sequence.Parameters[0] == 0) ? 1 : sequence.Parameters[0]);
+                    controller.MoveCursorRelative(0, -count);
+                }
             },
             new SequenceHandler
             {
@@ -813,8 +868,32 @@
                 Handler = (sequence, controller) => {
                     var count = ((sequence.Parameters == null || sequence.Parameters.Count == 0 || sequence.Parameters[0] == 0) ? 1 : sequence.Parameters[0]);
                     controller.CarriageReturn();
+                    controller.MoveCursorRelative(0, count);
+                }
+            },
+            new SequenceHandler
+            {
+                Description = "Cursor Preceding Line Ps Times (default = 1)",
+                SequenceType = SequenceHandler.ESequenceType.CSI,
+                CsiCommand = "F",
+                ExactParameterCountOrDefault = 1,
+                Handler = (sequence, controller) => {
+                    var count = ((sequence.Parameters == null || sequence.Parameters.Count == 0 || sequence.Parameters[0] == 0) ? 1 : sequence.Parameters[0]);
+                    controller.CarriageReturn();
                     while((count--) > 0)
-                        controller.NewLine();
+                        controller.ReverseIndex();
+                }
+            },
+            new SequenceHandler
+            {
+                Description = "Cursor Character Absolute  [column] (default = [row,1])",
+                SequenceType = SequenceHandler.ESequenceType.CSI,
+                CsiCommand = "G",
+                ExactParameterCountOrDefault = 1,
+                Handler = (sequence, controller) => {
+                    var count = ((sequence.Parameters == null || sequence.Parameters.Count == 0 || sequence.Parameters[0] == 0) ? 1 : sequence.Parameters[0]);
+                    controller.CarriageReturn();
+                    controller.MoveCursorRelative(count - 1, 0);
                 }
             },
             new SequenceHandler
@@ -829,6 +908,26 @@
                         controller.SetCursorPosition(1,1);
                     else
                         controller.SetCursorPosition(sequence.Parameters[1], sequence.Parameters[0]);
+                }
+            },
+            new SequenceHandler
+            {
+                Description = "Cursor Position [row;1]",
+                SequenceType = SequenceHandler.ESequenceType.CSI,
+                CsiCommand = "H",
+                ExactParameterCount = 1,
+                Handler = (sequence, controller) => controller.SetCursorPosition(1, sequence.Parameters[0])
+            },
+            new SequenceHandler
+            {
+                Description = "Cursor Forward Tabulation Ps tab stops (default = 1)",
+                SequenceType = SequenceHandler.ESequenceType.CSI,
+                CsiCommand = "I",
+                ExactParameterCountOrDefault = 1,
+                Handler = (sequence, controller) => {
+                    var count = ((sequence.Parameters == null || sequence.Parameters.Count == 0 || sequence.Parameters[0] == 0) ? 1 : sequence.Parameters[0]);
+                    while((count--) > 0)
+                        controller.Tab();
                 }
             },
             new SequenceHandler
@@ -914,6 +1013,30 @@
             },
             new SequenceHandler
             {
+                Description = "Cursor Backward Tabulation Ps tab stops (default = 1) (CBT).",
+                SequenceType = SequenceHandler.ESequenceType.CSI,
+                CsiCommand = "Z",
+                ExactParameterCountOrDefault = 1,
+                Handler = (sequence, controller) => {
+                    var count = ((sequence.Parameters == null || sequence.Parameters.Count == 0 || sequence.Parameters[0] == 0) ? 1 : sequence.Parameters[0]);
+                    while((count--) > 0)
+                        controller.ReverseTab();
+                }
+            },
+            new SequenceHandler
+            {
+                Description = "Character Position Absolute  [column] (default = [row,1])",
+                SequenceType = SequenceHandler.ESequenceType.CSI,
+                CsiCommand = "`",
+                ExactParameterCountOrDefault = 1,
+                Handler = (sequence, controller) => {
+                    var count = ((sequence.Parameters == null || sequence.Parameters.Count == 0 || sequence.Parameters[0] == 0) ? 1 : sequence.Parameters[0]);
+                    controller.CarriageReturn();
+                    controller.MoveCursorRelative(count - 1, 0);
+                }
+            },
+            new SequenceHandler
+            {
                 Description = "Select default character set.  That is ISO 8859-1",
                 SequenceType = SequenceHandler.ESequenceType.Unicode,
                 CsiCommand = "@",
@@ -959,15 +1082,21 @@
                             )
                         ) &&
                         (
-                            x.ExactParameterCount == -1 ||
-                            (sequence.Parameters != null || x.ExactParameterCount == sequence.Parameters.Count)
-                        ) &&
-                        (
-                            x.ExactParameterCountOrDefault == -1 ||
                             (
-                                sequence.Parameters == null ||
-                                sequence.Parameters.Count == 0 ||
-                                x.ExactParameterCountOrDefault == sequence.Parameters.Count
+                                x.ExactParameterCount == -1 &&
+                                x.ExactParameterCountOrDefault == -1
+                            ) ||
+                            (
+                                x.ExactParameterCount != -1 &&
+                                (sequence.Parameters != null && x.ExactParameterCount == sequence.Parameters.Count)
+                            ) ||
+                            (
+                                x.ExactParameterCountOrDefault != -1 &&
+                                (
+                                    sequence.Parameters == null ||
+                                    sequence.Parameters.Count == 0 ||
+                                    x.ExactParameterCountOrDefault == sequence.Parameters.Count
+                                )
                             )
                         )
                     )
