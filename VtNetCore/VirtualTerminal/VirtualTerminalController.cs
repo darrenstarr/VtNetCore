@@ -1436,7 +1436,7 @@
             SendData.Invoke(this, new SendDataEventArgs { Data = VT102DeviceAttributes });
         }
 
-        public static readonly byte[] XTermDeviceAttributesSecondary = { 0x1B, (byte)'[', (byte)'>', (byte)'0', (byte)';', (byte)'1', (byte)'3', (byte)'6', (byte)';', (byte)'0', (byte)'C' };
+        public static readonly byte[] XTermDeviceAttributesSecondary = { 0x1B, (byte)'[', (byte)'>', (byte)'0', (byte)';', (byte)'1', (byte)'3', (byte)'6', (byte)';', (byte)'0', (byte)'c' };
 
         public void SendDeviceAttributesSecondary()
         {
