@@ -1116,6 +1116,36 @@ namespace VtNetCoreUnitTests
             Assert.Equal(ExpectDeleteColumnInDECSTBMAndDECSLRM, s);
         }
 
+        //  "000000000111111111122222222223333333333444444444455555555556666666666777777777788
+        //  "123456789012345678901234567890123456789012345678901234567890123456789012345678901"
+        //  "                   |                                       |                     "
+        public static readonly string ExpectEraseInLineRight =
+            "AB                                                                              " + "\n" + // 1
+            "babcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyza" + "\n" + // 2
+            "cbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz" + "\n" + // 3
+            "dcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxy" + "\n" + // 4    -
+            "edcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwx" + "\n" + // 5
+            "fedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvw" + "\n" + // 6
+            "gfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuv" + "\n" + // 7
+            "hgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstu" + "\n" + // 8
+            "ihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrst" + "\n" + // 9
+            "jihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrs" + "\n" + // 10
+            "kjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqr" + "\n" + // 11
+            "lkjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopq" + "\n" + // 12
+            "mlkjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnop" + "\n" + // 13
+            "nmlkjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmno" + "\n" + // 14
+            "onmlkjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmn" + "\n" + // 15
+            "ponmlkjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklm" + "\n" + // 16
+            "qponmlkjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijkl" + "\n" + // 17
+            "rqponmlkjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijk" + "\n" + // 18
+            "srqponmlkjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghij" + "\n" + // 19
+            "tsrqponmlkjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghi" + "\n" + // 20   -
+            "utsrqponmlkjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefgh" + "\n" + // 21
+            "vutsrqponmlkjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefg" + "\n" + // 22
+            "wvutsrqponmlkjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdef" + "\n" + // 23
+            "xwvutsrqponmlkjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcde" + "\n" + // 24
+            "yxwvutsrqponmlkjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcd";         // 25
+
         // !EL 0
         // RESET
         //   erase 0..25,0..80
@@ -1126,6 +1156,60 @@ namespace VtNetCoreUnitTests
         // PUSH "\e[0K"
         //   erase 0..1,2..80
         //   ?cursor = 0,2
+        [Fact]
+        public void EraseInLineRight()
+        {
+            var s = string.Empty;
+            var t = new VirtualTerminalController();
+            var d = new DataConsumer(t);
+            t.ResizeView(80, 25);
+            t.TestPatternScrollingDiagonalLower();
+
+            // PUSH "ABCDE"
+            // PUSH "\e[3D"
+            //   ?cursor = 0,2
+            Push(d, "ABCDE".CUB(3));
+            s = t.GetScreenText();
+            Assert.True(IsCursor(t, 0, 2));
+
+            // PUSH "\e[0K"
+            //   erase 0..1,2..80
+            //   ?cursor = 0,2
+            Push(d, "".EL(0));
+            s = t.GetScreenText();
+            Assert.Equal(ExpectEraseInLineRight, s);
+            Assert.True(IsCursor(t, 0, 2));
+        }
+
+        //  "000000000111111111122222222223333333333444444444455555555556666666666777777777788
+        //  "123456789012345678901234567890123456789012345678901234567890123456789012345678901"
+        //  "                   |                                       |                     "
+        public static readonly string ExpectEraseInLineLeft =
+            "   DEfghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzab" + "\n" + // 1
+            "babcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyza" + "\n" + // 2
+            "cbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz" + "\n" + // 3
+            "dcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxy" + "\n" + // 4    -
+            "edcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwx" + "\n" + // 5
+            "fedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvw" + "\n" + // 6
+            "gfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuv" + "\n" + // 7
+            "hgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstu" + "\n" + // 8
+            "ihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrst" + "\n" + // 9
+            "jihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrs" + "\n" + // 10
+            "kjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqr" + "\n" + // 11
+            "lkjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopq" + "\n" + // 12
+            "mlkjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnop" + "\n" + // 13
+            "nmlkjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmno" + "\n" + // 14
+            "onmlkjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmn" + "\n" + // 15
+            "ponmlkjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklm" + "\n" + // 16
+            "qponmlkjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijkl" + "\n" + // 17
+            "rqponmlkjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijk" + "\n" + // 18
+            "srqponmlkjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghij" + "\n" + // 19
+            "tsrqponmlkjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghi" + "\n" + // 20   -
+            "utsrqponmlkjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefgh" + "\n" + // 21
+            "vutsrqponmlkjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefg" + "\n" + // 22
+            "wvutsrqponmlkjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdef" + "\n" + // 23
+            "xwvutsrqponmlkjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcde" + "\n" + // 24
+            "yxwvutsrqponmlkjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcd";         // 25
 
         // !EL 1
         // RESET
@@ -1137,7 +1221,60 @@ namespace VtNetCoreUnitTests
         // PUSH "\e[1K"
         //   erase 0..1,0..3
         //   ?cursor = 0,2
-        // 
+        [Fact]
+        public void EraseInLineLeft()
+        {
+            var s = string.Empty;
+            var t = new VirtualTerminalController();
+            var d = new DataConsumer(t);
+            t.ResizeView(80, 25);
+            t.TestPatternScrollingDiagonalLower();
+
+            // PUSH "ABCDE"
+            // PUSH "\e[3D"
+            //   ?cursor = 0,2
+            Push(d, "ABCDE".CUB(3));
+            s = t.GetScreenText();
+            Assert.True(IsCursor(t, 0, 2));
+
+            // PUSH "\e[1K"
+            //   erase 0..1,0..3
+            //   ?cursor = 0,2
+            Push(d, "".EL(1));
+            s = t.GetScreenText();
+            Assert.Equal(ExpectEraseInLineLeft, s);
+        }
+
+        //  "000000000111111111122222222223333333333444444444455555555556666666666777777777788
+        //  "123456789012345678901234567890123456789012345678901234567890123456789012345678901"
+        //  "                   |                                       |                     "
+        public static readonly string ExpectEraseInLineAll =
+            "                                                                                " + "\n" + // 1
+            "babcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyza" + "\n" + // 2
+            "cbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz" + "\n" + // 3
+            "dcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxy" + "\n" + // 4    -
+            "edcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwx" + "\n" + // 5
+            "fedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvw" + "\n" + // 6
+            "gfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuv" + "\n" + // 7
+            "hgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstu" + "\n" + // 8
+            "ihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrst" + "\n" + // 9
+            "jihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrs" + "\n" + // 10
+            "kjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqr" + "\n" + // 11
+            "lkjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopq" + "\n" + // 12
+            "mlkjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnop" + "\n" + // 13
+            "nmlkjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmno" + "\n" + // 14
+            "onmlkjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmn" + "\n" + // 15
+            "ponmlkjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklm" + "\n" + // 16
+            "qponmlkjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijkl" + "\n" + // 17
+            "rqponmlkjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijk" + "\n" + // 18
+            "srqponmlkjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghij" + "\n" + // 19
+            "tsrqponmlkjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghi" + "\n" + // 20   -
+            "utsrqponmlkjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefgh" + "\n" + // 21
+            "vutsrqponmlkjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefg" + "\n" + // 22
+            "wvutsrqponmlkjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdef" + "\n" + // 23
+            "xwvutsrqponmlkjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcde" + "\n" + // 24
+            "yxwvutsrqponmlkjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcd";         // 25
+
         // !EL 2
         // RESET
         //   erase 0..25,0..80
@@ -1148,7 +1285,30 @@ namespace VtNetCoreUnitTests
         // PUSH "\e[2K"
         //   erase 0..1,0..80
         //   ?cursor = 0,2
-        // 
+        [Fact]
+        public void EraseInLineAll ()
+        {
+            var s = string.Empty;
+            var t = new VirtualTerminalController();
+            var d = new DataConsumer(t);
+            t.ResizeView(80, 25);
+            t.TestPatternScrollingDiagonalLower();
+
+            // PUSH "ABCDE"
+            // PUSH "\e[3D"
+            //   ?cursor = 0,2
+            // PUSH "ABCDE"
+            // PUSH "\e[3D"
+            //   ?cursor = 0,2
+
+            // PUSH "\e[2K"
+            //   erase 0..1,0..80
+            //   ?cursor = 0,2
+            Push(d, "".EL(2));
+            s = t.GetScreenText();
+            Assert.Equal(ExpectEraseInLineAll, s);
+        }
+
         // !SEL
         // RESET
         //   erase 0..25,0..80

@@ -294,5 +294,17 @@ namespace VtNetCoreUnitTests
         {
             return x.CSI().Command(count, "'~");
         }
+
+        // CSI Ps K Erase in Line(EL).
+        //     Ps = 0  -> Erase to Right(default).
+        //     Ps = 1  -> Erase to Left.
+        //     Ps = 2  -> Erase All.
+        public static string EL(this string x, int command = 0)
+        {
+            if (command == 0)
+                return x.CSI().T("K");
+
+            return x.CSI().T(command.ToString()).T("K");
+        }
     }
 }
