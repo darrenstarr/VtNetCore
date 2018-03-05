@@ -306,5 +306,18 @@ namespace VtNetCoreUnitTests
 
             return x.CSI().T(command.ToString()).T("K");
         }
+
+        // CSI Ps J  Erase in Display (ED).
+        //    Ps = 0  -> Erase Below(default).
+        //    Ps = 1  -> Erase Above.
+        //    Ps = 2  -> Erase All.
+        //    Ps = 3->Erase Saved Lines (xterm).
+        public static string ED(this string x, int command = 0)
+        {
+            if (command == 0)
+                return x.CSI().T("J");
+
+            return x.CSI().T(command.ToString()).T("J");
+        }
     }
 }

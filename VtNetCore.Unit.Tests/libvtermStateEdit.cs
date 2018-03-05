@@ -1118,12 +1118,11 @@ namespace VtNetCoreUnitTests
 
         //  "000000000111111111122222222223333333333444444444455555555556666666666777777777788
         //  "123456789012345678901234567890123456789012345678901234567890123456789012345678901"
-        //  "                   |                                       |                     "
         public static readonly string ExpectEraseInLineRight =
             "AB                                                                              " + "\n" + // 1
             "babcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyza" + "\n" + // 2
             "cbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz" + "\n" + // 3
-            "dcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxy" + "\n" + // 4    -
+            "dcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxy" + "\n" + // 4
             "edcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwx" + "\n" + // 5
             "fedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvw" + "\n" + // 6
             "gfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuv" + "\n" + // 7
@@ -1139,7 +1138,7 @@ namespace VtNetCoreUnitTests
             "qponmlkjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijkl" + "\n" + // 17
             "rqponmlkjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijk" + "\n" + // 18
             "srqponmlkjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghij" + "\n" + // 19
-            "tsrqponmlkjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghi" + "\n" + // 20   -
+            "tsrqponmlkjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghi" + "\n" + // 20
             "utsrqponmlkjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefgh" + "\n" + // 21
             "vutsrqponmlkjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefg" + "\n" + // 22
             "wvutsrqponmlkjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdef" + "\n" + // 23
@@ -1183,12 +1182,11 @@ namespace VtNetCoreUnitTests
 
         //  "000000000111111111122222222223333333333444444444455555555556666666666777777777788
         //  "123456789012345678901234567890123456789012345678901234567890123456789012345678901"
-        //  "                   |                                       |                     "
         public static readonly string ExpectEraseInLineLeft =
             "   DEfghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzab" + "\n" + // 1
             "babcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyza" + "\n" + // 2
             "cbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz" + "\n" + // 3
-            "dcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxy" + "\n" + // 4    -
+            "dcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxy" + "\n" + // 4
             "edcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwx" + "\n" + // 5
             "fedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvw" + "\n" + // 6
             "gfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuv" + "\n" + // 7
@@ -1204,7 +1202,7 @@ namespace VtNetCoreUnitTests
             "qponmlkjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijkl" + "\n" + // 17
             "rqponmlkjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijk" + "\n" + // 18
             "srqponmlkjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghij" + "\n" + // 19
-            "tsrqponmlkjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghi" + "\n" + // 20   -
+            "tsrqponmlkjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghi" + "\n" + // 20
             "utsrqponmlkjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefgh" + "\n" + // 21
             "vutsrqponmlkjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefg" + "\n" + // 22
             "wvutsrqponmlkjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdef" + "\n" + // 23
@@ -1247,12 +1245,11 @@ namespace VtNetCoreUnitTests
 
         //  "000000000111111111122222222223333333333444444444455555555556666666666777777777788
         //  "123456789012345678901234567890123456789012345678901234567890123456789012345678901"
-        //  "                   |                                       |                     "
         public static readonly string ExpectEraseInLineAll =
             "                                                                                " + "\n" + // 1
             "babcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyza" + "\n" + // 2
             "cbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz" + "\n" + // 3
-            "dcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxy" + "\n" + // 4    -
+            "dcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxy" + "\n" + // 4
             "edcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwx" + "\n" + // 5
             "fedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvw" + "\n" + // 6
             "gfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuv" + "\n" + // 7
@@ -1268,7 +1265,7 @@ namespace VtNetCoreUnitTests
             "qponmlkjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijkl" + "\n" + // 17
             "rqponmlkjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijk" + "\n" + // 18
             "srqponmlkjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghij" + "\n" + // 19
-            "tsrqponmlkjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghi" + "\n" + // 20   -
+            "tsrqponmlkjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghi" + "\n" + // 20
             "utsrqponmlkjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefgh" + "\n" + // 21
             "vutsrqponmlkjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefg" + "\n" + // 22
             "wvutsrqponmlkjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdef" + "\n" + // 23
@@ -1309,6 +1306,7 @@ namespace VtNetCoreUnitTests
             Assert.Equal(ExpectEraseInLineAll, s);
         }
 
+        // TODO : DECSEL
         // !SEL
         // RESET
         //   erase 0..25,0..80
@@ -1324,7 +1322,36 @@ namespace VtNetCoreUnitTests
         // PUSH "\e[?2K"
         //   erase 0..1,0..80 selective
         //   ? cursor = 0,10
-        // 
+
+        //  "000000000111111111122222222223333333333444444444455555555556666666666777777777788
+        //  "123456789012345678901234567890123456789012345678901234567890123456789012345678901"
+        public static readonly string ExpectEraseInDisplayBelow =
+            "ABCDEfghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzab" + "\n" + // 1
+            "b                                                                               " + "\n" + // 2
+            "                                                                                " + "\n" + // 3
+            "                                                                                " + "\n" + // 4
+            "                                                                                " + "\n" + // 5
+            "                                                                                " + "\n" + // 6
+            "                                                                                " + "\n" + // 7
+            "                                                                                " + "\n" + // 8
+            "                                                                                " + "\n" + // 9
+            "                                                                                " + "\n" + // 10
+            "                                                                                " + "\n" + // 11
+            "                                                                                " + "\n" + // 12
+            "                                                                                " + "\n" + // 13
+            "                                                                                " + "\n" + // 14
+            "                                                                                " + "\n" + // 15
+            "                                                                                " + "\n" + // 16
+            "                                                                                " + "\n" + // 17
+            "                                                                                " + "\n" + // 18
+            "                                                                                " + "\n" + // 19
+            "                                                                                " + "\n" + // 20
+            "                                                                                " + "\n" + // 21
+            "                                                                                " + "\n" + // 22
+            "                                                                                " + "\n" + // 23
+            "                                                                                " + "\n" + // 24
+            "                                                                                ";         // 25
+
         // !ED 0
         // RESET
         //   erase 0..25,0..80
@@ -1335,7 +1362,60 @@ namespace VtNetCoreUnitTests
         //   erase 1..2,1..80
         //   erase 2..25,0..80
         //   ?cursor = 1,1
-        // 
+        [Fact]
+        public void EraseInDisplayBelow()
+        {
+            var s = string.Empty;
+            var t = new VirtualTerminalController();
+            var d = new DataConsumer(t);
+            t.ResizeView(80, 25);
+            t.TestPatternScrollingDiagonalLower();
+
+            // PUSH "\e[2;2H"
+            //   ?cursor = 1,1
+            Push(d, "ABCDE".CUP(2,2));
+            s = t.GetScreenText();
+            Assert.True(IsCursor(t, 1, 1));
+
+            // PUSH "\e[0J"
+            //   erase 1..2,1..80
+            //   erase 2..25,0..80
+            //   ?cursor = 1,1
+            Push(d, "".ED(0));
+            s = t.GetScreenText();
+            Assert.Equal(ExpectEraseInDisplayBelow, s);
+            Assert.True(IsCursor(t, 1, 1));
+        }
+
+        //  "000000000111111111122222222223333333333444444444455555555556666666666777777777788
+        //  "123456789012345678901234567890123456789012345678901234567890123456789012345678901"
+        public static readonly string ExpectEraseInDisplayAbove =
+            "                                                                                " + "\n" + // 1
+            "  bcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyza" + "\n" + // 2
+            "cbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz" + "\n" + // 3
+            "dcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxy" + "\n" + // 4
+            "edcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwx" + "\n" + // 5
+            "fedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvw" + "\n" + // 6
+            "gfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuv" + "\n" + // 7
+            "hgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstu" + "\n" + // 8
+            "ihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrst" + "\n" + // 9
+            "jihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrs" + "\n" + // 10
+            "kjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqr" + "\n" + // 11
+            "lkjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopq" + "\n" + // 12
+            "mlkjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnop" + "\n" + // 13
+            "nmlkjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmno" + "\n" + // 14
+            "onmlkjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmn" + "\n" + // 15
+            "ponmlkjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklm" + "\n" + // 16
+            "qponmlkjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijkl" + "\n" + // 17
+            "rqponmlkjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijk" + "\n" + // 18
+            "srqponmlkjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghij" + "\n" + // 19
+            "tsrqponmlkjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghi" + "\n" + // 20
+            "utsrqponmlkjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefgh" + "\n" + // 21
+            "vutsrqponmlkjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefg" + "\n" + // 22
+            "wvutsrqponmlkjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdef" + "\n" + // 23
+            "xwvutsrqponmlkjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcde" + "\n" + // 24
+            "yxwvutsrqponmlkjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcd";         // 25
+
         // !ED 1
         // RESET
         //   erase 0..25,0..80
@@ -1346,7 +1426,60 @@ namespace VtNetCoreUnitTests
         //   erase 0..1,0..80
         //   erase 1..2,0..2
         //   ?cursor = 1,1
-        // 
+        [Fact]
+        public void EraseInDisplayAbove()
+        {
+            var s = string.Empty;
+            var t = new VirtualTerminalController();
+            var d = new DataConsumer(t);
+            t.ResizeView(80, 25);
+            t.TestPatternScrollingDiagonalLower();
+
+            // PUSH "\e[2;2H"
+            //   ?cursor = 1,1
+            Push(d, "ABCDE".CUP(2, 2));
+            s = t.GetScreenText();
+            Assert.True(IsCursor(t, 1, 1));
+
+            // PUSH "\e[0J"
+            //   erase 1..2,1..80
+            //   erase 2..25,0..80
+            //   ?cursor = 1,1
+            Push(d, "".ED(1));
+            s = t.GetScreenText();
+            Assert.Equal(ExpectEraseInDisplayAbove, s);
+            Assert.True(IsCursor(t, 1, 1));
+        }
+
+        //  "000000000111111111122222222223333333333444444444455555555556666666666777777777788
+        //  "123456789012345678901234567890123456789012345678901234567890123456789012345678901"
+        public static readonly string ExpectEraseInDisplayAll =
+            "                                                                                " + "\n" + // 1
+            "                                                                                " + "\n" + // 2
+            "                                                                                " + "\n" + // 3
+            "                                                                                " + "\n" + // 4
+            "                                                                                " + "\n" + // 5
+            "                                                                                " + "\n" + // 6
+            "                                                                                " + "\n" + // 7
+            "                                                                                " + "\n" + // 8
+            "                                                                                " + "\n" + // 9
+            "                                                                                " + "\n" + // 10
+            "                                                                                " + "\n" + // 11
+            "                                                                                " + "\n" + // 12
+            "                                                                                " + "\n" + // 13
+            "                                                                                " + "\n" + // 14
+            "                                                                                " + "\n" + // 15
+            "                                                                                " + "\n" + // 16
+            "                                                                                " + "\n" + // 17
+            "                                                                                " + "\n" + // 18
+            "                                                                                " + "\n" + // 19
+            "                                                                                " + "\n" + // 20
+            "                                                                                " + "\n" + // 21
+            "                                                                                " + "\n" + // 22
+            "                                                                                " + "\n" + // 23
+            "                                                                                " + "\n" + // 24
+            "                                                                                ";         // 25
+
         // !ED 2
         // RESET
         //   erase 0..25,0..80
@@ -1356,7 +1489,32 @@ namespace VtNetCoreUnitTests
         // PUSH "\e[2J"
         //   erase 0..25,0..80
         //   ?cursor = 1,1
-        // 
+        [Fact]
+        public void EraseInDisplayAll()
+        {
+            var s = string.Empty;
+            var t = new VirtualTerminalController();
+            var d = new DataConsumer(t);
+            t.ResizeView(80, 25);
+            t.TestPatternScrollingDiagonalLower();
+
+            // PUSH "\e[2;2H"
+            //   ?cursor = 1,1
+            Push(d, "ABCDE".CUP(2, 2));
+            s = t.GetScreenText();
+            Assert.True(IsCursor(t, 1, 1));
+
+            // PUSH "\e[0J"
+            //   erase 1..2,1..80
+            //   erase 2..25,0..80
+            //   ?cursor = 1,1
+            Push(d, "".ED(2));
+            s = t.GetScreenText();
+            Assert.Equal(ExpectEraseInDisplayAll, s);
+            Assert.True(IsCursor(t, 1, 1));
+        }
+
+        // TODO : DECSED
         // !SED
         // RESET
         //   erase 0..25,0..80
@@ -1373,12 +1531,14 @@ namespace VtNetCoreUnitTests
         // PUSH "\e[?2J"
         //   erase 0..25,0..80 selective
         //   ? cursor = 4,4
-        // 
+
+        // TODO : DECRQSS
+        // TODO : DECSCA
         // !DECRQSS on DECSCA
         // PUSH "\e[2\"q"
         // PUSH "\eP\$q\"q\e\\"
         //   output "\eP1\$r2\"q\e\\"
-        // 
+
         // WANTSTATE -s+m
         // 
         // !ICH move+erase emuation

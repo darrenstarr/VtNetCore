@@ -1341,7 +1341,6 @@
 
             TopRow = Buffer.Count;
 
-            SetCursorPosition(1, 1);
             Columns = VisibleColumns;
             Rows = VisibleRows;
 
