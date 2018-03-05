@@ -441,7 +441,11 @@
         {
             LogController("ReverseIndex()");
 
-            if (CursorState.LeftAndRightMarginEnabled && CursorState.CurrentColumn >= CursorState.LeftMargin && CursorState.CurrentColumn <= CursorState.RightMargin)
+            if (
+                CursorState.LeftAndRightMarginEnabled && 
+                CursorState.CurrentColumn >= CursorState.LeftMargin && 
+                CursorState.CurrentColumn <= CursorState.RightMargin
+            )
             {
                 CursorState.CurrentRow--;
                 if (CursorState.CurrentRow == (CursorState.ScrollTop - 1))
@@ -450,7 +454,7 @@
                     if (CursorState.ScrollBottom == -1)
                         scrollBottom = TopRow + VisibleRows - 1;
                     else
-                        scrollBottom = TopRow + CursorState.ScrollBottom;
+                        scrollBottom = CursorState.ScrollBottom;
 
                     ScrollVisualRect(
                         CursorState.LeftMargin,
@@ -559,33 +563,7 @@
         {
             LogController("InsertBlank(count:" + count.ToString() + ")");
 
-            if (
-                CursorState.LeftAndRightMarginEnabled &&
-                (
-                    CursorState.CurrentColumn < CursorState.LeftMargin ||
-                    CursorState.CurrentColumn > CursorState.RightMargin
-                )
-            )
-                return;
-
-            while (Buffer.Count <= (TopRow + CursorState.CurrentRow))
-                Buffer.Add(new TerminalLine());
-
-            var line = Buffer[TopRow + CursorState.CurrentRow];
-            while (line.Count < CursorState.CurrentColumn)
-                line.Add(new TerminalCharacter());
-
-            var removeAt = Columns;
-            if (CursorState.LeftAndRightMarginEnabled)
-                removeAt = CursorState.RightMargin + 1;
-
-            for (var i = 0; i < count; i++)
-            {
-                line.Insert(CursorState.CurrentColumn, new TerminalCharacter());
-
-                if (removeAt < line.Count)
-                    line.RemoveAt(removeAt);
-            }
+            InsertBlanks(TopRow + CursorState.CurrentRow);
         }
 
         public void EraseCharacter(int count)
@@ -593,7 +571,7 @@
             LogController("EraseCharacter(count:" + count.ToString() + ")");
 
             for(var i=0; i<count; i++)
-                SetCharacter(CursorState.CurrentColumn + i, CursorState.CurrentRow + TopRow, ' ', CursorState.Attributes);
+                SetCharacter(CursorState.CurrentColumn + i, CursorState.CurrentRow, ' ', CursorState.Attributes);
         }
 
         public void DeleteCharacter(int count)
@@ -609,10 +587,10 @@
             )
                 return;
 
-            if (CursorState.CurrentRow >= Buffer.Count)
+            if ((TopRow + CursorState.CurrentRow) >= Buffer.Count)
                 return;
 
-            var line = Buffer[CursorState.CurrentRow];
+            var line = Buffer[TopRow + CursorState.CurrentRow];
 
             var insertAt = Columns + 1;
             if (CursorState.LeftAndRightMarginEnabled)
@@ -1196,6 +1174,70 @@
             ChangeCount++;
         }
 
+        private void InsertBlanks(int count, int row)
+        {
+            LogController("InsertBlank(count:" + count.ToString() + ")");
+
+            if (
+                CursorState.LeftAndRightMarginEnabled &&
+                (
+                    CursorState.CurrentColumn < CursorState.LeftMargin ||
+                    CursorState.CurrentColumn > CursorState.RightMargin
+                )
+            )
+                return;
+
+            while (Buffer.Count <= row)
+                Buffer.Add(new TerminalLine());
+
+            var line = Buffer[row];
+            while (line.Count < CursorState.CurrentColumn)
+                line.Add(new TerminalCharacter());
+
+            var removeAt = Columns;
+            if (CursorState.LeftAndRightMarginEnabled)
+                removeAt = CursorState.RightMargin + 1;
+
+            for (var i = 0; i < count; i++)
+            {
+                line.Insert(CursorState.CurrentColumn, new TerminalCharacter());
+
+                if (removeAt < line.Count)
+                    line.RemoveAt(removeAt);
+            }
+        }
+
+        public void InsertColumn(int count)
+        {
+            LogController("InsertColumn(count:" + count.ToString() + ")");
+
+            if (
+                CursorState.CurrentRow < CursorState.ScrollTop ||
+                (CursorState.ScrollBottom >= 0 && CursorState.CurrentRow > CursorState.ScrollBottom)
+            )
+                return;
+
+            if (
+                CursorState.LeftAndRightMarginEnabled &&
+                (
+                    CursorState.CurrentColumn < CursorState.LeftMargin ||
+                    CursorState.CurrentColumn > CursorState.RightMargin
+                )
+            )
+                return;
+
+            var insertTop = CursorState.CurrentRow;
+            var insertBottom = CursorState.ScrollBottom;
+            if (insertBottom == -1)
+                insertBottom = Rows - 1;
+
+            if (insertTop < insertBottom)
+            {
+                for (var row = insertTop; row <= insertBottom; row++)
+                    InsertBlanks(count, row + TopRow);
+            }
+        }
+
         public void InsertLines(int count)
         {
             LogController("InsertLines(count:" + count.ToString() + ")");
@@ -1401,6 +1443,7 @@
 
         public void TestPatternScrolling()
         {
+            TopRow = 100;
             for (var y = 0; y < Rows; y++)
                 for (var x = 0; x < Columns; x++)
                     SetCharacter(x, y, (char)('A' + y), CursorState.Attributes);
@@ -1408,12 +1451,15 @@
 
         public void TestPatternScrollingLower()
         {
+            TopRow = 100;
             for (var y = 0; y < Rows; y++)
                 for (var x = 0; x < Columns; x++)
                     SetCharacter(x, y, (char)('a' + y), CursorState.Attributes);
         }
+
         public void TestPatternScrollingDiagonalLower()
         {
+            TopRow = 100;
             for (var y = 0; y < Rows; y++)
                 for (var x = 0; x < Columns; x++)
                     SetCharacter(x, y, (char)('a' + Math.Abs(x - y) % 26), CursorState.Attributes);

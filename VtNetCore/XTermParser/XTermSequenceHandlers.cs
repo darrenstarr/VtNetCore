@@ -1102,6 +1102,17 @@
             },
             new SequenceHandler
             {
+                Description = "Insert Ps Column(s) (default = 1) (DECIC), VT420 and up.",
+                SequenceType = SequenceHandler.ESequenceType.CSI,
+                CsiCommand = "'}",
+                ExactParameterCountOrDefault = 1,
+                Handler = (sequence, controller) => {
+                    var count = ((sequence.Parameters == null || sequence.Parameters.Count == 0 || sequence.Parameters[0] == 0) ? 1 : sequence.Parameters[0]);
+                    controller.InsertColumn(count);
+                }
+            },
+            new SequenceHandler
+            {
                 Description = "Select default character set.  That is ISO 8859-1",
                 SequenceType = SequenceHandler.ESequenceType.Unicode,
                 CsiCommand = "@",

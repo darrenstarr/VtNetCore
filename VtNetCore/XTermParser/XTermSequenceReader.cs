@@ -52,7 +52,7 @@
                     else
                         currentParameter = (currentParameter * 10) + Convert.ToInt32(next - '0');
                 }
-                else if (next == '$' || next == '"' || next == ' ')
+                else if (next == '$' || next == '"' || next == ' ' || next =='\'')
                 {
                     if (modifier.HasValue)
                         throw new EscapeSequenceException("There appears to be two modifiers in a row", stream.Stacked);

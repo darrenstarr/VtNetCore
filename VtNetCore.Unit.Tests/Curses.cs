@@ -23,13 +23,29 @@ namespace VtNetCoreUnitTests
 
         private static string Command(this string x, int a, int b, char c)
         {
-            if(a == 1)
+            if (a == 1)
+                return x + ";" + b.ToString() + c;
+
+            return x + a.ToString() + ";" + b.ToString() + c;
+        }
+
+        private static string Command(this string x, int a, int b, string c)
+        {
+            if (a == 1)
                 return x + ";" + b.ToString() + c;
 
             return x + a.ToString() + ";" + b.ToString() + c;
         }
 
         private static string Command(this string x, int a, char c)
+        {
+            if (a == 1)
+                return x + c;
+
+            return x + a.ToString() + c;
+        }
+
+        private static string Command(this string x, int a, string c)
         {
             if (a == 1)
                 return x + c;
@@ -263,6 +279,13 @@ namespace VtNetCoreUnitTests
         public static string DL(this string x, int count = 1)
         {
             return x.CSI().Command(count, 'M');
+        }
+
+        // CSI Pm ' }
+        //   Insert Ps Column(s) (default = 1) (DECIC), VT420 and up.
+        public static string DECIC(this string x, int count = 1)
+        {
+            return x.CSI().Command(count, "'}");
         }
     }
 }

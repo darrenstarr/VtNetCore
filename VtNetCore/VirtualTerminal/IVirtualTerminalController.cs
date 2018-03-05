@@ -48,6 +48,7 @@
         void FormFeed();
         void FullReset();
         void InsertBlanks(int count);
+        void InsertColumn(int count);
         void InsertLines(int count);
         void MoveCursorRelative(int x, int y);
         void NewLine();
