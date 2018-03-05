@@ -918,28 +918,28 @@ namespace VtNetCoreUnitTests
 
         //  "000000000111111111122222222223333333333444444444455555555556666666666777777777788
         //  "123456789012345678901234567890123456789012345678901234567890123456789012345678901"
-        //  "                   |                                       |                     "
+        //  "                   |                                       |         *           "
         public static readonly string ExpectDECICInDECSTBMAndDECSLRM =
-            "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwvxyza" + "\n" + // 1
-            "babcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvxyzab" + "\n" + // 2
-            "cbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvxyza" + "\n" + // 3
-            "dcbabcdefghijklmnop   qrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuv" + "\n" + // 4    -
-            "edcbabcdefghijklmno   pqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstu" + "\n" + // 5
-            "fedcbabcdefghijklmn   opqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrst" + "\n" + // 6
-            "gfedcbabcdefghijklm   nopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrs" + "\n" + // 7
-            "hgfedcbabcdefghijkl   mnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqr" + "\n" + // 8
-            "ihgfedcbabcdefghijk   lmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopq" + "\n" + // 9
-            "jihgfedcbabcdefghij   klmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnop" + "\n" + // 10
-            "kjihgfedcbabcdefghi   jklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmno" + "\n" + // 11
-            "lkjihgfedcbabcdefgh   ijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmn" + "\n" + // 12
-            "mlkjihgfedcbabcdefg   hijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklm" + "\n" + // 13
-            "nmlkjihgfedcbabcdef   ghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijkl" + "\n" + // 14
-            "onmlkjihgfedcbabcde   fghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijk" + "\n" + // 15
-            "ponmlkjihgfedcbabcd   efghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghik" + "\n" + // 16
-            "qponmlkjihgfedcbabc   defghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghi" + "\n" + // 17
-            "rqponmlkjihgfedcbab   cdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefgh" + "\n" + // 18
-            "srqponmlkjihgfedcba   bcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefg" + "\n" + // 19
-            "tsrqponmlkjihgfedcb   abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdef" + "\n" + // 20   -
+            "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzab" + "\n" + // 1
+            "babcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyza" + "\n" + // 2
+            "cbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz" + "\n" + // 3
+            "dcbabcdefghijklmnop   qrstuvwxyzabcdefghijklmnopqrstuvwxyzabfghijklmnopqrstuvwxy" + "\n" + // 4    -
+            "edcbabcdefghijklmno   pqrstuvwxyzabcdefghijklmnopqrstuvwxyzaefghijklmnopqrstuvwx" + "\n" + // 5
+            "fedcbabcdefghijklmn   opqrstuvwxyzabcdefghijklmnopqrstuvwxyzdefghijklmnopqrstuvw" + "\n" + // 6
+            "gfedcbabcdefghijklm   nopqrstuvwxyzabcdefghijklmnopqrstuvwxycdefghijklmnopqrstuv" + "\n" + // 7
+            "hgfedcbabcdefghijkl   mnopqrstuvwxyzabcdefghijklmnopqrstuvwxbcdefghijklmnopqrstu" + "\n" + // 8
+            "ihgfedcbabcdefghijk   lmnopqrstuvwxyzabcdefghijklmnopqrstuvwabcdefghijklmnopqrst" + "\n" + // 9
+            "jihgfedcbabcdefghij   klmnopqrstuvwxyzabcdefghijklmnopqrstuvzabcdefghijklmnopqrs" + "\n" + // 10
+            "kjihgfedcbabcdefghi   jklmnopqrstuvwxyzabcdefghijklmnopqrstuyzabcdefghijklmnopqr" + "\n" + // 11
+            "lkjihgfedcbabcdefgh   ijklmnopqrstuvwxyzabcdefghijklmnopqrstxyzabcdefghijklmnopq" + "\n" + // 12
+            "mlkjihgfedcbabcdefg   hijklmnopqrstuvwxyzabcdefghijklmnopqrswxyzabcdefghijklmnop" + "\n" + // 13
+            "nmlkjihgfedcbabcdef   ghijklmnopqrstuvwxyzabcdefghijklmnopqrvwxyzabcdefghijklmno" + "\n" + // 14
+            "onmlkjihgfedcbabcde   fghijklmnopqrstuvwxyzabcdefghijklmnopquvwxyzabcdefghijklmn" + "\n" + // 15
+            "ponmlkjihgfedcbabcd   efghijklmnopqrstuvwxyzabcdefghijklmnoptuvwxyzabcdefghijklm" + "\n" + // 16
+            "qponmlkjihgfedcbabc   defghijklmnopqrstuvwxyzabcdefghijklmnostuvwxyzabcdefghijkl" + "\n" + // 17
+            "rqponmlkjihgfedcbab   cdefghijklmnopqrstuvwxyzabcdefghijklmnrstuvwxyzabcdefghijk" + "\n" + // 18
+            "srqponmlkjihgfedcba   bcdefghijklmnopqrstuvwxyzabcdefghijklmqrstuvwxyzabcdefghij" + "\n" + // 19
+            "tsrqponmlkjihgfedcb   abcdefghijklmnopqrstuvwxyzabcdefghijklpqrstuvwxyzabcdefghi" + "\n" + // 20   -
             "utsrqponmlkjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefgh" + "\n" + // 21
             "vutsrqponmlkjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefg" + "\n" + // 22
             "wvutsrqponmlkjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdef" + "\n" + // 23
@@ -990,22 +990,132 @@ namespace VtNetCoreUnitTests
             Assert.Equal(ExpectDECICInDECSTBMAndDECSLRM, s);
         }
 
+        //  "000000000111111111122222222223333333333444444444455555555556666666666777777777788
+        //  "123456789012345678901234567890123456789012345678901234567890123456789012345678901"
+        //  "                   |                                                             "
+        public static readonly string ExpectDeleteColumn =
+            "abcdefghijklmnopqrsyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzab     " + "\n" + // 1
+            "babcdefghijklmnopqrxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyza     " + "\n" + // 2
+            "cbabcdefghijklmnopqwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz     " + "\n" + // 3
+            "dcbabcdefghijklmnopvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxy     " + "\n" + // 4
+            "edcbabcdefghijklmnouvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwx     " + "\n" + // 5
+            "fedcbabcdefghijklmntuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvw     " + "\n" + // 6
+            "gfedcbabcdefghijklmstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuv     " + "\n" + // 7
+            "hgfedcbabcdefghijklrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstu     " + "\n" + // 8
+            "ihgfedcbabcdefghijkqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrst     " + "\n" + // 9
+            "jihgfedcbabcdefghijpqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrs     " + "\n" + // 10
+            "kjihgfedcbabcdefghiopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqr     " + "\n" + // 11
+            "lkjihgfedcbabcdefghnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopq     " + "\n" + // 12
+            "mlkjihgfedcbabcdefgmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnop     " + "\n" + // 13
+            "nmlkjihgfedcbabcdeflmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmno     " + "\n" + // 14
+            "onmlkjihgfedcbabcdeklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmn     " + "\n" + // 15
+            "ponmlkjihgfedcbabcdjklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklm     " + "\n" + // 16
+            "qponmlkjihgfedcbabcijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijkl     " + "\n" + // 17
+            "rqponmlkjihgfedcbabhijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijk     " + "\n" + // 18
+            "srqponmlkjihgfedcbaghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghij     " + "\n" + // 19
+            "tsrqponmlkjihgfedcbfghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghi     " + "\n" + // 20
+            "utsrqponmlkjihgfedcefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefgh     " + "\n" + // 21
+            "vutsrqponmlkjihgfeddefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefg     " + "\n" + // 22
+            "wvutsrqponmlkjihgfecdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdef     " + "\n" + // 23
+            "xwvutsrqponmlkjihgfbcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcde     " + "\n" + // 24
+            "yxwvutsrqponmlkjihgabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcd     ";         // 25
+
         // !DECDC
         // RESET
         //   erase 0..25,0..80
         // PUSH "\e[20G\e[5'~"
         //   scrollrect 0..25,19..80 => +0,+5
-        // 
+        [Fact]
+        public void DeleteColumn()
+        {
+            var s = string.Empty;
+            var t = new VirtualTerminalController();
+            var d = new DataConsumer(t);
+            t.ResizeView(80, 25);
+            t.TestPatternScrollingDiagonalLower();
+
+            // PUSH "\e[20G\e[5'~"
+            //   scrollrect 0..25,19..80 => +0,+5
+            Push(d, "".CHA(20).DECDC(5));
+            s = t.GetScreenText();
+            Assert.Equal(ExpectDeleteColumn, s);
+        }
+
+        //  "000000000111111111122222222223333333333444444444455555555556666666666777777777788
+        //  "123456789012345678901234567890123456789012345678901234567890123456789012345678901"
+        //  "                   |                                       |                     "
+        public static readonly string ExpectDeleteColumnInDECSTBMAndDECSLRM =
+            "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzab" + "\n" + // 1
+            "babcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyza" + "\n" + // 2
+            "cbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz" + "\n" + // 3
+            "dcbabcdefghijklmnoptuvwxyzabcdefghijklmnopqrstuvwxyzabcde   fghijklmnopqrstuvwxy" + "\n" + // 4    -
+            "edcbabcdefghijklmnostuvwxyzabcdefghijklmnopqrstuvwxyzabcd   efghijklmnopqrstuvwx" + "\n" + // 5
+            "fedcbabcdefghijklmnrstuvwxyzabcdefghijklmnopqrstuvwxyzabc   defghijklmnopqrstuvw" + "\n" + // 6
+            "gfedcbabcdefghijklmqrstuvwxyzabcdefghijklmnopqrstuvwxyzab   cdefghijklmnopqrstuv" + "\n" + // 7
+            "hgfedcbabcdefghijklpqrstuvwxyzabcdefghijklmnopqrstuvwxyza   bcdefghijklmnopqrstu" + "\n" + // 8
+            "ihgfedcbabcdefghijkopqrstuvwxyzabcdefghijklmnopqrstuvwxyz   abcdefghijklmnopqrst" + "\n" + // 9
+            "jihgfedcbabcdefghijnopqrstuvwxyzabcdefghijklmnopqrstuvwxy   zabcdefghijklmnopqrs" + "\n" + // 10
+            "kjihgfedcbabcdefghimnopqrstuvwxyzabcdefghijklmnopqrstuvwx   yzabcdefghijklmnopqr" + "\n" + // 11
+            "lkjihgfedcbabcdefghlmnopqrstuvwxyzabcdefghijklmnopqrstuvw   xyzabcdefghijklmnopq" + "\n" + // 12
+            "mlkjihgfedcbabcdefgklmnopqrstuvwxyzabcdefghijklmnopqrstuv   wxyzabcdefghijklmnop" + "\n" + // 13
+            "nmlkjihgfedcbabcdefjklmnopqrstuvwxyzabcdefghijklmnopqrstu   vwxyzabcdefghijklmno" + "\n" + // 14
+            "onmlkjihgfedcbabcdeijklmnopqrstuvwxyzabcdefghijklmnopqrst   uvwxyzabcdefghijklmn" + "\n" + // 15
+            "ponmlkjihgfedcbabcdhijklmnopqrstuvwxyzabcdefghijklmnopqrs   tuvwxyzabcdefghijklm" + "\n" + // 16
+            "qponmlkjihgfedcbabcghijklmnopqrstuvwxyzabcdefghijklmnopqr   stuvwxyzabcdefghijkl" + "\n" + // 17
+            "rqponmlkjihgfedcbabfghijklmnopqrstuvwxyzabcdefghijklmnopq   rstuvwxyzabcdefghijk" + "\n" + // 18
+            "srqponmlkjihgfedcbaefghijklmnopqrstuvwxyzabcdefghijklmnop   qrstuvwxyzabcdefghij" + "\n" + // 19
+            "tsrqponmlkjihgfedcbdefghijklmnopqrstuvwxyzabcdefghijklmno   pqrstuvwxyzabcdefghi" + "\n" + // 20   -
+            "utsrqponmlkjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefgh" + "\n" + // 21
+            "vutsrqponmlkjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefg" + "\n" + // 22
+            "wvutsrqponmlkjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdef" + "\n" + // 23
+            "xwvutsrqponmlkjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcde" + "\n" + // 24
+            "yxwvutsrqponmlkjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcd";         // 25
+
         // !DECDC with DECSTBM+DECSLRM
         // PUSH "\e[?69h"
         // PUSH "\e[4;20r\e[20;60s"
         // PUSH "\e[4;20H\e[3'~"
         //   scrollrect 3..20,19..60 => +0,+3
-        // 
+        [Fact]
+        public void DeleteColumnInDECSTBMAndDECSLRM()
+        {
+            var s = string.Empty;
+            var t = new VirtualTerminalController();
+            var d = new DataConsumer(t);
+            t.ResizeView(80, 25);
+            t.TestPatternScrollingDiagonalLower();
+
+            // PUSH "\e[?69h"
+            // PUSH "\e[4;20r\e[20;60s"
+            // PUSH "\e[4;20H\e[3'~"
+            //   scrollrect 3..20,19..60 => +0,+3
+            Push(d, "".EnableLRMM().STBM(4,20).LRMM(20,60).CUP(4,20).DECDC(3));
+            s = t.GetScreenText();
+            Assert.Equal(ExpectDeleteColumnInDECSTBMAndDECSLRM, s);
+        }
+
         // !DECDC outside DECSLRM
         // PUSH "\e[70G\e['~"
         //   # nothing happens
-        // 
+        [Fact]
+        public void DeleteColumnOutsideDECSTBMAndDECSLRM()
+        {
+            var s = string.Empty;
+            var t = new VirtualTerminalController();
+            var d = new DataConsumer(t);
+            t.ResizeView(80, 25);
+            t.TestPatternScrollingDiagonalLower();
+
+            // PUSH "\e[?69h"
+            // PUSH "\e[4;20r\e[20;60s"
+            // PUSH "\e[4;20H\e[3'~"
+            // PUSH "\e[70G\e['~"
+            //   # nothing happens
+            Push(d, "".EnableLRMM().STBM(4, 20).LRMM(20, 60).CUP(4, 20).DECDC(3).CHA(70).DECDC());
+            s = t.GetScreenText();
+            Assert.Equal(ExpectDeleteColumnInDECSTBMAndDECSLRM, s);
+        }
+
         // !EL 0
         // RESET
         //   erase 0..25,0..80
@@ -1016,7 +1126,7 @@ namespace VtNetCoreUnitTests
         // PUSH "\e[0K"
         //   erase 0..1,2..80
         //   ?cursor = 0,2
-        // 
+
         // !EL 1
         // RESET
         //   erase 0..25,0..80

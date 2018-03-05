@@ -22,6 +22,7 @@
         void ClearTab();
         void ClearTabs();
         void DeleteCharacter(int count);
+        void DeleteColumn(int count);
         void DeleteLines(int count);
         void DeviceStatusReport();
         void Enable80132Mode(bool enable);

@@ -287,5 +287,12 @@ namespace VtNetCoreUnitTests
         {
             return x.CSI().Command(count, "'}");
         }
+
+        // CSI Pm ' ~
+        //  Delete Ps Column(s) (default = 1) (DECDC), VT420 and up.
+        public static string DECDC(this string x, int count = 1)
+        {
+            return x.CSI().Command(count, "'~");
+        }
     }
 }

@@ -563,7 +563,9 @@
         {
             LogController("InsertBlank(count:" + count.ToString() + ")");
 
-            InsertBlanks(TopRow + CursorState.CurrentRow);
+            InsertBlanks(count, TopRow + CursorState.CurrentRow);
+
+            ChangeCount++;
         }
 
         public void EraseCharacter(int count)
@@ -578,41 +580,7 @@
         {
             LogController("DeleteCharacter(count:" + count.ToString() + ")");
 
-            if (
-                CursorState.LeftAndRightMarginEnabled &&
-                (
-                    CursorState.CurrentColumn < CursorState.LeftMargin ||
-                    CursorState.CurrentColumn > CursorState.RightMargin
-                )
-            )
-                return;
-
-            if ((TopRow + CursorState.CurrentRow) >= Buffer.Count)
-                return;
-
-            var line = Buffer[TopRow + CursorState.CurrentRow];
-
-            var insertAt = Columns + 1;
-            if (CursorState.LeftAndRightMarginEnabled)
-                insertAt = CursorState.RightMargin;
-
-            while (count > 0 && CursorState.CurrentColumn < line.Count)
-            {
-                line.RemoveAt(CursorState.CurrentColumn);
-                count--;
-
-                if (insertAt <= line.Count)
-                {
-                    line.Insert(
-                        insertAt,
-                        new TerminalCharacter
-                        {
-                            Char = ' ',
-                            Attributes = line[insertAt - 1].Attributes
-                        }
-                    );
-                }
-            }
+            DeleteCharacter(count, CursorState.CurrentRow + TopRow);
 
             ChangeCount++;
         }
@@ -1207,6 +1175,49 @@
             }
         }
 
+        public void DeleteCharacter(int count, int row)
+        {
+            LogController("DeleteCharacter(count:" + count.ToString() + ", row:" + row.ToString() + ")");
+
+            if (
+                CursorState.LeftAndRightMarginEnabled &&
+                (
+                    CursorState.CurrentColumn < CursorState.LeftMargin ||
+                    CursorState.CurrentColumn > CursorState.RightMargin
+                )
+            )
+                return;
+
+            if (row >= Buffer.Count)
+                return;
+
+            var line = Buffer[row];
+
+            var insertAt = Columns + 1;
+            if (CursorState.LeftAndRightMarginEnabled)
+                insertAt = CursorState.RightMargin;
+
+            while (count > 0 && CursorState.CurrentColumn < line.Count)
+            {
+                line.RemoveAt(CursorState.CurrentColumn);
+                count--;
+
+                if (insertAt <= line.Count)
+                {
+                    line.Insert(
+                        insertAt,
+                        new TerminalCharacter
+                        {
+                            Char = ' ',
+                            Attributes = line[insertAt - 1].Attributes
+                        }
+                    );
+                }
+            }
+
+            ChangeCount++;
+        }
+
         public void InsertColumn(int count)
         {
             LogController("InsertColumn(count:" + count.ToString() + ")");
@@ -1236,6 +1247,41 @@
                 for (var row = insertTop; row <= insertBottom; row++)
                     InsertBlanks(count, row + TopRow);
             }
+
+            ChangeCount++;
+        }
+
+        public void DeleteColumn(int count)
+        {
+            LogController("InsertColumn(count:" + count.ToString() + ")");
+
+            if (
+                CursorState.CurrentRow < CursorState.ScrollTop ||
+                (CursorState.ScrollBottom >= 0 && CursorState.CurrentRow > CursorState.ScrollBottom)
+            )
+                return;
+
+            if (
+                CursorState.LeftAndRightMarginEnabled &&
+                (
+                    CursorState.CurrentColumn < CursorState.LeftMargin ||
+                    CursorState.CurrentColumn > CursorState.RightMargin
+                )
+            )
+                return;
+
+            var insertTop = CursorState.CurrentRow;
+            var insertBottom = CursorState.ScrollBottom;
+            if (insertBottom == -1)
+                insertBottom = Rows - 1;
+
+            if (insertTop < insertBottom)
+            {
+                for (var row = insertTop; row <= insertBottom; row++)
+                    DeleteCharacter(count, row + TopRow);
+            }
+
+            ChangeCount++;
         }
 
         public void InsertLines(int count)
