@@ -1404,8 +1404,7 @@
         public void Enable80132Mode(bool enable)
         {
             LogController("Unimplemented: Enable80132Mode(enable:" + enable.ToString() + ")");
-            if (!enable)
-                Columns = VisibleColumns;
+            Columns = VisibleColumns;
         }
 
         public void EnableReverseWrapAroundMode(bool enable)
