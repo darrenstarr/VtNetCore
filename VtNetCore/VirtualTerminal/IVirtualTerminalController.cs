@@ -14,6 +14,7 @@
         /// This is not really well placed here.
         /// </remarks>
         void ClearChanges();
+        bool IsUtf8();
 
         void Backspace();
         void Bell();
@@ -51,9 +52,14 @@
         void InsertBlanks(int count);
         void InsertColumn(int count);
         void InsertLines(int count);
+        void InvokeCharacterSetMode(ECharacterSetMode mode);
+        void InvokeCharacterSetModeR(ECharacterSetMode mode);
         void MoveCursorRelative(int x, int y);
         void NewLine();
+        void ProtectCharacter(bool protect);
         void PutChar(char character);
+        void PutG2Char(char character);
+        void PutG3Char(char character);
         void ReportCursorPosition();
         void RestoreCursor();
         void RestoreEnableNormalBuffer();
@@ -78,7 +84,7 @@
         void SetAbsoluteRow(int line);
         void SetBracketedPasteMode(bool enable);
         void SetCharacterAttribute(int parameter);
-        void SetCharacterSet(ECharacterSet characterSet);
+        void SetCharacterSet(ECharacterSet characterSet, ECharacterSetMode mode);
         void SetCharacterSize(ECharacterSize size);
         void SetCursorPosition(int column, int row);
         void SetInsertReplaceMode(EInsertReplaceMode mode);

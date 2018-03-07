@@ -45,7 +45,7 @@
         /// </summary>
         public List<int> TabStops = new List<int>
         {
-            0, 9, 17, 25, 33, 41, 49, 57, 65, 73, 81
+            0, 8, 16, 24, 32, 40, 48, 56, 64, 72, 80
         };
 
         /// <summary>
@@ -96,6 +96,17 @@
         /// </summary>
         public bool LeftAndRightMarginEnabled { get; set; }
 
+        public bool Utf8 { get; set; } = true;
+        public ECharacterSetMode CharacterSetMode { get; set; } = ECharacterSetMode.IsoG0;
+        public ECharacterSetMode CharacterSetModeR { get; set; } = ECharacterSetMode.IsoG0;
+        public ECharacterSet G0 { get; set; } = ECharacterSet.USASCII;
+        public ECharacterSet G1 { get; set; } = ECharacterSet.USASCII;
+        public ECharacterSet G2 { get; set; } = ECharacterSet.USASCII;
+        public ECharacterSet G3 { get; set; } = ECharacterSet.USASCII;
+        public ECharacterSet Vt300G1 { get; set; } = ECharacterSet.USASCII;
+        public ECharacterSet Vt300G2 { get; set; } = ECharacterSet.USASCII;
+        public ECharacterSet Vt300G3 { get; set; } = ECharacterSet.USASCII;
+
         /// <summary>
         /// Deep copy
         /// </summary>
@@ -119,7 +130,16 @@
                 BlinkingCursor = BlinkingCursor,
                 LeftAndRightMarginEnabled = LeftAndRightMarginEnabled,
                 LeftMargin = LeftMargin,
-                RightMargin = RightMargin
+                RightMargin = RightMargin,
+                Utf8 = Utf8,
+                CharacterSetMode = CharacterSetMode,
+                G0 = G0,
+                G1 = G1,
+                G2 = G2,
+                G3 = G3,
+                Vt300G1 = Vt300G1,
+                Vt300G2 = Vt300G2,
+                Vt300G3 = Vt300G3
             };
         }
 
@@ -142,10 +162,19 @@
                 "OriginMode:" + OriginMode.ToString() + "\n" +
                 "InsertMode:" + InsertMode.ToString() + "\n" +
                 "ShowCursor:" + ShowCursor.ToString() + "\n" +
-                "BlinkingCursor:" + BlinkingCursor.ToString() + "\n" + 
+                "BlinkingCursor:" + BlinkingCursor.ToString() + "\n" +
                 "LeftAndRightMarginEnabled: " + LeftAndRightMarginEnabled.ToString() + "\n" +
-                "LeftMargin: " + LeftMargin.ToString() + "\n" + 
-                "RightMargin: " + RightMargin.ToString()
+                "LeftMargin: " + LeftMargin.ToString() + "\n" +
+                "RightMargin: " + RightMargin.ToString() + "\n" +
+                "Utf8: " + Utf8.ToString() + "\n" +
+                "CharacterSetMode: " + CharacterSetMode.ToString() + "\n" +
+                "G0: " + G0.ToString() + "\n" +
+                "G1: " + G1.ToString() + "\n" +
+                "G2: " + G2.ToString() + "\n" +
+                "G3: " + G3.ToString() + "\n" +
+                "Vt300G1: " + Vt300G1.ToString() + "\n" +
+                "Vt300G2: " + Vt300G2.ToString() + "\n" +
+                "Vt300G3: " + Vt300G3.ToString() + "\n"
                 ;
         }
     }

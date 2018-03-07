@@ -135,15 +135,11 @@
             return Buffer[Position + skip];
         }
 
-        public char Read()
+        public char Read(bool utf8=false)
         {
-            switch(Mode)
-            {
-                case EMode.UTF8:
-                    return ReadUtf8();
-                default:
-                    return ReadRaw();
-            }
+            if(utf8)
+                return ReadUtf8();
+            return ReadRaw();
         }
 
         public char ReadRaw()

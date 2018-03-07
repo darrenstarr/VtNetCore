@@ -1,7 +1,9 @@
 ﻿namespace VtNetCore.VirtualTerminal
 {
     using System;
+    using System.Linq;
     using System.Text;
+    using VtNetCore.VirtualTerminal.Encodings;
     using VtNetCore.VirtualTerminal.Enums;
     using VtNetCore.VirtualTerminal.Model;
 
@@ -67,6 +69,53 @@
 
         public VirtualTerminalViewPort ViewPort { get; private set; }
 
+        private ECharacterSet CharacterSet
+        {
+            get
+            {
+                switch(CursorState.CharacterSetMode)
+                {
+                    case ECharacterSetMode.IsoG1:
+                        return CursorState.G1;
+                    case ECharacterSetMode.IsoG2:
+                        return CursorState.G2;
+                    case ECharacterSetMode.IsoG3:
+                        return CursorState.G3;
+                    case ECharacterSetMode.Vt300G1:
+                        return CursorState.Vt300G1;
+                    case ECharacterSetMode.Vt300G2:
+                        return CursorState.Vt300G2;
+                    case ECharacterSetMode.Vt300G3:
+                        return CursorState.Vt300G3;
+                    default:
+                        return CursorState.G0;
+                }
+            }
+        }
+
+        private ECharacterSet RightCharacterSet
+        {
+            get
+            {
+                switch (CursorState.CharacterSetModeR)
+                {
+                    case ECharacterSetMode.IsoG1:
+                        return CursorState.G1;
+                    case ECharacterSetMode.IsoG2:
+                        return CursorState.G2;
+                    case ECharacterSetMode.IsoG3:
+                        return CursorState.G3;
+                    default:
+                        return CursorState.G0;
+                }
+            }
+        }
+
+        public bool IsUtf8()
+        {
+            return CursorState.Utf8;
+        }
+
         public void ClearChanges()
         {
             ChangeCount = 0;
@@ -74,16 +123,16 @@
 
         public bool Changed { get { return ChangeCount > 0;  } }
 
-        public char GetVisibleChar(int x, int y)
+        public string GetVisibleChar(int x, int y)
         {
             if ((TopRow + y) >= Buffer.Count)
-                return ' ';
+                return " ";
 
             var line = Buffer[TopRow + y];
             if (line.Count <= x)
-                return ' ';
+                return " ";
 
-            return line[x].Char;
+            return line[x].Char.ToString() + line[x].CombiningCharacters;
         }
 
         public string GetVisibleChars(int x, int y, int count)
@@ -196,14 +245,39 @@
                 System.Diagnostics.Debug.WriteLine("Terminal: (c=" + CursorState.CurrentColumn.ToString() + ",r=" + CursorState.CurrentRow.ToString() + ")" + message);
         }
 
-        public void SetCharacterSet(ECharacterSet characterSet)
+        public void SetCharacterSet(ECharacterSet characterSet, ECharacterSetMode mode)
         {
-            LogController("Unimplemented: SetCharacterSet(characterSet:" + characterSet.ToString() + ")");
+            LogController("SetCharacterSet(characterSet:" + characterSet.ToString() + ")");
+
+            switch (mode)
+            {
+                case ECharacterSetMode.IsoG0:
+                    CursorState.G0 = characterSet;
+                    break;
+                case ECharacterSetMode.IsoG1:
+                    CursorState.G1 = characterSet;
+                    break;
+                case ECharacterSetMode.IsoG2:
+                    CursorState.G2 = characterSet;
+                    break;
+                case ECharacterSetMode.IsoG3:
+                    CursorState.G3 = characterSet;
+                    break;
+                case ECharacterSetMode.Vt300G1:
+                    CursorState.Vt300G1 = characterSet;
+                    break;
+                case ECharacterSetMode.Vt300G2:
+                    CursorState.Vt300G2 = characterSet;
+                    break;
+                case ECharacterSetMode.Vt300G3:
+                    CursorState.Vt300G3 = characterSet;
+                    break;
+            }
         }
 
         public void TabSet()
         {
-            var stop = CursorState.CurrentColumn + 1;
+            var stop = CursorState.CurrentColumn;
             LogController("TabSet() [cursorX=" + stop.ToString() + "]");
 
             var tabStops = CursorState.TabStops;
@@ -219,7 +293,7 @@
 
         public void Tab()
         {
-            var current = CursorState.CurrentColumn + 1;
+            var current = CursorState.CurrentColumn;
             LogController("Tab() [cursorX=" + current.ToString() + "]");
 
             var tabStops = CursorState.TabStops;
@@ -228,12 +302,12 @@
                 index++;
 
             if (index < tabStops.Count)
-                SetCursorPosition(tabStops[index], CursorState.CurrentRow + 1);
+                SetCursorPosition(tabStops[index] + 1, CursorState.CurrentRow + 1);
         }
 
         public void ReverseTab()
         {
-            var current = CursorState.CurrentColumn + 1;
+            var current = CursorState.CurrentColumn;
             LogController("ReverseTab() [cursorX=" + current.ToString() + "]");
 
             var tabStops = CursorState.TabStops;
@@ -242,7 +316,7 @@
                 index--;
             
             if (index >= 0)
-                SetCursorPosition(tabStops[index], CursorState.CurrentRow + 1);
+                SetCursorPosition(tabStops[index] + 1, CursorState.CurrentRow + 1);
         }
 
         public void ClearTabs()
@@ -254,7 +328,7 @@
 
         public void ClearTab()
         {
-            var stop = CursorState.CurrentColumn + 1;
+            var stop = CursorState.CurrentColumn;
 
             LogController("ClearTab() [cursorX=" + stop.ToString() + "]");
 
@@ -285,7 +359,31 @@
 
         private TerminalLine GetCurrentLine()
         {
-            return GetLine(CursorState.CurrentRow);
+            return GetLine(TopRow + CursorState.CurrentRow);
+        }
+
+        private TerminalCharacter GetCurrentCharacter()
+        {
+            var line = GetCurrentLine();
+            if (line == null || line.Count <= CursorState.CurrentColumn)
+                return null;
+
+            return line[CursorState.CurrentColumn];
+        }
+
+        private TerminalCharacter GetCharacterAt(int row, int column)
+        {
+            var line = GetVisualLine(row);
+            if (line == null || line.Count <= column)
+                return null;
+
+            return line[column];
+        }
+
+        public bool IsProtected(int row, int column)
+        {
+            var character = GetCharacterAt(row, column);
+            return character == null ? false : character.Protected;
         }
 
         private TerminalLine GetLine(int y)
@@ -585,9 +683,29 @@
             ChangeCount++;
         }
 
+        public void ProtectCharacter(bool protect)
+        {
+            LogController("ProtectChar()");
+            var character = GetCurrentCharacter();
+            if (character != null)
+                character.Protected = protect;
+        }
+
         public void PutChar(char character)
         {
             LogExtreme("PutChar(ch:'" + character + "'=" + ((int)character).ToString() + ")");
+
+            if (!CursorState.Utf8 && IsRGrCharacter(character))
+                character = Iso2022Encoding.DecodeChar((char)(character - (char)0x80), RightCharacterSet);
+            else
+                character = Iso2022Encoding.DecodeChar(character, CharacterSet);
+
+            if (IsCombiningCharacter(character) && CursorState.CurrentColumn > 0)
+            {
+                // TODO : Find a better solution to ensure that combining marks work
+                SetCombiningCharacter(CursorState.CurrentColumn-1, CursorState.CurrentRow, character);
+                return;
+            }
 
             if (CursorState.InsertMode == EInsertReplaceMode.Insert)
             {
@@ -601,23 +719,56 @@
                 line.Insert(CursorState.CurrentColumn, new TerminalCharacter());
             }
 
-            if (CursorState.WordWrap)
+            if (CursorState.CurrentColumn >= Columns && CursorState.WordWrap)
             {
-                if (CursorState.CurrentColumn >= Columns)
-                {
-                    CursorState.CurrentColumn = 0;
-                    NewLine();
-                }
+                CursorState.CurrentColumn = 0;
+                NewLine();
             }
 
             SetCharacter(CursorState.CurrentColumn, CursorState.CurrentRow, character, CursorState.Attributes);
             CursorState.CurrentColumn++;
+
+            if (CursorState.CurrentColumn >= Columns && !CursorState.WordWrap)
+                CursorState.CurrentColumn = Columns - 1;
 
             var lineToClip = Buffer[TopRow + CursorState.CurrentRow];
             while (lineToClip.Count > Columns)
                 lineToClip.RemoveAt(lineToClip.Count - 1);
 
             ChangeCount++;
+        }
+
+        private bool IsRGrCharacter(char character)
+        {
+            return
+                character >= (char)0xA0 &&
+                character <= (char)0xFF;
+        }
+
+        public void PutG2Char(char character)
+        {
+            LogExtreme("PutG2Char(ch:'" + character + "'=" + ((int)character).ToString() + ")");
+
+            var oldUtf8 = CursorState.Utf8;
+            var oldMode = CursorState.CharacterSetMode;
+            CursorState.CharacterSetMode = ECharacterSetMode.IsoG2;
+            CursorState.Utf8 = false;
+
+
+            PutChar(character);
+            CursorState.CharacterSetMode = oldMode;
+            CursorState.Utf8 = oldUtf8;
+        }
+
+        public void PutG3Char(char character)
+        {
+            LogExtreme("PutG3Char(ch:'" + character + "'=" + ((int)character).ToString() + ")");
+
+            var oldMode = CursorState.CharacterSetMode;
+            CursorState.CharacterSetMode = ECharacterSetMode.IsoG3;
+
+            PutChar(character);
+            CursorState.CharacterSetMode = oldMode;
         }
 
         public void SetWindowTitle(string title)
@@ -629,12 +780,31 @@
 
         public void ShiftIn()
         {
-            LogController("Unimplemented: ShiftIn()");
+            LogController("ShiftIn()");
+            CursorState.Utf8 = false;
+            CursorState.CharacterSetMode = ECharacterSetMode.IsoG0;
         }
 
         public void ShiftOut()
         {
-            LogController("Unimplemented: ShiftOut()");
+            LogController("ShiftOut()");
+            CursorState.Utf8 = false;
+            CursorState.CharacterSetMode = ECharacterSetMode.IsoG1;
+        }
+
+        public void InvokeCharacterSetMode(ECharacterSetMode mode)
+        {
+            LogController("InvokeCharacterSetMode(mode: " + mode.ToString() + ")");
+
+            CursorState.CharacterSetMode = mode;
+        }
+
+        public void InvokeCharacterSetModeR(ECharacterSetMode mode)
+        {
+            LogController("InvokeCharacterSetModeR(mode: " + mode.ToString() + ")");
+
+            CursorState.Utf8 = false;
+            CursorState.CharacterSetModeR = mode;
         }
 
         public void SetCharacterAttribute(int parameter)
@@ -1352,6 +1522,7 @@
             LogController("Enable132ColumnMode(enable:" + enable.ToString() + ")");
             EraseAll();
             Columns = enable ? 132 : 80;
+            SetCursorPosition(1, 1);
         }
 
         public void EnableSmoothScrollMode(bool enable)
@@ -1463,11 +1634,13 @@
         public void SetLatin1()
         {
             LogController("Unimplemented: SetLatin1()");
+            CursorState.Utf8 = false;
         }
 
         public void SetUTF8()
         {
             LogController("Unimplemented: SetUTF8()");
+            CursorState.Utf8 = true;
         }
 
         public void ResizeView(int columns, int rows)
@@ -1483,6 +1656,13 @@
                 TopRow += offset;
                 CursorState.CurrentRow -= offset;
             }
+
+            var start = ((CursorState.TabStops.Count > 0) ? CursorState.TabStops.Last() : 0) & ~7;
+            for (var t = start + 8; t <= Columns; t += 8)
+                CursorState.TabStops.Add(t);
+
+            while (CursorState.TabStops.Count > 0 && CursorState.TabStops.Last() > (Columns + 1))
+                CursorState.TabStops.RemoveAt(CursorState.TabStops.Count - 1);
         }
 
         public void TestPatternScrolling()
@@ -1509,6 +1689,14 @@
                     SetCharacter(x, y, (char)('a' + Math.Abs(x - y) % 26), CursorState.Attributes);
         }
 
+        public void TestPatternScrollingDiagonalUpper()
+        {
+            TopRow = 100;
+            for (var y = 0; y < Rows; y++)
+                for (var x = 0; x < Columns; x++)
+                    SetCharacter(x, y, (char)('A' + Math.Abs(x - y) % 26), CursorState.Attributes);
+        }
+
         private void Send(byte[] v)
         {
             SendData.Invoke(this, new SendDataEventArgs { Data = v });
@@ -1526,11 +1714,30 @@
             var character = line[currentColumn];
             character.Char = ch;
             character.Attributes = attribute.Clone();
+            character.CombiningCharacters = "";
+        }
+
+        private void SetCombiningCharacter(int column, int row, char combiningCharacter)
+        {
+            var line = GetVisualLine(row);
+            if (line != null && column < line.Count)
+                line[column].CombiningCharacters += combiningCharacter;
         }
 
         public byte [] GetKeySequence(string key)
         {
             return KeyboardTranslations.GetKeySequence(key, CursorState.ApplicationCursorKeysMode);
+        }
+
+        private static bool IsCombiningCharacter(char ch)
+        {
+            return 
+                (ch >= '\u0300' && ch <= '\u036F') ||   // Combining diacritical marks
+                (ch >= '\u1AB0' && ch <= '\u1ABE') ||   // Combining diacritical marks extended
+                (ch >= '\u1DC0' && ch <= '\u1DFF') ||   // Combining diacritical marks supplement
+                (ch >= '\u20D0' && ch <= '\u20F1') ||   // Combining diacritical marks for symbols
+                (ch >= '\uFE20' && ch <= '\uFE2F')      // Combining half marks
+                ;
         }
     }
 }

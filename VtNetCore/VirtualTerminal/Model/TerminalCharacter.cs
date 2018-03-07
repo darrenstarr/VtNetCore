@@ -11,9 +11,19 @@
         public char Char { get; set; } = ' ';
 
         /// <summary>
+        /// Specifies the lower portion of a combining character
+        /// </summary>
+        public string CombiningCharacters { get; set; }
+
+        /// <summary>
         /// The attributes to apply to the character
         /// </summary>
         public TerminalAttribute Attributes { get; set; } = new TerminalAttribute();
+
+        /// <summary>
+        /// Protected characters can't be erased
+        /// </summary>
+        public bool Protected { get; set; }
 
         /// <summary>
         /// Deep copy/clone
@@ -25,7 +35,8 @@
             return new TerminalCharacter
             {
                 Char = Char,
-                Attributes = Attributes.Clone()
+                CombiningCharacters = CombiningCharacters,
+                Attributes = Attributes.Clone(),
             };
         }
     }

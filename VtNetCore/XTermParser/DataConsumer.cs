@@ -65,7 +65,7 @@
                         ResumingStarvedBuffer = false;
                     }
 
-                    var sequence = XTermSequenceReader.ConsumeNextSequence(InputBuffer);
+                    var sequence = XTermSequenceReader.ConsumeNextSequence(InputBuffer, Controller.IsUtf8());
 
                     // Handle poorly injected sequences
                     if (sequence.ProcessFirst != null)

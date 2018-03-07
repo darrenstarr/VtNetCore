@@ -84,6 +84,18 @@ namespace VtNetCoreUnitTests
             return x.CSI().Command(left, right, 's');
         }
 
+        // Ps = 7  -> Wraparound Mode (DECAWM).
+        public static string EnableWrapAround(this string x)
+        {
+            return x.CSI().Query().Command(7, 'h');
+        }
+
+        // Ps = 7  -> No Wraparound Mode (DECAWM).
+        public static string DisableWrapAround(this string x)
+        {
+            return x.CSI().Query().Command(7, 'l');
+        }
+
         // Ps = 6 9  -> Enable left and right margin mode (DECLRMM)
         public static string EnableLRMM(this string x)
         {
@@ -98,12 +110,12 @@ namespace VtNetCoreUnitTests
 
         // CSI Ps; Ps H
         //  Cursor Position[row; column] (default = [1,1]) (CUP).
-        public static string CUP(this string x, int row=1, int column=1)
+        public static string CUP(this string x, int row = 1, int column = 1)
         {
             if (column == 1 && row == 1)
                 return x.CSI().T("H");
 
-            if(column == 1)
+            if (column == 1)
                 return x.CSI().Command(row, 'H');
 
             return x.CSI().Command(row, column, 'H');
@@ -128,6 +140,13 @@ namespace VtNetCoreUnitTests
         public static string NEL(this string x)
         {
             return x + ESC() + "E";
+        }
+
+        // ESC H
+        //  Tab Set(HTS  is 0x88).
+        public static string HTS(this string x)
+        {
+            return x + ESC() + "H";
         }
 
         // CSI Ps S  Scroll up Ps lines (default = 1) (SU).
@@ -182,6 +201,14 @@ namespace VtNetCoreUnitTests
         public static string CHA(this string x, int count = 1)
         {
             return x.CSI().Command(count, 'G');
+        }
+
+        // Tab Clear (TBC).
+        //  Ps = 0  -> Clear Current Column(default).
+        //  Ps = 3  -> Clear All.
+        public static string TBC(this string x, int Ps = 1)
+        {
+            return x.CSI().Command(Ps, 'g');
         }
 
         // CSI Pm `  Character Position Absolute  [column] (default = [row,1])
@@ -318,6 +345,79 @@ namespace VtNetCoreUnitTests
                 return x.CSI().T("J");
 
             return x.CSI().T(command.ToString()).T("J");
+        }
+
+        public static string DECSCA(this string x, int command = 0)
+        {
+            if (command == 0)
+                return x.CSI().T("\"q");
+
+            return x.CSI().T(command.ToString()).T("\"q");
+        }
+
+        public static string DesignateG0(this string x, char mode)
+        {
+            return x + ESC() + "(" + mode;
+        }
+
+        public static string DesignateG1(this string x, char mode)
+        {
+            return x + ESC() + ")" + mode;
+        }
+
+        public static string DesignateG2(this string x, char mode)
+        {
+            return x + ESC() + "*" + mode;
+        }
+
+        public static string DesignateG3(this string x, char mode)
+        {
+            return x + ESC() + "+" + mode;
+        }
+
+        public static string SS2(this string x, char mode)
+        {
+            return x + '\u008e' + mode;
+        }
+
+        public static string SS3(this string x, char mode)
+        {
+            return x + '\u008f' + mode;
+        }
+
+        public static string ShiftIn(this string x)
+        {
+            return x + "\u000f";
+        }
+
+        public static string ShiftOut(this string x)
+        {
+            return x + "\u000e";
+        }
+
+        public static string LS2(this string x)
+        {
+            return x + ESC() + "n";
+        }
+
+        public static string LS3(this string x)
+        {
+            return x + ESC() + "o";
+        }
+
+        public static string LS1R(this string x)
+        {
+            return x + ESC() + "~";
+        }
+
+        public static string LS2R(this string x)
+        {
+            return x + ESC() + "}";
+        }
+
+        public static string LS3R(this string x)
+        {
+            return x + ESC() + "|";
         }
     }
 }

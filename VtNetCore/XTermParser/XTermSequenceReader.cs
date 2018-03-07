@@ -312,6 +312,12 @@
                 case '0':
                     characterSet = ECharacterSet.C0;
                     break;
+                case '1':
+                    characterSet = ECharacterSet.C1;
+                    break;
+                case '2':
+                    characterSet = ECharacterSet.C2;
+                    break;
                 case 'A':
                     characterSet = ECharacterSet.UK;
                     break;
@@ -424,9 +430,24 @@
             }
         }
 
+        private static TerminalSequence ConsumeSS2Sequence(XTermInputBuffer stream)
+        {
+            var next = stream.ReadRaw();
+
+            var ss2 = new SS2Sequence
+            {
+                Command = next.ToString()
+            };
+
+            stream.Commit();
+
+            //System.Diagnostics.Debug.WriteLine(ss2.ToString());
+            return ss2;
+        }
+
         private static TerminalSequence ConsumeSS3Sequence(XTermInputBuffer stream)
         {
-            var next = stream.Read();
+            var next = stream.ReadRaw();
 
             var ss3 = new SS3Sequence
             {
@@ -439,16 +460,20 @@
             return ss3;
         }
 
-        public static TerminalSequence ConsumeNextSequence(XTermInputBuffer stream)
+        public static TerminalSequence ConsumeNextSequence(XTermInputBuffer stream, bool utf8)
         {
             stream.PushState();
-            var next = stream.Read();
+            var next = stream.Read(utf8);
 
             TerminalSequence sequence = null;
             switch (next)
             {
                 case '\u001b':      // ESC
                     sequence = ConsumeEscapeSequence(stream);
+                    break;
+
+                case '\u008e':      // SS2
+                    sequence = ConsumeSS2Sequence(stream);
                     break;
 
                 case '\u008f':      // SS3

@@ -55,7 +55,11 @@
             new SequenceHandler
             {
                 SequenceType = SequenceHandler.ESequenceType.CharacterSet,
-                Handler = (sequence, controller) => controller.SetCharacterSet((sequence as CharacterSetSequence).CharacterSet)
+                Handler = (sequence, controller) =>
+                    controller.SetCharacterSet(
+                        (sequence as CharacterSetSequence).CharacterSet,
+                        (sequence as CharacterSetSequence).Mode
+                        )
             },
             new SequenceHandler
             {
@@ -122,6 +126,41 @@
                 SequenceType = SequenceHandler.ESequenceType.Escape,
                 CsiCommand = "M",
                 Handler = (sequence, controller) => controller.ReverseIndex()
+            },
+            new SequenceHandler
+            {
+                Description = "Invoke the G2 Character Set as GL (LS2).",
+                SequenceType = SequenceHandler.ESequenceType.Escape,
+                CsiCommand = "n",
+                Handler = (sequence, controller) => controller.InvokeCharacterSetMode(ECharacterSetMode.IsoG2)
+            },
+            new SequenceHandler
+            {
+                Description = "Invoke the G3 Character Set as GL (LS3).",
+                SequenceType = SequenceHandler.ESequenceType.Escape,
+                CsiCommand = "o",
+                Handler = (sequence, controller) => controller.InvokeCharacterSetMode(ECharacterSetMode.IsoG3)
+            },
+            new SequenceHandler
+            {
+                Description = "Invoke the G1 Character Set as GR (LS1R).",
+                SequenceType = SequenceHandler.ESequenceType.Escape,
+                CsiCommand = "~",
+                Handler = (sequence, controller) => controller.InvokeCharacterSetModeR(ECharacterSetMode.IsoG1)
+            },
+            new SequenceHandler
+            {
+                Description = "Invoke the G2 Character Set as GR (LS2R).",
+                SequenceType = SequenceHandler.ESequenceType.Escape,
+                CsiCommand = "}",
+                Handler = (sequence, controller) => controller.InvokeCharacterSetModeR(ECharacterSetMode.IsoG2)
+            },
+            new SequenceHandler
+            {
+                Description = "Invoke the G3 Character Set as GR (LS3R).",
+                SequenceType = SequenceHandler.ESequenceType.Escape,
+                CsiCommand = "|",
+                Handler = (sequence, controller) => controller.InvokeCharacterSetModeR(ECharacterSetMode.IsoG3)
             },
             new SequenceHandler
             {
@@ -703,6 +742,24 @@
             },
             new SequenceHandler
             {
+                Description = "Select character protection attribute (DECSCA).",
+                SequenceType = SequenceHandler.ESequenceType.CSI,
+                CsiCommand = "\"q",
+                ExactParameterCountOrDefault = 1,
+                Param0 = new int [] { 0, 2 },
+                Handler = (sequence, controller) => controller.ProtectCharacter(false)
+            },
+            new SequenceHandler
+            {
+                Description = "Select character protection attribute (DECSCA).",
+                SequenceType = SequenceHandler.ESequenceType.CSI,
+                CsiCommand = "\"q",
+                ExactParameterCount = 1,
+                Param0 = new int [] { 1 },
+                Handler = (sequence, controller) => controller.ProtectCharacter(true)
+            },
+            new SequenceHandler
+            {
                 Description = "Set Scrolling Region [top;bottom] (default = full size of window)  (DECSTBM).",
                 SequenceType = SequenceHandler.ESequenceType.CSI,
                 CsiCommand = "r",
@@ -1264,6 +1321,18 @@
 
                 handler.Handler(sequence, controller);
 
+                return;
+            }
+
+            if (sequence is SS2Sequence)
+            {
+                controller.PutG2Char(sequence.Command[0]);
+                return;
+            }
+
+            if (sequence is SS3Sequence)
+            {
+                controller.PutG3Char(sequence.Command[0]);
                 return;
             }
 
