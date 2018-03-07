@@ -60,6 +60,7 @@
         void PutChar(char character);
         void PutG2Char(char character);
         void PutG3Char(char character);
+        void RequestDecPrivateMode(int mode);
         void ReportCursorPosition();
         void RestoreCursor();
         void RestoreEnableNormalBuffer();

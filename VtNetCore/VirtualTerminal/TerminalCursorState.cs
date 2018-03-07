@@ -106,6 +106,7 @@
         public ECharacterSet Vt300G1 { get; set; } = ECharacterSet.USASCII;
         public ECharacterSet Vt300G2 { get; set; } = ECharacterSet.USASCII;
         public ECharacterSet Vt300G3 { get; set; } = ECharacterSet.USASCII;
+        public bool AutomaticNewLine { get; set; }
 
         /// <summary>
         /// Deep copy
@@ -139,7 +140,8 @@
                 G3 = G3,
                 Vt300G1 = Vt300G1,
                 Vt300G2 = Vt300G2,
-                Vt300G3 = Vt300G3
+                Vt300G3 = Vt300G3,
+                AutomaticNewLine = AutomaticNewLine
             };
         }
 
@@ -174,7 +176,8 @@
                 "G3: " + G3.ToString() + "\n" +
                 "Vt300G1: " + Vt300G1.ToString() + "\n" +
                 "Vt300G2: " + Vt300G2.ToString() + "\n" +
-                "Vt300G3: " + Vt300G3.ToString() + "\n"
+                "Vt300G3: " + Vt300G3.ToString() + "\n" +
+                "AutomaticNewLine: " + AutomaticNewLine.ToString() + "\n"
                 ;
         }
     }

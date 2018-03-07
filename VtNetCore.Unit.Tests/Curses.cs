@@ -53,7 +53,7 @@ namespace VtNetCoreUnitTests
             return x + a.ToString() + c;
         }
 
-        private static string Query(this string x)
+        public static string Query(this string x)
         {
             return x + "?";
         }
@@ -71,9 +71,41 @@ namespace VtNetCoreUnitTests
         // CSI Ps ; Ps r
         //   Set Scrolling Region [top;bottom] (default = full size of win-
         //   dow) (DECSTBM).
-        public static string STBM(this string x, int top, int bottom)
+        public static string STBM(this string x, int top=1, int bottom=1)
         {
+            if (top == bottom)
+                return x.CSI().T("r");
+
             return x.CSI().Command(top, bottom, 'r');
+        }
+
+
+        // CSI Pm h Set Mode(SM).
+        //     Ps = 4  -> Insert Mode(IRM).
+        public static string InsertMode(this string x)
+        {
+            return x.CSI().Command(4, 'h');
+        }
+
+        // CSI Pm l Reset Mode(RM).
+        //     Ps = 4  -> Replace Mode(IRM).
+        public static string ReplaceMode(this string x)
+        {
+            return x.CSI().Command(4, 'l');
+        }
+
+        // CSI Pm h Set Mode(SM).
+        //     Ps = 2 0  -> Automatic Newline(LNM).
+        public static string AutomaticNewlineMode(this string x)
+        {
+            return x.CSI().Command(20, 'h');
+        }
+
+        // CSI Pm l Reset Mode(RM).
+        //     Ps = 2 0  -> Normal Linefeed (LNM).
+        public static string NormalLineFeedMode(this string x)
+        {
+            return x.CSI().Command(20, 'l');
         }
 
         // CSI Pl; Pr s
@@ -106,6 +138,20 @@ namespace VtNetCoreUnitTests
         public static string DisableLRMM(this string x)
         {
             return x.CSI().Query().Command(69, 'l');
+        }
+
+        // CSI? Pm h - DEC Private Mode Set(DECSET).
+        //     Ps = 6->Origin Mode (DECOM).
+        public static string EnableDECOM(this string x)
+        {
+            return x.CSI().Query().Command(6, 'h');
+        }
+
+        // CSI? Pm l - DEC Private Mode Reset (DECRST).
+        //     Ps = 6  -> Normal Cursor Mode (DECOM).
+        public static string DisableDECOM(this string x)
+        {
+            return x.CSI().Query().Command(6, 'l');
         }
 
         // CSI Ps; Ps H
@@ -345,6 +391,13 @@ namespace VtNetCoreUnitTests
                 return x.CSI().T("J");
 
             return x.CSI().T(command.ToString()).T("J");
+        }
+
+        // CSI? Ps$ p - Request DEC private mode(DECRQM).
+        //    For VT300 and up, reply is CSI? Ps; Pm$ y
+        public static string DecDECRQM(this string x, int mode)
+        {
+            return x.CSI().Query().T(mode.ToString()).T("$p");
         }
 
         public static string DECSCA(this string x, int command = 0)

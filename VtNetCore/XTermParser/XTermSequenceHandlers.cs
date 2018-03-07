@@ -734,6 +734,15 @@
             },
             new SequenceHandler
             {
+                Description = "Request DEC private mode (DECRQM).",
+                SequenceType = SequenceHandler.ESequenceType.CSI,
+                Query = true,
+                CsiCommand = "$p",
+                ExactParameterCount = 1,
+                Handler = (sequence, controller) => controller.RequestDecPrivateMode(sequence.Parameters[0])
+            },
+            new SequenceHandler
+            {
                 Description = "Soft terminal reset (DECSTR).",
                 SequenceType = SequenceHandler.ESequenceType.CSI,
                 CsiCommand = "p",

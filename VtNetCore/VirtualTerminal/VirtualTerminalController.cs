@@ -73,7 +73,7 @@
         {
             get
             {
-                switch(CursorState.CharacterSetMode)
+                switch (CursorState.CharacterSetMode)
                 {
                     case ECharacterSetMode.IsoG1:
                         return CursorState.G1;
@@ -121,7 +121,7 @@
             ChangeCount = 0;
         }
 
-        public bool Changed { get { return ChangeCount > 0;  } }
+        public bool Changed { get { return ChangeCount > 0; } }
 
         public string GetVisibleChar(int x, int y)
         {
@@ -192,7 +192,7 @@
             for (int i = startColumn; i < line.Count; i++)
                 result += line[i].Char;
 
-            for (int y=startRow + 1; y < endRow; y++)
+            for (int y = startRow + 1; y < endRow; y++)
             {
                 result += '\n';
 
@@ -314,7 +314,7 @@
             int index = tabStops.Count - 1;
             while (index >= 0 && tabStops[index] >= current)
                 index--;
-            
+
             if (index >= 0)
                 SetCursorPosition(tabStops[index] + 1, CursorState.CurrentRow + 1);
         }
@@ -521,6 +521,9 @@
 
                 ChangeCount++;
             }
+
+            if (CursorState.AutomaticNewLine)
+                CarriageReturn();
         }
 
         public void VerticalTab()
@@ -540,8 +543,8 @@
             LogController("ReverseIndex()");
 
             if (
-                CursorState.LeftAndRightMarginEnabled && 
-                CursorState.CurrentColumn >= CursorState.LeftMargin && 
+                CursorState.LeftAndRightMarginEnabled &&
+                CursorState.CurrentColumn >= CursorState.LeftMargin &&
                 CursorState.CurrentColumn <= CursorState.RightMargin
             )
             {
@@ -632,9 +635,9 @@
             LogController("SetCursorPosition(column:" + column.ToString() + ",row:" + row.ToString() + ")");
 
             CursorState.CurrentColumn = column - 1;
-            if(CursorState.LeftAndRightMarginEnabled)
+            if (CursorState.LeftAndRightMarginEnabled)
             {
-                if(CursorState.OriginMode && CursorState.CurrentColumn < CursorState.LeftMargin)
+                if (CursorState.OriginMode && CursorState.CurrentColumn < CursorState.LeftMargin)
                     CursorState.CurrentColumn = CursorState.LeftMargin;
                 if (CursorState.CurrentColumn >= CursorState.RightMargin)
                     CursorState.RightMargin = CursorState.RightMargin;
@@ -670,7 +673,7 @@
         {
             LogController("EraseCharacter(count:" + count.ToString() + ")");
 
-            for(var i=0; i<count; i++)
+            for (var i = 0; i < count; i++)
                 SetCharacter(CursorState.CurrentColumn + i, CursorState.CurrentRow, ' ', CursorState.Attributes);
         }
 
@@ -703,7 +706,7 @@
             if (IsCombiningCharacter(character) && CursorState.CurrentColumn > 0)
             {
                 // TODO : Find a better solution to ensure that combining marks work
-                SetCombiningCharacter(CursorState.CurrentColumn-1, CursorState.CurrentRow, character);
+                SetCombiningCharacter(CursorState.CurrentColumn - 1, CursorState.CurrentRow, character);
                 return;
             }
 
@@ -1108,7 +1111,8 @@
 
         public void SetAutomaticNewLine(bool enable)
         {
-            LogController("Unimplemented: SetAutomaticNewLine(enable:" + enable.ToString() + ")");
+            LogController("SetAutomaticNewLine(enable:" + enable.ToString() + ")");
+            CursorState.AutomaticNewLine = enable;
         }
 
         public void EnableApplicationCursorKeys(bool enable)
@@ -1587,9 +1591,9 @@
         {
             LogController("EnableLeftAndRightMarginMode(enable:" + enable.ToString() + ")");
 
-            if(CursorState.LeftAndRightMarginEnabled != enable)
+            if (CursorState.LeftAndRightMarginEnabled != enable)
             {
-                if(enable)
+                if (enable)
                 {
                     CursorState.LeftMargin = 0;
                     CursorState.RightMargin = Columns;
@@ -1614,7 +1618,7 @@
             SendData.Invoke(this, new SendDataEventArgs { Data = XTermDeviceAttributesSecondary });
         }
 
-        public static readonly byte[] DsrOk= { 0x1B, (byte)'[', (byte)'0', (byte)'n' };
+        public static readonly byte[] DsrOk = { 0x1B, (byte)'[', (byte)'0', (byte)'n' };
 
         public void DeviceStatusReport()
         {
@@ -1722,6 +1726,36 @@
             var line = GetVisualLine(row);
             if (line != null && column < line.Count)
                 line[column].CombiningCharacters += combiningCharacter;
+        }
+
+        private static byte [] DecPrivateModeResponse(int mode, bool response)
+        {
+            return Encoding.ASCII.GetBytes(
+                    "\u001b[?" + mode.ToString() + ";" + (response ? "1" : "2") + "$y"
+                );
+        }
+
+        private static byte[] DecUnknownPrivateModeResponse(int mode)
+        {
+            return Encoding.ASCII.GetBytes(
+                    "\u001b[?" + mode.ToString() + ";0$y"
+                );
+        }
+
+        public void RequestDecPrivateMode(int mode)
+        {
+            LogController("RequestDecPrivateMode(mode:" + mode.ToString() + ")");
+
+            switch (mode)
+            {
+                case 6:         // DECOM
+                    SendData.Invoke(this, new SendDataEventArgs { Data = DecPrivateModeResponse(mode, CursorState.OriginMode) });
+                    break;
+
+                default:
+                    SendData.Invoke(this, new SendDataEventArgs { Data = DecUnknownPrivateModeResponse(mode) });
+                    break;
+            }
         }
 
         public byte [] GetKeySequence(string key)
