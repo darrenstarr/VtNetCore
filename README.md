@@ -51,6 +51,19 @@ information.
 
 ## Progress
 
+### 08-March-2018
+
+So, thanks again to [Paul "LeoNerd" Evans](https://launchpad.net/~leonerd) libvterm unit tests which I've spent much time porting to C# and into
+XUnit, my code is getting pretty good. I've passed many of the more interesting tests and many of the boring tests. I hope to port them all to
+XUnit to QC purposes, but short of mouse support, the terminal is pretty good now. I am certainly not feature complete, but I'm at the point now
+that other than compliance testing, I'm not encountering any escape sequences that I don't handle "properly" in real software. In many cases,
+I'm further along than Putty, in others I have a LONG way to go.
+
+I'll be cleaning up the API and adding some pretty important things (like maximum history length) to the system shortly. There's two really annoying bugs getting to me at the moment. The first is vttest's double wide character support. I think it's a tab thing. Second, is the vttest for scrolling. I'm not 100% sure what it should look like, so I'll spin up a Linux VM and look at xterm and check. I'm close, but I'll port both these tests to XUnit and debug them soon.
+
+I still wouldn't call the code production ready, but it's clearly usable now. I'm going to continue working on VtConnect which is has a few blaring
+problems like, there's no way to reliably detect a disconnect from a peer, and there's a glitch in Telnet support (reproducable using vttest). And soon I'll write the scripting engine!!!
+
 ### 05-March-2018
 
 Considerable progress has been made in standards compliance. Thanks to finding the excellent [libvterm](https://launchpad.net/libvterm) toolkit
