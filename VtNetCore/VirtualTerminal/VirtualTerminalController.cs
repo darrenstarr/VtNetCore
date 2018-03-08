@@ -1789,9 +1789,9 @@
             CursorState.BlinkingCursor = blink;
         }
 
-        public byte [] GetKeySequence(string key)
+        public byte [] GetKeySequence(string key, bool control, bool shift)
         {
-            return KeyboardTranslations.GetKeySequence(key, CursorState.ApplicationCursorKeysMode);
+            return KeyboardTranslations.GetKeySequence(key, control, shift, CursorState.ApplicationCursorKeysMode);
         }
 
         private static bool IsCombiningCharacter(char ch)
