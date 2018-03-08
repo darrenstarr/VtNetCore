@@ -75,6 +75,11 @@
                         }
                     );
                 }
+                else if (next == '\0')
+                {
+                    // Trash null characters. Telnet is injecting them after carriage returns for
+                    // some horrible reason
+                }
                 else
                 {
                     if (currentParameter != -1)

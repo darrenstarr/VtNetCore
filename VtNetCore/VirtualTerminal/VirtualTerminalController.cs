@@ -303,6 +303,9 @@
 
             if (index < tabStops.Count)
                 SetCursorPosition(tabStops[index] + 1, CursorState.CurrentRow + 1);
+
+            if (CursorState.WordWrap && CursorState.CurrentColumn >= CurrentLineColumns)
+                CursorState.CurrentColumn = CurrentLineColumns - 1;
         }
 
         public void ReverseTab()
@@ -1115,7 +1118,7 @@
 
         public void SetInsertReplaceMode(EInsertReplaceMode mode)
         {
-            LogController("Unimplemented: SetInsertReplaceMode(mode:" + mode.ToString() + ")");
+            LogController("SetInsertReplaceMode(mode:" + mode.ToString() + ")");
             CursorState.InsertMode = mode;
         }
 
@@ -1527,13 +1530,17 @@
 
         public void EraseAll()
         {
-            // TODO : Verify it works with scroll range
-            LogController("Partial: EraseAll()");
+            LogController("EraseAll()");
 
             TopRow = Buffer.Count;
 
-            Columns = VisibleColumns;
+            Columns = CursorState.ConfiguredColumns == 0 ? VisibleColumns : CursorState.ConfiguredColumns;
             Rows = VisibleRows;
+
+            CursorState.Utf8 = true;
+
+            // TODO : This is hackish as it makes the 80 and 132 column mode stick only until the next erase
+            CursorState.ConfiguredColumns = 0;      
 
             ChangeCount++;
         }
@@ -1543,6 +1550,7 @@
             LogController("Enable132ColumnMode(enable:" + enable.ToString() + ")");
             EraseAll();
             Columns = enable ? 132 : 80;
+            CursorState.ConfiguredColumns = Columns;
             SetCursorPosition(1, 1);
         }
 

@@ -157,6 +157,11 @@
         public bool AutomaticNewLine { get; set; }
 
         /// <summary>
+        /// The number of columns configured by the server
+        /// </summary>
+        public int ConfiguredColumns { get; set; }
+
+        /// <summary>
         /// Deep copy
         /// </summary>
         /// <returns>A deep copy of the state</returns>
@@ -190,7 +195,8 @@
                 Vt300G1 = Vt300G1,
                 Vt300G2 = Vt300G2,
                 Vt300G3 = Vt300G3,
-                AutomaticNewLine = AutomaticNewLine
+                AutomaticNewLine = AutomaticNewLine,
+                ConfiguredColumns = ConfiguredColumns
             };
         }
 
@@ -227,7 +233,8 @@
                 "Vt300G1:" + Vt300G1.ToString() + "\n" +
                 "Vt300G2:" + Vt300G2.ToString() + "\n" +
                 "Vt300G3:" + Vt300G3.ToString() + "\n" +
-                "AutomaticNewLine:" + AutomaticNewLine.ToString() + "\n"
+                "AutomaticNewLine:" + AutomaticNewLine.ToString() + "\n" +
+                "ConfiguredColumns:" + ConfiguredColumns.ToString() + "\n"
                 ;
         }
     }
