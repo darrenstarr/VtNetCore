@@ -88,6 +88,7 @@
         void SetCharacterSet(ECharacterSet characterSet, ECharacterSetMode mode);
         void SetCharacterSize(ECharacterSize size);
         void SetCursorPosition(int column, int row);
+        void SetCursorStyle(ECursorShape shape, bool blink);
         void SetInsertReplaceMode(EInsertReplaceMode mode);
         void SetLatin1();
         void SetLeftAndRightMargins(int left, int right);

@@ -23,6 +23,16 @@
             return result;
         }
 
+        public TerminalLine GetLine(int row)
+        {
+            return ((row) >= Parent.Buffer.Count) ? null : Parent.Buffer[row]; 
+        }
+
+        public TerminalLine GetVisibleLine(int row)
+        {
+            return GetLine(row + TopRow);
+        }
+
         public void SetTopLine(int top)
         {
             Parent.TopRow = top;

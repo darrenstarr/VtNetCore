@@ -16,6 +16,11 @@ namespace VtNetCoreUnitTests
             return x + ESC() + '[';
         }
 
+        public static string OSC(this string x, int ps, string text)
+        {
+            return x + ESC() + ']' + ps.ToString() + ";" + text + "\u0007";
+        }
+
         public static string T(this string x, string text)
         {
             return x + text;
@@ -152,6 +157,34 @@ namespace VtNetCoreUnitTests
         public static string DisableDECOM(this string x)
         {
             return x.CSI().Query().Command(6, 'l');
+        }
+
+        // CSI? Pm h -DEC Private Mode Set(DECSET).
+        //     Ps = 2 5  -> Show Cursor(DECTCEM).
+        public static string EnableDECSET(this string x)
+        {
+            return x.CSI().Query().Command(25, 'h');
+        }
+
+        // CSI? Pm l - DEC Private Mode Reset (DECRST).
+        //     Ps = 2 5  -> Hide Cursor (DECTCEM).
+        public static string DisableDECSET(this string x)
+        {
+            return x.CSI().Query().Command(25, 'l');
+        }
+
+        // CSI? Pm h -DEC Private Mode Set(DECSET).
+        //     Ps = 1 2  -> Start Blinking Cursor (AT&T 610).
+        public static string StartBlinkingCursor(this string x)
+        {
+            return x.CSI().Query().Command(12, 'h');
+        }
+
+        // CSI? Pm l - DEC Private Mode Reset (DECRST).
+        //     Ps = 1 2  -> Stop Blinking Cursor (AT&T 610).
+        public static string StopBlinkingCursor(this string x)
+        {
+            return x.CSI().Query().Command(12, 'l');
         }
 
         // CSI Ps; Ps H
@@ -400,6 +433,19 @@ namespace VtNetCoreUnitTests
             return x.CSI().Query().T(mode.ToString()).T("$p");
         }
 
+        // CSI Ps SP q - Set cursor style(DECSCUSR, VT520).
+        //     Ps = 0  -> blinking block.
+        //     Ps = 1  -> blinking block (default).
+        //     Ps = 2  -> steady block.
+        //     Ps = 3  -> blinking underline.
+        //     Ps = 4->steady underline.
+        //     Ps = 5->blinking bar (xterm).
+        //     Ps = 6->steady bar (xterm).
+        public static string DECSCUSR(this string x, int mode)
+        {
+            return x.CSI().T(mode.ToString()).T(" q");
+        }
+
         public static string DECSCA(this string x, int command = 0)
         {
             if (command == 0)
@@ -471,6 +517,45 @@ namespace VtNetCoreUnitTests
         public static string LS3R(this string x)
         {
             return x + ESC() + "|";
+        }
+
+        // ESC # 3   DEC double-height line, top half (DECDHL).
+        public static string DECDHLTop(this string x)
+        {
+            return x + ESC() + "#3";
+        }
+
+        // ESC # 4   DEC double-height line, bottom half (DECDHL).
+        public static string DECDHLBottom(this string x)
+        {
+            return x + ESC() + "#4";
+        }
+        
+        // ESC # 5   DEC single-width line (DECSWL).
+        public static string DECSWL(this string x)
+        {
+            return x + ESC() + "#5";
+        }
+
+        // ESC # 6   DEC double-width line (DECDWL).
+        public static string DECDWL(this string x)
+        {
+            return x + ESC() + "#6";
+        }
+
+        // ESC # 8   DEC Screen Alignment Test (DECALN).
+        public static string DECALN(this string x)
+        {
+            return x + ESC() + "#8";
+        }
+
+        // OSC Ps; Pt BEL - Set Text Parameters of VT window.
+        //     Ps = 0  -> Change Icon Name and Window Title to Pt.
+        //     Ps = 1->Change Icon Name to Pt.
+        //     Ps = 2->Change Window Title to Pt.
+        public static string ChangeWindowTitle(this string x, string title)
+        {
+            return x.OSC(2, title);
         }
     }
 }

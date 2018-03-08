@@ -38,7 +38,12 @@
         /// <summary>
         /// Specifies whether the text cursor should be blinking
         /// </summary>
-        public bool BlinkingCursor { get; set; } = false;
+        public bool BlinkingCursor { get; set; } = true;
+
+        /// <summary>
+        /// Defines the shape of the cursor
+        /// </summary>
+        public ECursorShape CursorShape { get; set; } = ECursorShape.Block;
 
         /// <summary>
         /// The currently configured tab stops (in base 1)
@@ -96,16 +101,59 @@
         /// </summary>
         public bool LeftAndRightMarginEnabled { get; set; }
 
+        /// <summary>
+        /// Flags whether the current character set is meant to be read as Utf8
+        /// </summary>
         public bool Utf8 { get; set; } = true;
+
+        /// <summary>
+        /// Specifies the active character mode for the L region
+        /// </summary>
         public ECharacterSetMode CharacterSetMode { get; set; } = ECharacterSetMode.IsoG0;
+
+        /// <summary>
+        /// Specifies the active character mode for the R region
+        /// </summary>
         public ECharacterSetMode CharacterSetModeR { get; set; } = ECharacterSetMode.IsoG0;
+
+        /// <summary>
+        /// The configured character set for the G0 page
+        /// </summary>
         public ECharacterSet G0 { get; set; } = ECharacterSet.USASCII;
+
+        /// <summary>
+        /// The configured character set for the G1 page
+        /// </summary>
         public ECharacterSet G1 { get; set; } = ECharacterSet.USASCII;
+
+        /// <summary>
+        /// The configured character set for the G2 page
+        /// </summary>
         public ECharacterSet G2 { get; set; } = ECharacterSet.USASCII;
+
+        /// <summary>
+        /// The configured character set for the G3 page
+        /// </summary>
         public ECharacterSet G3 { get; set; } = ECharacterSet.USASCII;
+
+        /// <summary>
+        /// The configured character set for the Vt300 G1 page
+        /// </summary>
         public ECharacterSet Vt300G1 { get; set; } = ECharacterSet.USASCII;
+
+        /// <summary>
+        /// The configured character set for the Vt300 G2 page
+        /// </summary>
         public ECharacterSet Vt300G2 { get; set; } = ECharacterSet.USASCII;
+
+        /// <summary>
+        /// The configured character set for the Vt300 G3 page
+        /// </summary>
         public ECharacterSet Vt300G3 { get; set; } = ECharacterSet.USASCII;
+
+        /// <summary>
+        /// Specifies whether LF should assume CR
+        /// </summary>
         public bool AutomaticNewLine { get; set; }
 
         /// <summary>
@@ -129,6 +177,7 @@
                 InsertMode = InsertMode,
                 ShowCursor = ShowCursor,
                 BlinkingCursor = BlinkingCursor,
+                CursorShape = CursorShape,
                 LeftAndRightMarginEnabled = LeftAndRightMarginEnabled,
                 LeftMargin = LeftMargin,
                 RightMargin = RightMargin,
@@ -165,19 +214,20 @@
                 "InsertMode:" + InsertMode.ToString() + "\n" +
                 "ShowCursor:" + ShowCursor.ToString() + "\n" +
                 "BlinkingCursor:" + BlinkingCursor.ToString() + "\n" +
-                "LeftAndRightMarginEnabled: " + LeftAndRightMarginEnabled.ToString() + "\n" +
-                "LeftMargin: " + LeftMargin.ToString() + "\n" +
-                "RightMargin: " + RightMargin.ToString() + "\n" +
-                "Utf8: " + Utf8.ToString() + "\n" +
-                "CharacterSetMode: " + CharacterSetMode.ToString() + "\n" +
-                "G0: " + G0.ToString() + "\n" +
-                "G1: " + G1.ToString() + "\n" +
-                "G2: " + G2.ToString() + "\n" +
-                "G3: " + G3.ToString() + "\n" +
-                "Vt300G1: " + Vt300G1.ToString() + "\n" +
-                "Vt300G2: " + Vt300G2.ToString() + "\n" +
-                "Vt300G3: " + Vt300G3.ToString() + "\n" +
-                "AutomaticNewLine: " + AutomaticNewLine.ToString() + "\n"
+                "CursorShape:" + CursorShape.ToString() + "\n" + 
+                "LeftAndRightMarginEnabled:" + LeftAndRightMarginEnabled.ToString() + "\n" +
+                "LeftMargin:" + LeftMargin.ToString() + "\n" +
+                "RightMargin:" + RightMargin.ToString() + "\n" +
+                "Utf8:" + Utf8.ToString() + "\n" +
+                "CharacterSetMode:" + CharacterSetMode.ToString() + "\n" +
+                "G0:" + G0.ToString() + "\n" +
+                "G1:" + G1.ToString() + "\n" +
+                "G2:" + G2.ToString() + "\n" +
+                "G3:" + G3.ToString() + "\n" +
+                "Vt300G1:" + Vt300G1.ToString() + "\n" +
+                "Vt300G2:" + Vt300G2.ToString() + "\n" +
+                "Vt300G3:" + Vt300G3.ToString() + "\n" +
+                "AutomaticNewLine:" + AutomaticNewLine.ToString() + "\n"
                 ;
         }
     }

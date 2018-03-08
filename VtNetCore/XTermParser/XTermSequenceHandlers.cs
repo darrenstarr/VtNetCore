@@ -769,6 +769,55 @@
             },
             new SequenceHandler
             {
+                Description = "Set cursor style (DECSCUSR, VT520).",
+                SequenceType = SequenceHandler.ESequenceType.CSI,
+                CsiCommand = " q",
+                ExactParameterCountOrDefault = 1,
+                Param0 = new int [] { 0, 1, 2, 3, 4, 5, 6 },
+                Handler = (sequence, controller) => {
+                    var shape = ECursorShape.Block;
+                    var blink = true;
+                    if(sequence.Parameters.Count == 1)
+                    {
+                        switch(sequence.Parameters[0])
+                        {
+                            case 0:
+                            case 1:
+                                shape = ECursorShape.Block;
+                                blink = true;
+                                break;
+
+                            case 2:
+                                shape = ECursorShape.Block;
+                                blink = false;
+                                break;
+
+                            case 3:
+                                shape = ECursorShape.Underline;
+                                blink = true;
+                                break;
+
+                            case 4:
+                                shape = ECursorShape.Underline;
+                                blink = false;
+                                break;
+
+                            case 5:
+                                shape = ECursorShape.Bar;
+                                blink = true;
+                                break;
+
+                            case 6:
+                                shape = ECursorShape.Bar;
+                                blink = false;
+                                break;
+                        }
+                    }
+                    controller.SetCursorStyle(shape, blink);
+                }
+            },
+            new SequenceHandler
+            {
                 Description = "Set Scrolling Region [top;bottom] (default = full size of window)  (DECSTBM).",
                 SequenceType = SequenceHandler.ESequenceType.CSI,
                 CsiCommand = "r",

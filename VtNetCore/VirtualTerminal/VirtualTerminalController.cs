@@ -589,14 +589,26 @@
             }
         }
 
+        private int CurrentLineColumns
+        {
+            get
+            {
+                var line = GetCurrentLine();
+                if (line == null)
+                    return Columns;
+
+                return (line.DoubleWidth | line.DoubleHeightTop | line.DoubleHeightBottom) ? (Columns >> 1) : Columns;
+            }
+        }
+
         public void Backspace()
         {
             LogExtreme("Backspace");
 
             if (CursorState.CurrentColumn > 0)
             {
-                if (CursorState.WordWrap && CursorState.CurrentColumn >= Columns)
-                    CursorState.CurrentColumn = Columns - 1;
+                if (CursorState.WordWrap && CursorState.CurrentColumn >= CurrentLineColumns)
+                    CursorState.CurrentColumn = CurrentLineColumns - 1;
 
                 CursorState.CurrentColumn--;
 
@@ -613,12 +625,6 @@
         {
             LogController("MoveCursorRelative(x:" + x.ToString() + ",y:" + y.ToString() + ",vis:[" + VisibleColumns.ToString() + "," + VisibleRows.ToString() + "]" + ")");
 
-            CursorState.CurrentColumn += x;
-            if (CursorState.CurrentColumn < 0)
-                CursorState.CurrentColumn = 0;
-            if (CursorState.CurrentColumn >= Columns)
-                CursorState.CurrentColumn = Columns - 1;
-
             CursorState.CurrentRow += y;
             if (CursorState.CurrentRow < CursorState.ScrollTop)
                 CursorState.CurrentRow = CursorState.ScrollTop;
@@ -627,12 +633,27 @@
             if (CursorState.CurrentRow > scrollBottom)
                 CursorState.CurrentRow = scrollBottom;
 
+            CursorState.CurrentColumn += x;
+            if (CursorState.CurrentColumn < 0)
+                CursorState.CurrentColumn = 0;
+            if (CursorState.CurrentColumn >= CurrentLineColumns)
+                CursorState.CurrentColumn = CurrentLineColumns - 1;
+
             ChangeCount++;
         }
 
         public void SetCursorPosition(int column, int row)
         {
             LogController("SetCursorPosition(column:" + column.ToString() + ",row:" + row.ToString() + ")");
+
+            CursorState.CurrentRow = row - 1 + (CursorState.OriginMode ? CursorState.ScrollTop : 0);
+            if (CursorState.CurrentRow < 0)
+                CursorState.CurrentRow = 0;
+
+            if (CursorState.OriginMode && CursorState.ScrollBottom > -1 && CursorState.CurrentRow > CursorState.ScrollBottom)
+                CursorState.CurrentRow = CursorState.ScrollBottom;
+            else if (CursorState.ScrollBottom == -1 && CursorState.CurrentRow >= VisibleRows)
+                CursorState.CurrentRow = TopRow + VisibleRows - 1;
 
             CursorState.CurrentColumn = column - 1;
             if (CursorState.LeftAndRightMarginEnabled)
@@ -643,14 +664,10 @@
                     CursorState.RightMargin = CursorState.RightMargin;
             }
 
-            CursorState.CurrentRow = row - 1 + (CursorState.OriginMode ? CursorState.ScrollTop : 0);
-            if (CursorState.CurrentRow < 0)
-                CursorState.CurrentRow = 0;
-
-            if (CursorState.OriginMode && CursorState.ScrollBottom > -1 && CursorState.CurrentRow > CursorState.ScrollBottom)
-                CursorState.CurrentRow = CursorState.ScrollBottom;
-            else if (CursorState.ScrollBottom == -1 && CursorState.CurrentRow >= VisibleRows)
-                CursorState.CurrentRow = TopRow + VisibleRows - 1;
+            if (CursorState.WordWrap && CursorState.CurrentColumn > CurrentLineColumns)
+                CursorState.CurrentColumn = CurrentLineColumns;
+            else if(!CursorState.WordWrap && CursorState.CurrentColumn >= CurrentLineColumns)
+                CursorState.CurrentColumn = CurrentLineColumns - 1;
 
             ChangeCount++;
         }
@@ -722,7 +739,7 @@
                 line.Insert(CursorState.CurrentColumn, new TerminalCharacter());
             }
 
-            if (CursorState.CurrentColumn >= Columns && CursorState.WordWrap)
+            if (CursorState.CurrentColumn >= CurrentLineColumns && CursorState.WordWrap)
             {
                 CursorState.CurrentColumn = 0;
                 NewLine();
@@ -731,11 +748,11 @@
             SetCharacter(CursorState.CurrentColumn, CursorState.CurrentRow, character, CursorState.Attributes);
             CursorState.CurrentColumn++;
 
-            if (CursorState.CurrentColumn >= Columns && !CursorState.WordWrap)
-                CursorState.CurrentColumn = Columns - 1;
+            if (CursorState.CurrentColumn >= CurrentLineColumns && !CursorState.WordWrap)
+                CursorState.CurrentColumn = CurrentLineColumns - 1;
 
             var lineToClip = Buffer[TopRow + CursorState.CurrentRow];
-            while (lineToClip.Count > Columns)
+            while (lineToClip.Count > CurrentLineColumns)
                 lineToClip.RemoveAt(lineToClip.Count - 1);
 
             ChangeCount++;
@@ -1752,10 +1769,24 @@
                     SendData.Invoke(this, new SendDataEventArgs { Data = DecPrivateModeResponse(mode, CursorState.OriginMode) });
                     break;
 
+                case 12:        // Blinking Cursor (AT&T 610).
+                    SendData.Invoke(this, new SendDataEventArgs { Data = DecPrivateModeResponse(mode, CursorState.BlinkingCursor) });
+                    break;
+
+                case 25:        // DECSET
+                    SendData.Invoke(this, new SendDataEventArgs { Data = DecPrivateModeResponse(mode, CursorState.ShowCursor) });
+                    break;
+
                 default:
                     SendData.Invoke(this, new SendDataEventArgs { Data = DecUnknownPrivateModeResponse(mode) });
                     break;
             }
+        }
+
+        public void SetCursorStyle(ECursorShape shape, bool blink)
+        {
+            CursorState.CursorShape = shape;
+            CursorState.BlinkingCursor = blink;
         }
 
         public byte [] GetKeySequence(string key)
