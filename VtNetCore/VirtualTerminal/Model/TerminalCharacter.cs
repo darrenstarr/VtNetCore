@@ -21,11 +21,6 @@
         public TerminalAttribute Attributes { get; set; } = new TerminalAttribute();
 
         /// <summary>
-        /// Protected characters can't be erased
-        /// </summary>
-        public bool Protected { get; set; }
-
-        /// <summary>
         /// Deep copy/clone
         /// </summary>
         /// <returns>A deep copy of this object</returns>
@@ -36,7 +31,7 @@
             {
                 Char = Char,
                 CombiningCharacters = CombiningCharacters,
-                Attributes = Attributes.Clone(),
+                Attributes = Attributes.Clone()
             };
         }
     }

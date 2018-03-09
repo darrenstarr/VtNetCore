@@ -26,7 +26,7 @@
     // \033[5;10H
     // Choose test type:\r
 
-    public class vttestCursorMovement
+    public class VttestCursorMovement
     {
         private void Push(DataConsumer d, string s)
         {
@@ -75,7 +75,6 @@
             t.Debugging = true;
             var d = new DataConsumer(t);
             t.ResizeView(80, 25);
-            //t.TestPatternScrollingDiagonalLower();
 
             Push(d, "Test of autowrap, mixing control and print characters.\r");
             Push(d, "\r\n");
