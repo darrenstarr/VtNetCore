@@ -1,6 +1,7 @@
 ﻿namespace VtNetCore.VirtualTerminal
 {
     using System;
+    using System.Collections;
     using System.Linq;
     using System.Text;
     using VtNetCore.VirtualTerminal.Encodings;
@@ -114,24 +115,22 @@
         /// </summary>
         public bool StoreRawText { get; set; }
 
-        private string _rawText;
-        private long _rawTextLength;
+        private char[] _rawText;
+        private int _rawTextLength;
 
         /// <summary>
         /// Queued raw text data
         /// </summary>
-        public string RawText
+        public char [] RawText
         {
             get
             {
-                var result = _rawText;
-                _rawText = "";
+                if (_rawTextLength == 0)
+                    return new char[] { };
 
+                var result = _rawText.Take(_rawTextLength).ToArray();
+                _rawTextLength = 0;
                 return result;
-            }
-            private set
-            {
-                _rawText = value;
             }
         }
 
@@ -440,8 +439,15 @@
             var current = CursorState.CurrentColumn;
             LogController("Tab() [cursorX=" + current.ToString() + "]");
 
-            if(StoreRawText)
-                RawText += "\t";
+            if (StoreRawText)
+            {
+                if (_rawText == null)
+                    _rawText = new char[1024];
+                else if ((_rawTextLength + 1) >= _rawText.Length)
+                    Array.Resize(ref _rawText, _rawText.Length * 2);
+
+                _rawText[_rawTextLength++] = '\t';
+            }
 
             var tabStops = CursorState.TabStops;
             int index = 0;
@@ -629,7 +635,14 @@
             LogExtreme("NewLine()");
 
             if (StoreRawText)
-                RawText += "\n";
+            {
+                if (_rawText == null)
+                    _rawText = new char[1024];
+                else if ((_rawTextLength + 1) >= _rawText.Length)
+                    Array.Resize(ref _rawText, _rawText.Length * 2);
+
+                _rawText[_rawTextLength++] = '\n';
+            }
 
             if (CursorState.LeftAndRightMarginEnabled && CursorState.CurrentColumn >= CursorState.LeftMargin && CursorState.CurrentColumn <= CursorState.RightMargin)
             {
@@ -881,7 +894,14 @@
                 character = Iso2022Encoding.DecodeChar(character, CharacterSet);
 
             if (StoreRawText)
-                RawText += character.ToString();
+            {
+                if (_rawText == null)
+                    _rawText = new char[1024];
+                else if ((_rawTextLength + 1) >= _rawText.Length)
+                    Array.Resize(ref _rawText, _rawText.Length * 2);
+
+                _rawText[_rawTextLength++] = character;
+            }
 
             if (IsCombiningCharacter(character) && CursorState.CurrentColumn > 0)
             {
@@ -1998,6 +2018,60 @@
                 (ch >= '\u20D0' && ch <= '\u20F1') ||   // Combining diacritical marks for symbols
                 (ch >= '\uFE20' && ch <= '\uFE2F')      // Combining half marks
                 ;
+        }
+
+        /// <summary>
+        /// Sends a mouse press event to the server is highlight mouse tracking is enabled
+        /// </summary>
+        /// <param name="x">X coordinate (0 based visual)</param>
+        /// <param name="y">X coordinate (1 based visual)</param>
+        /// <param name="buttonNumber">Button number (left=0, right=1, middle=2)</param>
+        /// <param name="controlPressed">true if control is pressed</param>
+        /// <param name="shiftPressed">true if shift is pressed</param>
+        public void MousePress(int x, int y, int buttonNumber, bool controlPressed, bool shiftPressed)
+        {
+            if (!SgrMouseMode)
+                return;
+
+            var modifier =
+                (buttonNumber & 0x3) |
+                (controlPressed ? 16 : 0) |
+                (shiftPressed ? 4 : 0);
+
+            var message = "\u001b[<" + modifier.ToString() + ";" + (x + 1).ToString() + ";" + (y + 1).ToString() + "M";
+
+            SendData.Invoke(this, 
+                new SendDataEventArgs {
+                    Data = Encoding.UTF8.GetBytes(message)
+                }
+            );
+        }
+
+        /// <summary>
+        /// Sends a mouse press event to the server is highlight mouse tracking is enabled
+        /// </summary>
+        /// <param name="x">X coordinate (0 based visual)</param>
+        /// <param name="y">X coordinate (1 based visual)</param>
+        /// <param name="controlPressed">true if control is pressed</param>
+        /// <param name="shiftPressed">true if shift is pressed</param>
+        public void MouseRelease(int x, int y, bool controlPressed, bool shiftPressed)
+        {
+            if (!SgrMouseMode)
+                return;
+
+            var modifier =
+                (0x3) |
+                (controlPressed ? 16 : 0) |
+                (shiftPressed ? 4 : 0);
+
+            var message = "\u001b[<" + modifier.ToString() + ";" + (x + 1).ToString() + ";" + (y + 1).ToString() + "m";
+
+            SendData.Invoke(this,
+                new SendDataEventArgs
+                {
+                    Data = Encoding.UTF8.GetBytes(message)
+                }
+            );
         }
     }
 }
