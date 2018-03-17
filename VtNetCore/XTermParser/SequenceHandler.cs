@@ -28,7 +28,8 @@
         public bool Query { get; set; } = false;
         public bool Send { get; set; } = false;
         public bool Bang { get; set; } = false;
-        public int[] Param0 { get; set; } = new int[] {};
+        public int[] Param0 { get; set; } = new int[] { };
+        public int[] ValidParams { get; set; } = new int[] { };
         public string CsiCommand { get; set; }
         public Action<TerminalSequence, IVirtualTerminalController> Handler { get; set; }
     }

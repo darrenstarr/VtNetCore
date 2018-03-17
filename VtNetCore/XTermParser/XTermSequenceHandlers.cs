@@ -273,205 +273,121 @@
             },
             new SequenceHandler
             {
-                Description = "Set Mode - Insert Mode",
+                Description = "Set Mode (SM).",
                 SequenceType = SequenceHandler.ESequenceType.CSI,
                 CsiCommand = "h",
-                ExactParameterCount = 1,
-                Param0 = new int [] { 4 },
-                Handler = (sequence, controller) => controller.SetInsertReplaceMode(EInsertReplaceMode.Insert)
-            },
-            new SequenceHandler
-            {
-                Description = "Set Mode - Automatic Newline",
-                SequenceType = SequenceHandler.ESequenceType.CSI,
-                CsiCommand = "h",
-                ExactParameterCount = 1,
-                Param0 = new int [] { 20 },
-                Handler = (sequence, controller) => controller.SetAutomaticNewLine(true)
-            },
-            new SequenceHandler
-            {
-                Description = "Application Cursor Keys",
-                SequenceType = SequenceHandler.ESequenceType.CSI,
-                CsiCommand = "h",
-                Query = true,
-                ExactParameterCount = 1,
-                Param0 = new int [] { 1 },
-                Handler = (sequence, controller) => controller.EnableApplicationCursorKeys(true)
-            },
-            new SequenceHandler
-            {
-                Description = "132 Column Mode (DECCOLM).",
-                SequenceType = SequenceHandler.ESequenceType.CSI,
-                CsiCommand = "h",
-                Query = true,
-                ExactParameterCount = 1,
-                Param0 = new int [] { 3 },
-                Handler = (sequence, controller) => controller.Enable132ColumnMode(true)
-            },
-            new SequenceHandler
-            {
-                Description = "Smooth (Slow) Scroll (DECSCLM)",
-                SequenceType = SequenceHandler.ESequenceType.CSI,
-                CsiCommand = "h",
-                Query = true,
-                ExactParameterCount = 1,
-                Param0 = new int [] { 4 },
-                Handler = (sequence, controller) => controller.EnableSmoothScrollMode(true)
-            },
-            new SequenceHandler
-            {
-                Description = "Reverse Video (DECSCNM).",
-                SequenceType = SequenceHandler.ESequenceType.CSI,
-                CsiCommand = "h",
-                Query = true,
-                ExactParameterCount = 1,
-                Param0 = new int [] { 5 },
-                Handler = (sequence, controller) => controller.EnableReverseVideoMode(true)
-            },
-            new SequenceHandler
-            {
-                Description = "Origin Mode (DECOM).",
-                SequenceType = SequenceHandler.ESequenceType.CSI,
-                CsiCommand = "h",
-                Query = true,
-                ExactParameterCount = 1,
-                Param0 = new int [] { 6 },
-                Handler = (sequence, controller) => controller.EnableOriginMode(true)
-            },
-            new SequenceHandler
-            {
-                Description = "Wraparound Mode (DECAWM).",
-                SequenceType = SequenceHandler.ESequenceType.CSI,
-                CsiCommand = "h",
-                Query = true,
-                ExactParameterCount = 1,
-                Param0 = new int [] { 7 },
-                Handler = (sequence, controller) => controller.EnableWrapAroundMode(true)
-            },
-            new SequenceHandler
-            {
-                Description = "Auto-repeat Keys (DECARM).",
-                SequenceType = SequenceHandler.ESequenceType.CSI,
-                CsiCommand = "h",
-                Query = true,
-                ExactParameterCount = 1,
-                Param0 = new int [] { 8 },
-                Handler = (sequence, controller) => controller.EnableAutoRepeatKeys(true)
-            },
-            new SequenceHandler
-            {
-                Description = "Start Blinking Cursor (att610).",
-                SequenceType = SequenceHandler.ESequenceType.CSI,
-                CsiCommand = "h",
-                Query = true,
-                ExactParameterCount = 1,
-                Param0 = new int [] { 12 },
-                Handler = (sequence, controller) => controller.EnableBlinkingCursor(true)
-            },
-            new SequenceHandler
-            {
-                Description = "Show Cursor (DECTCEM).",
-                SequenceType = SequenceHandler.ESequenceType.CSI,
-                CsiCommand = "h",
-                Query = true,
-                ExactParameterCount = 1,
-                Param0 = new int [] { 25 },
-                Handler = (sequence, controller) => controller.ShowCursor(true)
-            },
-            new SequenceHandler
-            {
-                Description = "Allow 80 -> 132 Mode.",
-                SequenceType = SequenceHandler.ESequenceType.CSI,
-                CsiCommand = "h",
-                Query = true,
-                ExactParameterCount = 1,
-                Param0 = new int [] { 40 },
-                Handler = (sequence, controller) => controller.Enable80132Mode(true)
-            },
-            new SequenceHandler
-            {
-                Description = "Reverse-wraparound Mode.",
-                SequenceType = SequenceHandler.ESequenceType.CSI,
-                CsiCommand = "h",
-                Query = true,
-                ExactParameterCount = 1,
-                Param0 = new int [] { 45 },
-                Handler = (sequence, controller) => controller.EnableReverseWrapAroundMode(true)
-            },
-            new SequenceHandler
-            {
-                Description = "Use Alternative Screen Buffer.",
-                SequenceType = SequenceHandler.ESequenceType.CSI,
-                CsiCommand = "h",
-                Query = true,
-                ExactParameterCount = 1,
-                Param0 = new int [] { 47 },
-                Handler = (sequence, controller) => controller.EnableAlternateBuffer()
-            },
-            new SequenceHandler
-            {
-                Description = "Enable left and right margin mode (DECLRMM)",
-                SequenceType = SequenceHandler.ESequenceType.CSI,
-                CsiCommand = "h",
-                Query = true,
-                ExactParameterCount = 1,
-                Param0 = new int [] { 69 },
-                Handler = (sequence, controller) => controller.EnableLeftAndRightMarginMode(true)
-            },
-            new SequenceHandler
-            {
-                Description = "Use Hilite Mouse Tracking.",
-                SequenceType = SequenceHandler.ESequenceType.CSI,
-                CsiCommand = "h",
-                Query = true,
-                ExactParameterCount = 1,
-                Param0 = new int [] { 1001 },
-                Handler = (sequence, controller) => controller.UseHighlightMouseTracking(true)
-            },
-            new SequenceHandler
-            {
-                Description = "Use Cell Motion Mouse Tracking.",
-                SequenceType = SequenceHandler.ESequenceType.CSI,
-                CsiCommand = "h",
-                Query = true,
-                ExactParameterCount = 1,
-                Param0 = new int [] { 1002 },
-                Handler = (sequence, controller) => controller.UseCellMotionMouseTracking(true)
-            },
-            new SequenceHandler
-            {
-                Description = "Enable SGR Mouse Mode.",
-                SequenceType = SequenceHandler.ESequenceType.CSI,
-                CsiCommand = "h",
-                Query = true,
-                ExactParameterCount = 1,
-                Param0 = new int [] { 1006 },
-                Handler = (sequence, controller) => controller.EnableSgrMouseMode(true)
-            },
-            new SequenceHandler
-            {
-                Description = "Save cursor as in DECSC and use Alternate Screen Buffer, clearing it first.",
-                SequenceType = SequenceHandler.ESequenceType.CSI,
-                CsiCommand = "h",
-                Query = true,
-                ExactParameterCount = 1,
-                Param0 = new int [] { 1049 },
                 Handler = (sequence, controller) =>
                 {
-                    controller.SaveCursor();
-                    controller.EnableAlternateBuffer();
+                    foreach(var parameter in sequence.Parameters)
+                    {
+                        switch(parameter)
+                        {
+                            case 4:     // Ps = 4  -> Insert Mode (IRM).
+                                controller.SetInsertReplaceMode(EInsertReplaceMode.Insert);
+                                break;
+
+                            case 20:    // Ps = 2 0  -> Automatic Newline (LNM).
+                                controller.SetAutomaticNewLine(true);
+                                break;
+
+                            default:
+                                System.Diagnostics.Debug.WriteLine("Set Mode (SM) mode: " + parameter.ToString() + " is unknown");
+                                break;
+                        }
+                    }
                 }
             },
             new SequenceHandler
             {
-                Description = "Set bracketed paste mode.",
+                Description = "DEC Private Mode Set (DECSET).",
                 SequenceType = SequenceHandler.ESequenceType.CSI,
                 CsiCommand = "h",
                 Query = true,
-                ExactParameterCount = 1,
-                Param0 = new int [] { 2004 },
-                Handler = (sequence, controller) => controller.SetBracketedPasteMode(true)
+                Handler = (sequence, controller) =>
+                {
+                    foreach(var parameter in sequence.Parameters)
+                    {
+                        switch(parameter)
+                        {
+                            case 1:     // Ps = 1  -> Application Cursor Keys (DECCKM).
+                                controller.EnableApplicationCursorKeys(true);
+                                break;
+
+                            case 3:     // Ps = 3  -> 132 Column Mode (DECCOLM).
+                                controller.Enable132ColumnMode(true);
+                                break;
+
+                            case 4:     // Ps = 4  -> Smooth (Slow) Scroll (DECSCLM).
+                                controller.EnableSmoothScrollMode(true);
+                                break;
+
+                            case 5:     // Ps = 5  -> Reverse Video (DECSCNM).
+                                controller.EnableReverseVideoMode(true);
+                                break;
+
+                            case 6:     // Ps = 6  -> Origin Mode (DECOM).
+                                controller.EnableOriginMode(true);
+                                break;
+
+                            case 7:     // Ps = 7  -> Wraparound Mode (DECAWM).
+                                controller.EnableWrapAroundMode(true);
+                                break;
+
+                            case 8:     // Ps = 8  -> Auto-repeat Keys (DECARM).
+                                controller.EnableAutoRepeatKeys(true);
+                                break;
+
+                            case 12:    // Ps = 1 2  -> Start Blinking Cursor (AT&T 610).
+                                controller.EnableBlinkingCursor(true);
+                                break;
+
+                            case 25:    // Ps = 2 5  -> Show Cursor (DECTCEM).
+                                controller.ShowCursor(true);
+                                break;
+
+                            case 40:    // Ps = 4 0  -> Allow 80 -> 132 Mode.
+                                controller.Enable80132Mode(true);
+                                break;
+
+                            case 45:    // Ps = 4 5  -> Reverse-wraparound Mode.
+                                controller.EnableReverseWrapAroundMode(true);
+                                break;
+
+                            case 47:    // Ps = 4 7  -> Use Alternate Screen Buffer.  (This may be disabled by the titeInhibit resource).
+                                controller.EnableAlternateBuffer();
+                                break;
+
+                            case 69:    // Ps = 6 9  -> Enable left and right margin mode (DECLRMM), VT420 and up.
+                                controller.EnableLeftAndRightMarginMode(true);
+                                break;
+
+                            case 1001:  // Ps = 1 0 0 1  -> Use Hilite Mouse Tracking.
+                                controller.UseHighlightMouseTracking(true);
+                                break;
+
+                            case 1002:  // Ps = 1 0 0 2  -> Use Cell Motion Mouse Tracking.
+                                controller.UseCellMotionMouseTracking(true);
+                                break;
+
+                            case 1006:  // Ps = 1 0 0 6  -> Enable SGR Mouse Mode.
+                                controller.EnableSgrMouseMode(true);
+                                break;
+
+                            case 1049:  // Ps = 1 0 4 9  -> Save cursor as in DECSC and use Alternate Screen Buffer, clearing it first.
+                                controller.SaveCursor();
+                                controller.EnableAlternateBuffer();
+                                break;
+
+                            case 2004:  // Ps = 2 0 0 4  -> Set bracketed paste mode.
+                                controller.SetBracketedPasteMode(true);
+                                break;
+
+                            default:
+                                System.Diagnostics.Debug.WriteLine("Reset Mode (RM) mode: " + parameter.ToString() + " is unknown");
+                                break;
+                        }
+                    }
+                }
             },
             new SequenceHandler
             {
@@ -497,205 +413,121 @@
             },
             new SequenceHandler
             {
-                Description = "Reset Mode - Replace Mode",
+                Description = "Reset Mode (RM).",
                 SequenceType = SequenceHandler.ESequenceType.CSI,
                 CsiCommand = "l",
-                ExactParameterCount = 1,
-                Param0 = new int [] { 4 },
-                Handler = (sequence, controller) => controller.SetInsertReplaceMode(EInsertReplaceMode.Replace)
-            },
-            new SequenceHandler
-            {
-                Description = "Set Mode - Normal Linefeed",
-                SequenceType = SequenceHandler.ESequenceType.CSI,
-                CsiCommand = "l",
-                ExactParameterCount = 1,
-                Param0 = new int [] { 20 },
-                Handler = (sequence, controller) => controller.SetAutomaticNewLine(false)
-            },
-            new SequenceHandler
-            {
-                Description = "Normal Cursor Keys",
-                SequenceType = SequenceHandler.ESequenceType.CSI,
-                CsiCommand = "l",
-                Query = true,
-                ExactParameterCount = 1,
-                Param0 = new int [] { 1 },
-                Handler = (sequence, controller) => controller.EnableApplicationCursorKeys(false)
-            },
-            new SequenceHandler
-            {
-                Description = "80 Column Mode (DECCOLM).",
-                SequenceType = SequenceHandler.ESequenceType.CSI,
-                CsiCommand = "l",
-                Query = true,
-                ExactParameterCount = 1,
-                Param0 = new int [] { 3 },
-                Handler = (sequence, controller) => controller.Enable132ColumnMode(false)
-            },
-            new SequenceHandler
-            {
-                Description = "Jump (Fast) Scroll (DECSCLM).",
-                SequenceType = SequenceHandler.ESequenceType.CSI,
-                CsiCommand = "l",
-                Query = true,
-                ExactParameterCount = 1,
-                Param0 = new int [] { 4 },
-                Handler = (sequence, controller) => controller.EnableSmoothScrollMode(false)
-            },
-            new SequenceHandler
-            {
-                Description = "Normal Video (DECSCNM).",
-                SequenceType = SequenceHandler.ESequenceType.CSI,
-                CsiCommand = "l",
-                Query = true,
-                ExactParameterCount = 1,
-                Param0 = new int [] { 5 },
-                Handler = (sequence, controller) => controller.EnableReverseVideoMode(false)
-            },
-            new SequenceHandler
-            {
-                Description = "Normal Cursor Mode (DECOM).",
-                SequenceType = SequenceHandler.ESequenceType.CSI,
-                CsiCommand = "l",
-                Query = true,
-                ExactParameterCount = 1,
-                Param0 = new int [] { 6 },
-                Handler = (sequence, controller) => controller.EnableOriginMode(false)
-            },
-            new SequenceHandler
-            {
-                Description = "No Wraparound Mode (DECAWM).",
-                SequenceType = SequenceHandler.ESequenceType.CSI,
-                CsiCommand = "l",
-                Query = true,
-                ExactParameterCount = 1,
-                Param0 = new int [] { 7 },
-                Handler = (sequence, controller) => controller.EnableWrapAroundMode(false)
-            },
-            new SequenceHandler
-            {
-                Description = "No Auto-repeat Keys (DECARM).",
-                SequenceType = SequenceHandler.ESequenceType.CSI,
-                CsiCommand = "l",
-                Query = true,
-                ExactParameterCount = 1,
-                Param0 = new int [] { 8 },
-                Handler = (sequence, controller) => controller.EnableAutoRepeatKeys(false)
-            },
-            new SequenceHandler
-            {
-                Description = "Stop Blinking Cursor (att610).",
-                SequenceType = SequenceHandler.ESequenceType.CSI,
-                CsiCommand = "l",
-                Query = true,
-                ExactParameterCount = 1,
-                Param0 = new int [] { 12 },
-                Handler = (sequence, controller) => controller.EnableBlinkingCursor(false)
-            },
-            new SequenceHandler
-            {
-                Description = "Hide Cursor (DECTCEM).",
-                SequenceType = SequenceHandler.ESequenceType.CSI,
-                CsiCommand = "l",
-                Query = true,
-                ExactParameterCount = 1,
-                Param0 = new int [] { 25 },
-                Handler = (sequence, controller) => controller.ShowCursor(false)
-            },
-            new SequenceHandler
-            {
-                Description = "Disallow 80 -> 132 Mode.",
-                SequenceType = SequenceHandler.ESequenceType.CSI,
-                CsiCommand = "l",
-                Query = true,
-                ExactParameterCount = 1,
-                Param0 = new int [] { 40 },
-                Handler = (sequence, controller) => controller.Enable80132Mode(false)
-            },
-            new SequenceHandler
-            {
-                Description = "No Reverse-wraparound Mode.",
-                SequenceType = SequenceHandler.ESequenceType.CSI,
-                CsiCommand = "l",
-                Query = true,
-                ExactParameterCount = 1,
-                Param0 = new int [] { 45 },
-                Handler = (sequence, controller) => controller.EnableReverseWrapAroundMode(false)
-            },
-            new SequenceHandler
-            {
-                Description = "Use Normal Screen Buffer.",
-                SequenceType = SequenceHandler.ESequenceType.CSI,
-                CsiCommand = "l",
-                Query = true,
-                ExactParameterCount = 1,
-                Param0 = new int [] { 47 },
-                Handler = (sequence, controller) => controller.EnableNormalBuffer()
-            },
-            new SequenceHandler
-            {
-                Description = "Disable left and right margin mode (DECLRMM)",
-                SequenceType = SequenceHandler.ESequenceType.CSI,
-                CsiCommand = "l",
-                Query = true,
-                ExactParameterCount = 1,
-                Param0 = new int [] { 69 },
-                Handler = (sequence, controller) => controller.EnableLeftAndRightMarginMode(false)
-            },
-            new SequenceHandler
-            {
-                Description = "Don't use Hilite Mouse Tracking.",
-                SequenceType = SequenceHandler.ESequenceType.CSI,
-                CsiCommand = "l",
-                Query = true,
-                ExactParameterCount = 1,
-                Param0 = new int [] { 1001 },
-                Handler = (sequence, controller) => controller.UseHighlightMouseTracking(false)
-            },
-            new SequenceHandler
-            {
-                Description = "Don't use Hilite Mouse Tracking.",
-                SequenceType = SequenceHandler.ESequenceType.CSI,
-                CsiCommand = "l",
-                Query = true,
-                ExactParameterCount = 1,
-                Param0 = new int [] { 1002 },
-                Handler = (sequence, controller) => controller.UseCellMotionMouseTracking(false)
-            },
-            new SequenceHandler
-            {
-                Description = "Disable SGR Mouse Mode.",
-                SequenceType = SequenceHandler.ESequenceType.CSI,
-                CsiCommand = "l",
-                Query = true,
-                ExactParameterCount = 1,
-                Param0 = new int [] { 1006 },
-                Handler = (sequence, controller) => controller.EnableSgrMouseMode(false)
-            },
-            new SequenceHandler
-            {
-                Description = "Use Normal Screen Buffer and restore cursor as in DECRC",
-                SequenceType = SequenceHandler.ESequenceType.CSI,
-                CsiCommand = "l",
-                Query = true,
-                ExactParameterCount = 1,
-                Param0 = new int [] { 1049 },
                 Handler = (sequence, controller) =>
                 {
-                    controller.RestoreCursor();
-                    controller.EnableNormalBuffer();
+                    foreach(var parameter in sequence.Parameters)
+                    {
+                        switch(parameter)
+                        {
+                            case 4:     // Ps = 4  -> Replace Mode (IRM).
+                                controller.SetInsertReplaceMode(EInsertReplaceMode.Replace);
+                                break;
+
+                            case 20:    // Ps = 2 0  -> Normal Linefeed (LNM).
+                                controller.SetAutomaticNewLine(false);
+                                break;
+
+                            default:
+                                System.Diagnostics.Debug.WriteLine("Reset Mode (RM) mode: " + parameter.ToString() + " is unknown");
+                                break;
+                        }
+                    }
                 }
             },
             new SequenceHandler
             {
-                Description = "Reset bracketed paste mode.",
+                Description = "DEC Private Mode Reset (DECRST).",
                 SequenceType = SequenceHandler.ESequenceType.CSI,
                 CsiCommand = "l",
                 Query = true,
-                ExactParameterCount = 1,
-                Param0 = new int [] { 2004 },
-                Handler = (sequence, controller) => controller.SetBracketedPasteMode(false)
+                Handler = (sequence, controller) =>
+                {
+                    foreach(var parameter in sequence.Parameters)
+                    {
+                        switch(parameter)
+                        {
+                            case 1:     // Ps = 1  -> Normal Cursor Keys (DECCKM).
+                                controller.EnableApplicationCursorKeys(false);
+                                break;
+
+                            case 3:     // Ps = 3  -> 80 Column Mode (DECCOLM).
+                                controller.Enable132ColumnMode(false);
+                                break;
+
+                            case 4:     // Ps = 4  -> Jump (Fast) Scroll (DECSCLM).
+                                controller.EnableSmoothScrollMode(false);
+                                break;
+
+                            case 5:     // Ps = 5  -> Normal Video (DECSCNM).
+                                controller.EnableReverseVideoMode(false);
+                                break;
+
+                            case 6:     // Ps = 6  -> Normal Cursor Mode (DECOM).
+                                controller.EnableOriginMode(false);
+                                break;
+
+                            case 7:     // Ps = 7  -> No Wraparound Mode (DECAWM).
+                                controller.EnableWrapAroundMode(false);
+                                break;
+
+                            case 8:     // Ps = 8  -> No Auto-repeat Keys (DECARM).
+                                controller.EnableAutoRepeatKeys(false);
+                                break;
+
+                            case 12:    // Ps = 1 2  -> Stop Blinking Cursor (AT&T 610).
+                                controller.EnableBlinkingCursor(false);
+                                break;
+
+                            case 25:    // Ps = 2 5  -> Hide Cursor (DECTCEM).
+                                controller.ShowCursor(false);
+                                break;
+
+                            case 40:    // Ps = 4 0  -> Disallow 80 -> 132 Mode.
+                                controller.Enable80132Mode(false);
+                                break;
+
+                            case 45:    // Ps = 4 5  -> No Reverse-wraparound Mode.
+                                controller.EnableReverseWrapAroundMode(false);
+                                break;
+
+                            case 47:    // Ps = 4 7  -> Use Normal Screen Buffer.
+                                controller.EnableNormalBuffer();
+                                break;
+
+                            case 69:    // Ps = 6 9  -> Disable left and right margin mode (DECLRMM), VT420 and up.
+                                controller.EnableLeftAndRightMarginMode(false);
+                                break;
+
+                            case 1001:  // Ps = 1 0 0 1  -> Don't use Hilite Mouse Tracking.
+                                controller.UseHighlightMouseTracking(false);
+                                break;
+
+                            case 1002:  // Ps = 1 0 0 2  -> Don't use Cell Motion Mouse Tracking.
+                                controller.UseCellMotionMouseTracking(false);
+                                break;
+
+                            case 1006:  // Ps = 1 0 0 6  -> Disable SGR Mouse Mode.
+                                controller.EnableSgrMouseMode(false);
+                                break;
+
+                            case 1049:  // Ps = 1 0 4 9  -> Use Normal Screen Buffer and restore cursor as in DECRC.
+                                controller.RestoreCursor();
+                                controller.EnableNormalBuffer();
+                                break;
+
+                            case 2004:  // Ps = 2 0 0 4  -> Reset bracketed paste mode.
+                                controller.SetBracketedPasteMode(false);
+                                break;
+
+                            default:
+                                System.Diagnostics.Debug.WriteLine("Reset Mode (RM) mode: " + parameter.ToString() + " is unknown");
+                                break;
+                        }
+                    }
+                }
             },
             new SequenceHandler
             {
@@ -1276,13 +1108,27 @@
                         x.Send == sequence.IsSend &&
                         x.Bang == sequence.IsBang &&
                         (
-                            x.Param0.Length == 0 ||
-                            x.Param0.Contains(
-                                (sequence.Parameters == null || sequence.Parameters.Count < 1) ?
-                                0 :
-                                sequence.Parameters[0]
+                            (
+                                x.Param0.Length == 0 && 
+                                x.ValidParams.Length == 0
                             )
-                        ) &&
+                            ||
+                            (
+                                x.Param0.Length > 0 &&
+                                x.Param0.Contains(
+                                    (sequence.Parameters == null || sequence.Parameters.Count < 1) ?
+                                    0 :
+                                    sequence.Parameters[0]
+                                )
+                            )
+                            ||
+                            (
+                                x.ValidParams.Length > 0 &&
+                                sequence.Parameters != null &&
+                                !x.ValidParams.Except(sequence.Parameters).Any()
+                            )
+                        )
+                        &&
                         (
                             (
                                 x.ExactParameterCount == -1 &&
