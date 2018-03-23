@@ -539,6 +539,34 @@
                     var csiSequence = sequence as CsiSequence;
                     if(csiSequence.Parameters.Count == 0)
                         controller.SetCharacterAttribute(0);
+                    else if(csiSequence.Parameters[0] == 38 || csiSequence.Parameters[0] == 48)
+                    {
+                        if(csiSequence.Parameters.Count == 6 && csiSequence.Parameters[1] == 2)
+                        {
+                            // XTerm iRGB
+                            if(csiSequence.Parameters[0] == 38)
+                                controller.SetRgbForegroundColor(csiSequence.Parameters[3], csiSequence.Parameters[4], csiSequence.Parameters[5]);
+                            else
+                                controller.SetRgbBackgroundColor(csiSequence.Parameters[3], csiSequence.Parameters[4], csiSequence.Parameters[5]);
+                        }
+                        else if(csiSequence.Parameters.Count == 5 && csiSequence.Parameters[1] == 2)
+                        {
+                            // Konsole RGB
+                            if(csiSequence.Parameters[0] == 38)
+                                controller.SetRgbForegroundColor(csiSequence.Parameters[2], csiSequence.Parameters[3], csiSequence.Parameters[4]);
+                            else
+                                controller.SetRgbBackgroundColor(csiSequence.Parameters[2], csiSequence.Parameters[3], csiSequence.Parameters[4]);
+                        }
+                        else if(csiSequence.Parameters.Count == 3 && csiSequence.Parameters[1] == 5)
+                        {
+                            if(csiSequence.Parameters[0] == 38)
+                                controller.SetIso8613PaletteForeground(csiSequence.Parameters[2]);
+                            else
+                                controller.SetIso8613PaletteBackground(csiSequence.Parameters[2]);
+                        }
+                        else
+                            System.Diagnostics.Debug.WriteLine("SGR " + csiSequence.Parameters[0].ToString() + " must be longer than 1 option");
+                    }
                     else
                     {
                         foreach(var parameter in csiSequence.Parameters)

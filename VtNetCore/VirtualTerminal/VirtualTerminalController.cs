@@ -1009,12 +1009,58 @@
             CursorState.CharacterSetModeR = mode;
         }
 
+        public void SetRgbForegroundColor(int red, int green, int blue)
+        {
+            LogController("SetRgbForegroundColor(r:" + red + ", g:" + green + ", b:" + blue + ")");
+
+            if (CursorState.Attributes.ForegroundRgb == null)
+                CursorState.Attributes.ForegroundRgb = new TerminalColor { Red = (uint)red, Green = (uint)green, Blue = (uint)blue };
+            else
+                CursorState.Attributes.ForegroundRgb.Set((uint)red, (uint)green, (uint)blue);
+        }
+
+        public void SetRgbBackgroundColor(int red, int green, int blue)
+        {
+            LogController("SetRgbBackgroundColor(r:" + red + ", g:" + green + ", b:" + blue + ")");
+
+            if (CursorState.Attributes.BackgroundRgb == null)
+                CursorState.Attributes.BackgroundRgb = new TerminalColor { Red = (uint)red, Green = (uint)green, Blue = (uint)blue };
+            else
+                CursorState.Attributes.BackgroundRgb.Set((uint)red, (uint)green, (uint)blue);
+        }
+
+        public void SetIso8613PaletteForeground(int paletteEntry)
+        {
+            LogController("SetIso8613PaletteForeground(e:" + paletteEntry + ")");
+            if(TerminalColor.Iso8613.TryGetValue(paletteEntry, out TerminalColor color))
+            {
+                if (CursorState.Attributes.ForegroundRgb == null)
+                    CursorState.Attributes.ForegroundRgb = new TerminalColor(color);
+                else
+                    CursorState.Attributes.ForegroundRgb.ARGB = color.ARGB;
+            }
+        }
+
+        public void SetIso8613PaletteBackground(int paletteEntry)
+        {
+            LogController("SetIso8613PaletteBackground(e:" + paletteEntry + ")");
+            if (TerminalColor.Iso8613.TryGetValue(paletteEntry, out TerminalColor color))
+            {
+                if (CursorState.Attributes.BackgroundRgb == null)
+                    CursorState.Attributes.BackgroundRgb = new TerminalColor(color);
+                else
+                    CursorState.Attributes.BackgroundRgb.ARGB = color.ARGB;
+            }
+        }
+
         public void SetCharacterAttribute(int parameter)
         {
             switch (parameter)
             {
                 case 0:
                     LogController("SetCharacterAttribute(reset)");
+                    CursorState.Attributes.ForegroundRgb = null;
+                    CursorState.Attributes.BackgroundRgb = null;
                     CursorState.Attributes.ForegroundColor = ETerminalColor.White;
                     CursorState.Attributes.BackgroundColor = ETerminalColor.Black;
                     CursorState.Attributes.Bright = false;
@@ -1094,10 +1140,12 @@
                 case 36:
                 case 37:
                 case 38:
+                    CursorState.Attributes.ForegroundRgb = null;
                     CursorState.Attributes.ForegroundColor = (ETerminalColor)(parameter - 30);
                     LogController("SetCharacterAttribute(foreground:" + CursorState.Attributes.ForegroundColor.ToString() + ")");
                     break;
                 case 39:
+                    CursorState.Attributes.ForegroundRgb = null;
                     CursorState.Attributes.ForegroundColor = ETerminalColor.White;
                     LogController("SetCharacterAttribute(foreground:default)");
                     break;
@@ -1110,12 +1158,40 @@
                 case 46:
                 case 47:
                 case 48:
+                    CursorState.Attributes.BackgroundRgb = null;
                     CursorState.Attributes.BackgroundColor = (ETerminalColor)(parameter - 40);
                     LogController("SetCharacterAttribute(background:" + CursorState.Attributes.BackgroundColor.ToString() + ")");
                     break;
                 case 49:
+                    CursorState.Attributes.BackgroundRgb = null;
                     CursorState.Attributes.BackgroundColor = ETerminalColor.Black;
                     LogController("SetCharacterAttribute(background:default)");
+                    break;
+
+                case 90:
+                case 91:
+                case 92:
+                case 93:
+                case 94:
+                case 95:
+                case 96:
+                case 97:
+                    CursorState.Attributes.ForegroundRgb = null;
+                    CursorState.Attributes.ForegroundColor = (ETerminalColor)(parameter - 90);
+                    CursorState.Attributes.Bright = true;
+                    LogController("SetCharacterAttribute(foreground:" + CursorState.Attributes.ForegroundColor.ToString() + ")");
+                    break;
+
+                case 100:
+                case 101:
+                case 102:
+                case 103:
+                case 104:
+                case 105:
+                case 106:
+                case 107:
+                    CursorState.Attributes.BackgroundRgb = new TerminalColor((ETerminalColor)(parameter - 100), true);
+                    LogController("SetCharacterAttribute(backgroundRgb:" + CursorState.Attributes.BackgroundRgb.ToString() + ")");
                     break;
 
                 default:

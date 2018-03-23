@@ -104,5 +104,9 @@
         void UseCellMotionMouseTracking(bool enable);
         void UseHighlightMouseTracking(bool enable);
         void VerticalTab();
+        void SetRgbForegroundColor(int red, int green, int blue);
+        void SetRgbBackgroundColor(int red, int green, int blue);
+        void SetIso8613PaletteForeground(int paletteEntry);
+        void SetIso8613PaletteBackground(int paletteEntry);
     }
 }

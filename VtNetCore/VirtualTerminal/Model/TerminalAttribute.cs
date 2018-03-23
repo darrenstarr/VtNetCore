@@ -19,6 +19,9 @@
             (ushort)ETerminalColor.White |     // ForegroundColor
             (ushort)ETerminalColor.Black;      // BackgroundColor
 
+        public TerminalColor ForegroundRgb { get; set; }
+
+        public TerminalColor BackgroundRgb { get; set; }
 
         /// <summary>
         /// The foreground color of the text
@@ -189,7 +192,9 @@
         {
             return new TerminalAttribute
             {
-                InternalBits = InternalBits
+                InternalBits = InternalBits,
+                ForegroundRgb = ForegroundRgb == null ? null : new TerminalColor(ForegroundRgb),
+                BackgroundRgb = BackgroundRgb == null ? null : new TerminalColor(BackgroundRgb)
             };
         }
 
@@ -201,7 +206,9 @@
         {
             return
                 "  ForegroundColor: " + ForegroundColor.ToString() + "\n" +
+                "  ForegroundRgb: " + ForegroundRgb == null ? "<null>" : ForegroundRgb.ToString() + "\n" + 
                 "  BackgroundColor: " + BackgroundColor.ToString() + "\n" +
+                "  BackgroundRgb: " + BackgroundRgb == null ? "<null>" : BackgroundRgb.ToString() + "\n" +
                 "  Bright: " + Bright.ToString() + "\n" +
                 "  Standout: " + Standout.ToString() + "\n" +
                 "  Underscore: " + Underscore.ToString() + "\n" +
