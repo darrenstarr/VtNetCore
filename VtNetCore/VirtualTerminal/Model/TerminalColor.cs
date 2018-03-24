@@ -345,31 +345,31 @@ namespace VtNetCore.VirtualTerminal.Model
                 switch (termColor)
                 {
                     case ETerminalColor.Black:
-                        Set(85, 85, 85);     // Bright black
+                        Set(127, 127, 127);     // Bright black
                         break;
 
                     case ETerminalColor.Red:
-                        Set(255, 85, 85);    // Bright red
+                        Set(255, 0, 0);    // Bright red
                         break;
 
                     case ETerminalColor.Green:
-                        Set(85, 255, 85);    // Bright green
+                        Set(0, 255, 0);    // Bright green
                         break;
 
                     case ETerminalColor.Yellow:
-                        Set(255, 255, 85);   // Bright yellow
+                        Set(255, 255, 0);   // Bright yellow
                         break;
 
                     case ETerminalColor.Blue:
-                        Set(85, 85, 255);    // Bright blue
+                        Set(92, 92, 255);    // Bright blue
                         break;
 
                     case ETerminalColor.Magenta:
-                        Set(255, 85, 255);   // Bright Magenta
+                        Set(255, 0, 255);   // Bright Magenta
                         break;
 
                     case ETerminalColor.Cyan:
-                        Set(85, 255, 255);   // Bright cyan
+                        Set(0, 255, 255);   // Bright cyan
                         break;
 
                     case ETerminalColor.White:
@@ -386,31 +386,31 @@ namespace VtNetCore.VirtualTerminal.Model
                         break;
 
                     case ETerminalColor.Red:
-                        Set(187, 0, 0);      // Red
+                        Set(205, 0, 0);      // Red
                         break;
 
                     case ETerminalColor.Green:
-                        Set(0, 187, 0);      // Green
+                        Set(0, 205, 0);      // Green
                         break;
 
                     case ETerminalColor.Yellow:
-                        Set(187, 187, 0);    // Yellow
+                        Set(205, 205, 0);    // Yellow
                         break;
 
                     case ETerminalColor.Blue:
-                        Set(0, 0, 187);      // Blue
+                        Set(0, 0, 205);      // Blue
                         break;
 
                     case ETerminalColor.Magenta:
-                        Set(187, 0, 187);    // Magenta
+                        Set(205, 0, 205);    // Magenta
                         break;
 
                     case ETerminalColor.Cyan:
-                        Set(0, 187, 187);    // Cyan
+                        Set(0, 205, 205);    // Cyan
                         break;
 
                     case ETerminalColor.White:
-                        Set(187, 187, 187);  // White
+                        Set(205, 205, 205);  // White
                         break;
                 }
             }
