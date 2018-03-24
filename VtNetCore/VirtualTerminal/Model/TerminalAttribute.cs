@@ -13,7 +13,7 @@
         private static readonly ushort BlinkBit = 0x0200;
         private static readonly ushort ReverseBit = 0x0400;
         private static readonly ushort HiddenBit = 0x0800;
-        private static readonly ushort ProtectionBit = 0x1000;
+        private static readonly ushort ProtectionBits = 0x3000;
 
         private ushort InternalBits =
             (ushort)ETerminalColor.White |     // ForegroundColor
@@ -169,18 +169,15 @@
         /// <summary>
         /// Specifies that the character should not be erased on SEL and SED operations.
         /// </summary>
-        public bool Protected
+        public int Protected
         {
             get
             {
-                return (InternalBits & ProtectionBit) == ProtectionBit;
+                return (InternalBits & ProtectionBits) >> 12;
             }
             set
             {
-                if (value)
-                    InternalBits |= ProtectionBit;
-                else
-                    InternalBits = (ushort)((InternalBits & ~ProtectionBit) & 0xFFFF);
+                InternalBits = (ushort)((InternalBits & ~ProtectionBits) | ((value & 0x3) << 12));
             }
         }
 

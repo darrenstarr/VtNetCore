@@ -235,6 +235,18 @@
         /// </summary>
         public bool Changed { get { return ChangeCount > 0; } }
 
+        internal TerminalCharacter GetVisibleCharModel(int x, int y)
+        {
+            if ((TopRow + y) >= Buffer.Count)
+                return null;
+
+            var line = Buffer[TopRow + y];
+            if (line.Count <= x)
+                return null;
+
+            return line[x];
+        }
+
         internal string GetVisibleChar(int x, int y)
         {
             if ((TopRow + y) >= Buffer.Count)
@@ -285,6 +297,31 @@
             }
 
             return result;
+        }
+
+        /// <summary>
+        /// Makes a map of what the screen protection looks like
+        /// </summary>
+        internal string ProtectionMap
+        {
+            get
+            {
+                string result = "";
+
+                for (var y = 0; y < Rows; y++)
+                {
+                    for (var x = 0; x < Columns; x++)
+                    {
+                        var ch = GetVisibleCharModel(x, y);
+                        result += (ch != null && ch.Attributes.Protected == 1) ? "X" : ".";
+                    }
+
+                    if (y < (Rows - 1))
+                        result += '\n';
+                }
+
+                return result;
+            }
         }
 
         /// <summary>
@@ -400,7 +437,7 @@
         {
             if (Debugging)
             {
-                //System.Diagnostics.Debug.WriteLine("Controller: " + message);
+                System.Diagnostics.Debug.WriteLine("Controller: " + message);
                 OnLog?.Invoke(this, new TextEventArgs { Text = "Controller: " + message });
             }
         }
@@ -566,7 +603,7 @@
         public bool IsProtected(int row, int column)
         {
             var character = GetCharacterAt(row, column);
-            return character == null ? false : character.Attributes.Protected;
+            return character == null ? false : (character.Attributes.Protected == 1);
         }
 
         private TerminalLine GetLine(int y)
@@ -902,12 +939,10 @@
             ChangeCount++;
         }
 
-        public void ProtectCharacter(bool protect)
+        public void ProtectCharacter(int protect)
         {
-            LogController("ProtectChar()");
-            var character = GetCurrentCharacter();
-            if (character != null)
-                character.Attributes.Protected = protect;
+            LogController("ProtectChar(protect:" + protect + ")");
+            CursorState.Attributes.Protected = protect;
         }
 
         public void PutChar(char character)
@@ -1468,12 +1503,12 @@
                 SetCursorPosition(1, 1);
         }
 
-        public void EraseLine()
+        public void EraseLine(bool ignoreProtected = true)
         {
-            LogController("EraseLine()");
+            LogController("EraseLine(ignoreProtected: " + ignoreProtected + ")");
 
             for (var i = 0; i < Columns; i++)
-                SetCharacter(i, CursorState.CurrentRow, ' ', CursorState.Attributes);
+                SetCharacter(i, CursorState.CurrentRow, ' ', CursorState.Attributes, ignoreProtected);
 
             var line = Buffer[TopRow + CursorState.CurrentRow];
             while (line.Count > Columns)
@@ -1482,12 +1517,12 @@
             ChangeCount++;
         }
 
-        public void EraseToEndOfLine()
+        public void EraseToEndOfLine(bool ignoreProtected=true)
         {
-            LogController("EraseToEndOfLine()");
+            LogController("EraseToEndOfLine(ignoreProtected: " + ignoreProtected + ")");
 
             for (var i = CursorState.CurrentColumn; i < Columns; i++)
-                SetCharacter(i, CursorState.CurrentRow, ' ', CursorState.Attributes);
+                SetCharacter(i, CursorState.CurrentRow, ' ', CursorState.Attributes, ignoreProtected);
 
             var line = Buffer[TopRow + CursorState.CurrentRow];
             while (line.Count > Columns)
@@ -1508,12 +1543,12 @@
             ChangeCount++;
         }
 
-        public void EraseToStartOfLine()
+        public void EraseToStartOfLine(bool ignoreProtected = true)
         {
-            LogController("EraseToStartOfLine()");
+            LogController("EraseToStartOfLine(ignoreProtected: " + ignoreProtected + ")");
 
             for (var i = 0; i < Columns && i <= CursorState.CurrentColumn; i++)
-                SetCharacter(i, CursorState.CurrentRow, ' ', CursorState.Attributes);
+                SetCharacter(i, CursorState.CurrentRow, ' ', CursorState.Attributes, ignoreProtected);
 
             var line = Buffer[TopRow + CursorState.CurrentRow];
             while (line.Count > Columns)
@@ -1522,15 +1557,15 @@
             ChangeCount++;
         }
 
-        public void EraseBelow()
+        public void EraseBelow(bool ignoreProtected = true)
         {
             // TODO : Optimize
-            LogController("EraseBelow()");
+            LogController("EraseBelow(ignoreProtected: " + ignoreProtected + ")");
 
             for (var y = CursorState.CurrentRow + 1; y < VisibleRows; y++)
             {
                 for (var x = 0; x < VisibleColumns; x++)
-                    SetCharacter(x, y, ' ', CursorState.Attributes);
+                    SetCharacter(x, y, ' ', CursorState.Attributes, ignoreProtected);
 
                 var line = Buffer[TopRow + y];
                 while (line.Count > Columns)
@@ -1539,18 +1574,18 @@
 
 
             for (var x = CursorState.CurrentColumn; x < VisibleColumns; x++)
-                SetCharacter(x, CursorState.CurrentRow, ' ', CursorState.Attributes);
+                SetCharacter(x, CursorState.CurrentRow, ' ', CursorState.Attributes, ignoreProtected);
         }
 
-        public void EraseAbove()
+        public void EraseAbove(bool ignoreProtected = true)
         {
             // TODO : Optimize
-            LogController("EraseAbove()");
+            LogController("EraseAbove(ignoreProtected: " + ignoreProtected + ")");
 
             for (var y = CursorState.CurrentRow - 1; y >= 0; y--)
             {
                 for (var x = 0; x < VisibleColumns; x++)
-                    SetCharacter(x, y, ' ', CursorState.Attributes);
+                    SetCharacter(x, y, ' ', CursorState.Attributes, ignoreProtected);
 
                 var line = Buffer[TopRow + y];
                 while (line.Count > Columns)
@@ -1558,7 +1593,7 @@
             }
 
             for (var x = 0; x <= CursorState.CurrentColumn; x++)
-                SetCharacter(x, CursorState.CurrentRow, ' ', CursorState.Attributes);
+                SetCharacter(x, CursorState.CurrentRow, ' ', CursorState.Attributes, ignoreProtected);
         }
 
         public void DeleteLines(int count)
@@ -1807,9 +1842,16 @@
             ChangeCount++;
         }
 
-        public void EraseAll()
+        public void EraseAll(bool ignoreProtected = true)
         {
-            LogController("EraseAll()");
+            LogController("EraseAll(ignoreProtected: " + ignoreProtected + ")");
+
+            if(!ignoreProtected)
+            {
+                EraseAbove(ignoreProtected);
+                EraseBelow(ignoreProtected);
+                return;
+            }
 
             TopRow = Buffer.Count;
             while(TopRow > MaximumHistoryLines)
@@ -1944,6 +1986,15 @@
             SendData.Invoke(this, new SendDataEventArgs { Data = Encoding.UTF8.GetBytes(rcp) });
         }
 
+        public void ReportExtendedCursorPosition()
+        {
+            LogController("ReportExtendedCursorPosition()");
+
+            var rcp = "\u001b[?" + (CursorState.CurrentRow - CursorState.ScrollTop + 1).ToString() + ";" + (CursorState.CurrentColumn - CursorState.LeftMargin + 1).ToString() + "R";
+
+            SendData.Invoke(this, new SendDataEventArgs { Data = Encoding.UTF8.GetBytes(rcp) });
+        }
+
         public void SetLatin1()
         {
             LogController("Unimplemented: SetLatin1()");
@@ -2021,7 +2072,7 @@
             SendData.Invoke(this, new SendDataEventArgs { Data = v });
         }
 
-        private void SetCharacter(int currentColumn, int currentRow, char ch, TerminalAttribute attribute)
+        private void SetCharacter(int currentColumn, int currentRow, char ch, TerminalAttribute attribute, bool overwriteProtected=true)
         {
             while (Buffer.Count < (currentRow + TopRow + 1))
                 Buffer.Add(new TerminalLine());
@@ -2031,11 +2082,12 @@
                 line.Add(new TerminalCharacter { Char = ' ', Attributes = CursorState.Attributes });
 
             var character = line[currentColumn];
-            character.Char = ch;
-            var wasProtected = character.Attributes.Protected;
-            character.Attributes = attribute.Clone();
-            character.Attributes.Protected = wasProtected;
-            character.CombiningCharacters = "";
+            if (overwriteProtected || (!overwriteProtected && character.Attributes.Protected != 1))
+            {
+                character.Char = ch;
+                character.Attributes = attribute.Clone();
+                character.CombiningCharacters = "";
+            }
         }
 
         private void SetCombiningCharacter(int column, int row, char combiningCharacter)
@@ -2139,6 +2191,17 @@
                 return;
 
             SendData.Invoke(this, new SendDataEventArgs { Data = Encoding.ASCII.GetBytes(ConformanceLevelResponse) });
+        }
+
+        public void RequestStatusStringSetProtectionAttribute()
+        {
+            LogController("RequestStatusStringSetProtectionAttribute()");
+
+            var result = "\u001bP1$r" + CursorState.Attributes.Protected + "\"q\u001b\\";
+
+            // TODO : Is this for the current state or the character at the cursor position?
+
+            SendData.Invoke(this, new SendDataEventArgs { Data = Encoding.ASCII.GetBytes(result) });
         }
 
         public static readonly string Vt52Identification = "\u001b/Z";

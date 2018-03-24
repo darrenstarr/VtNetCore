@@ -605,6 +605,16 @@
             },
             new SequenceHandler
             {
+                Description = "Device Status Report (DSR, DEC-specific). - Report Cursor Position",
+                SequenceType = SequenceHandler.ESequenceType.CSI,
+                CsiCommand = "n",
+                Query = true,
+                ExactParameterCount = 1,
+                Param0 = new int [] { 6 },
+                Handler = (sequence, controller) => controller.ReportExtendedCursorPosition()
+            },
+            new SequenceHandler
+            {
                 Description = "Request DEC private mode (DECRQM).",
                 SequenceType = SequenceHandler.ESequenceType.CSI,
                 Query = true,
@@ -621,9 +631,9 @@
                 Handler = (sequence, controller) =>
                 {
                     controller.SetConformanceLevel(
-                        sequence.Parameters[0], 
-                        sequence.Parameters.Count > 1 ? 
-                            (sequence.Parameters[1] == 1 ? false : true) : 
+                        sequence.Parameters[0],
+                        sequence.Parameters.Count > 1 ?
+                            (sequence.Parameters[1] == 1 ? false : true) :
                             true
                         );
                 }
@@ -643,7 +653,7 @@
                 CsiCommand = "\"q",
                 ExactParameterCountOrDefault = 1,
                 Param0 = new int [] { 0, 2 },
-                Handler = (sequence, controller) => controller.ProtectCharacter(false)
+                Handler = (sequence, controller) => controller.ProtectCharacter(sequence.Parameters.Count == 0 ? 0 : sequence.Parameters[0])
             },
             new SequenceHandler
             {
@@ -652,7 +662,7 @@
                 CsiCommand = "\"q",
                 ExactParameterCount = 1,
                 Param0 = new int [] { 1 },
-                Handler = (sequence, controller) => controller.ProtectCharacter(true)
+                Handler = (sequence, controller) => controller.ProtectCharacter(1)
             },
             new SequenceHandler
             {
@@ -971,7 +981,7 @@
                 CsiCommand = "J",
                 ExactParameterCountOrDefault = 1,
                 Param0 = new int [] { 0 },
-                Handler = (sequence, controller) => controller.EraseBelow()
+                Handler = (sequence, controller) => controller.EraseBelow(true)
             },
             new SequenceHandler
             {
@@ -980,7 +990,7 @@
                 CsiCommand = "J",
                 ExactParameterCount = 1,
                 Param0 = new int [] { 1 },
-                Handler = (sequence, controller) => controller.EraseAbove()
+                Handler = (sequence, controller) => controller.EraseAbove(true)
             },
             new SequenceHandler
             {
@@ -989,7 +999,37 @@
                 CsiCommand = "J",
                 ExactParameterCount = 1,
                 Param0 = new int [] { 2 },
-                Handler = (sequence, controller) => controller.EraseAll()
+                Handler = (sequence, controller) => controller.EraseAll(true)
+            },
+            new SequenceHandler
+            {
+                Description = "Erase in Display (DECSED). - Ps = 0  -> Selective Erase Below (default).",
+                SequenceType = SequenceHandler.ESequenceType.CSI,
+                CsiCommand = "J",
+                ExactParameterCountOrDefault = 1,
+                Query = true,
+                Param0 = new int [] { 0 },
+                Handler = (sequence, controller) => controller.EraseBelow(false)
+            },
+            new SequenceHandler
+            {
+                Description = "Erase in Display (DECSED). - Ps = 1  -> Selective Erase Above.",
+                SequenceType = SequenceHandler.ESequenceType.CSI,
+                CsiCommand = "J",
+                Query = true,
+                ExactParameterCount = 1,
+                Param0 = new int [] { 1 },
+                Handler = (sequence, controller) => controller.EraseAbove(false)
+            },
+            new SequenceHandler
+            {
+                Description = "Erase in Display (DECSED). - Ps = 2  -> Selective Erase All.",
+                SequenceType = SequenceHandler.ESequenceType.CSI,
+                CsiCommand = "J",
+                Query = true,
+                ExactParameterCount = 1,
+                Param0 = new int [] { 2 },
+                Handler = (sequence, controller) => controller.EraseAll(false)
             },
             new SequenceHandler
             {
@@ -998,7 +1038,7 @@
                 CsiCommand = "K",
                 ExactParameterCountOrDefault = 1,
                 Param0 = new int [] { 0 },
-                Handler = (sequence, controller) => controller.EraseToEndOfLine()
+                Handler = (sequence, controller) => controller.EraseToEndOfLine(true)
             },
             new SequenceHandler
             {
@@ -1007,7 +1047,7 @@
                 CsiCommand = "K",
                 ExactParameterCount = 1,
                 Param0 = new int [] { 1 },
-                Handler = (sequence, controller) => controller.EraseToStartOfLine()
+                Handler = (sequence, controller) => controller.EraseToStartOfLine(true)
             },
             new SequenceHandler
             {
@@ -1016,7 +1056,37 @@
                 CsiCommand = "K",
                 ExactParameterCount = 1,
                 Param0 = new int [] { 2 },
-                Handler = (sequence, controller) => controller.EraseLine()
+                Handler = (sequence, controller) => controller.EraseLine(true)
+            },
+            new SequenceHandler
+            {
+                Description = "Erase in Line (DECSEL). - Ps = 0  -> Selective Erase to Right (default).",
+                SequenceType = SequenceHandler.ESequenceType.CSI,
+                CsiCommand = "K",
+                Query = true,
+                ExactParameterCountOrDefault = 1,
+                Param0 = new int [] { 0 },
+                Handler = (sequence, controller) => controller.EraseToEndOfLine(false)
+            },
+            new SequenceHandler
+            {
+                Description = "Erase in Line (DECSEL). - Ps = 1  -> Selective Erase to Left.",
+                SequenceType = SequenceHandler.ESequenceType.CSI,
+                CsiCommand = "K",
+                Query = true,
+                ExactParameterCount = 1,
+                Param0 = new int [] { 1 },
+                Handler = (sequence, controller) => controller.EraseToStartOfLine(false)
+            },
+            new SequenceHandler
+            {
+                Description = "Erase in Line (DECSEL). - Ps = 2  -> Selective Erase All.",
+                SequenceType = SequenceHandler.ESequenceType.CSI,
+                CsiCommand = "K",
+                Query = true,
+                ExactParameterCount = 1,
+                Param0 = new int [] { 2 },
+                Handler = (sequence, controller) => controller.EraseLine(false)
             },
             new SequenceHandler
             {
@@ -1147,6 +1217,13 @@
             },
             new SequenceHandler
             {
+                Description = "Request Status String (DECRQSS) - DECSCA",
+                SequenceType = SequenceHandler.ESequenceType.DCS,
+                CsiCommand = "$q\"q",
+                Handler = (sequence, controller) => controller.RequestStatusStringSetProtectionAttribute()
+            },
+            new SequenceHandler
+            {
                 // TODO : Figure out if I'm even close here
                 Description = "VT52 Mode - Exit VT52 mode (Enter VT100 mode)",
                 SequenceType = SequenceHandler.ESequenceType.Escape,
@@ -1239,7 +1316,7 @@
                 Description = "VT52 Mode - Erase from the cursor to the end of the screen.",
                 SequenceType = SequenceHandler.ESequenceType.Escape,
                 CsiCommand = "J",
-                Handler = (sequence, controller) => controller.EraseBelow(),
+                Handler = (sequence, controller) => controller.EraseBelow(true),
                 Vt52 = SequenceHandler.Vt52Mode.Yes
             },
             new SequenceHandler
@@ -1247,7 +1324,7 @@
                 Description = "VT52 Mode - Erase from the cursor to the end of the line.",
                 SequenceType = SequenceHandler.ESequenceType.Escape,
                 CsiCommand = "K",
-                Handler = (sequence, controller) => controller.EraseToEndOfLine(),
+                Handler = (sequence, controller) => controller.EraseToEndOfLine(true),
                 Vt52 = SequenceHandler.Vt52Mode.Yes
             },
             new SequenceHandler

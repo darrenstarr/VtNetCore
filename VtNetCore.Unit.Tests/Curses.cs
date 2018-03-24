@@ -466,6 +466,31 @@ namespace VtNetCoreUnitTests
             return x.CSI().T(command.ToString()).T("\"q");
         }
 
+        // CSI? Ps J - Erase in Display(DECSED).
+        //     Ps = 0  -> Selective Erase Below(default).
+        //     Ps = 1  -> Selective Erase Above.
+        //     Ps = 2  -> Selective Erase All.
+        //     Ps = 3  -> Selective Erase Saved Lines(xterm).
+        public static string DECSED(this string x, int command = 0)
+        {
+            if (command == 0)
+                return x.CSI().Query().T("J");
+
+            return x.CSI().Query().T(command.ToString()).T("J");
+        }
+
+        // CSI? Ps K - Erase in Line(DECSEL).
+        //     Ps = 0  -> Selective Erase to Right(default).
+        //     Ps = 1  -> Selective Erase to Left.
+        //     Ps = 2  -> Selective Erase All.
+        public static string DECSEL(this string x, int command = 0)
+        {
+            if (command == 0)
+                return x.CSI().Query().T("K");
+
+            return x.CSI().Query().T(command.ToString()).T("K");
+        }
+
         public static string DesignateG0(this string x, char mode)
         {
             return x + ESC() + "(" + mode;

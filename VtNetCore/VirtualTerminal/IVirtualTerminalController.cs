@@ -43,13 +43,13 @@
         void EnableSmoothScrollMode(bool enable);
         void EnableSgrMouseMode(bool enable);
         void EnableWrapAroundMode(bool enable);
-        void EraseAbove();
-        void EraseAll();
-        void EraseBelow();
+        void EraseAbove(bool ignoreProtected);
+        void EraseAll(bool ignoreProtected);
+        void EraseBelow(bool ignoreProtected);
         void EraseCharacter(int count);
-        void EraseLine();
-        void EraseToEndOfLine();
-        void EraseToStartOfLine();
+        void EraseLine(bool ignoreProtected);
+        void EraseToEndOfLine(bool ignoreProtected);
+        void EraseToStartOfLine(bool ignoreProtected);
         void FormFeed();
         void FullReset();
         void InsertBlanks(int count);
@@ -59,13 +59,15 @@
         void InvokeCharacterSetModeR(ECharacterSetMode mode);
         void MoveCursorRelative(int x, int y);
         void NewLine();
-        void ProtectCharacter(bool protect);
+        void ProtectCharacter(int protect);
         void PutChar(char character);
         void PutG2Char(char character);
         void PutG3Char(char character);
         void RequestDecPrivateMode(int mode);
         void RequestStatusStringSetConformanceLevel();
+        void RequestStatusStringSetProtectionAttribute();
         void ReportCursorPosition();
+        void ReportExtendedCursorPosition();
         void RestoreCursor();
         void RestoreEnableNormalBuffer();
         void RestoreEnableSgrMouseMode();
@@ -117,6 +119,6 @@
         void UseHighlightMouseTracking(bool enable);
         void VerticalTab();
         void Vt52EnterAnsiMode();
-        void Vt52Identify();
+        void Vt52Identify();        
     }
 }

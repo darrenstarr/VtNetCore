@@ -1514,7 +1514,65 @@ namespace VtNetCoreUnitTests
             Assert.True(IsCursor(t, 1, 1));
         }
 
-        // TODO : DECSED
+        //  "000000000111111111122222222223333333333444444444455555555556666666666777777777788
+        //  "123456789012345678901234567890123456789012345678901234567890123456789012345678901"
+        public static readonly string ExpectEraseInDisplayBelow55 =
+            "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzab" + "\n" + // 1
+            "babcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyza" + "\n" + // 2
+            "cbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz" + "\n" + // 3
+            "dcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxy" + "\n" + // 4
+            "edcb                                                                            " + "\n" + // 5
+            "                                                                                " + "\n" + // 6
+            "                                                                                " + "\n" + // 7
+            "                                                                                " + "\n" + // 8
+            "                                                                                " + "\n" + // 9
+            "                                                                                " + "\n" + // 10
+            "                                                                                " + "\n" + // 11
+            "                                                                                " + "\n" + // 12
+            "                                                                                " + "\n" + // 13
+            "                                                                                " + "\n" + // 14
+            "                                                                                " + "\n" + // 15
+            "                                                                                " + "\n" + // 16
+            "                                                                                " + "\n" + // 17
+            "                                                                                " + "\n" + // 18
+            "                                                                                " + "\n" + // 19
+            "                                                                                " + "\n" + // 20
+            "                                                                                " + "\n" + // 21
+            "                                                                                " + "\n" + // 22
+            "                                                                                " + "\n" + // 23
+            "                                                                                " + "\n" + // 24
+            "                                                                                ";         // 25
+
+        //  "000000000111111111122222222223333333333444444444455555555556666666666777777777788
+        //  "123456789012345678901234567890123456789012345678901234567890123456789012345678901"
+        public static readonly string ExpectEraseInDisplayAbove55 =
+
+            "                                                                                " + "\n" + // 1
+            "                                                                                " + "\n" + // 2
+            "                                                                                " + "\n" + // 3
+            "                                                                                " + "\n" + // 4
+            "     bcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwx" + "\n" + // 5
+            "fedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvw" + "\n" + // 6
+            "gfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuv" + "\n" + // 7
+            "hgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstu" + "\n" + // 8
+            "ihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrst" + "\n" + // 9
+            "jihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrs" + "\n" + // 10
+            "kjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqr" + "\n" + // 11
+            "lkjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopq" + "\n" + // 12
+            "mlkjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnop" + "\n" + // 13
+            "nmlkjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmno" + "\n" + // 14
+            "onmlkjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmn" + "\n" + // 15
+            "ponmlkjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklm" + "\n" + // 16
+            "qponmlkjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijkl" + "\n" + // 17
+            "rqponmlkjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijk" + "\n" + // 18
+            "srqponmlkjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghij" + "\n" + // 19
+            "tsrqponmlkjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghi" + "\n" + // 20
+            "utsrqponmlkjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefgh" + "\n" + // 21
+            "vutsrqponmlkjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefg" + "\n" + // 22
+            "wvutsrqponmlkjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdef" + "\n" + // 23
+            "xwvutsrqponmlkjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcde" + "\n" + // 24
+            "yxwvutsrqponmlkjihgfedcbabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcd";         // 25
+
         // !SED
         // RESET
         //   erase 0..25,0..80
@@ -1531,13 +1589,80 @@ namespace VtNetCoreUnitTests
         // PUSH "\e[?2J"
         //   erase 0..25,0..80 selective
         //   ? cursor = 4,4
+        [Fact]
+        public void NonSelectiveErasure()
+        {
+            string s;
+            var t = new VirtualTerminalController();
+            var d = new DataConsumer(t);
+            t.ResizeView(80, 25);
+            t.TestPatternScrollingDiagonalLower();
 
-        // TODO : DECRQSS
-        // TODO : DECSCA
+            // PUSH "\e[5;5H"
+            //   ?cursor = 4,4
+            Push(d, "".CUP(5, 5));
+            Assert.True(IsCursor(t, 4, 4));
+
+            // PUSH "\e[?0J"
+            //   erase 4..5,4..80 selective
+            //   erase 5..25,0..80 selective
+            //   ? cursor = 4,4
+            Push(d, "".DECSED(0));
+            s = t.GetScreenText();
+            Assert.Equal(ExpectEraseInDisplayBelow55, s);
+            Assert.True(IsCursor(t, 4, 4));
+
+            // PUSH "\e[?1J"
+            //   erase 0..4,0..80 selective
+            //   erase 4..5,0..5 selective
+            //   ? cursor = 4,4
+            t.TestPatternScrollingDiagonalLower();
+            Push(d, "".DECSED(1));
+            s = t.GetScreenText();
+            Assert.Equal(ExpectEraseInDisplayAbove55, s);
+            Assert.True(IsCursor(t, 4, 4));
+
+            // PUSH "\e[?2J"
+            //   erase 0..25,0..80 selective
+            //   ? cursor = 4,4
+            t.TestPatternScrollingDiagonalLower();
+            Push(d, "".DECSED(2));
+            s = t.GetScreenText();
+            Assert.Equal(ExpectEraseInDisplayAll, s);
+            Assert.True(IsCursor(t, 4, 4));
+        }
+
         // !DECRQSS on DECSCA
         // PUSH "\e[2\"q"
         // PUSH "\eP\$q\"q\e\\"
         //   output "\eP1\$r2\"q\e\\"
+        [Fact]
+        public void DECRQSSonDECSCA()
+        {
+            string s;
+            var t = new VirtualTerminalController();
+            var d = new DataConsumer(t);
+            t.ResizeView(80, 25);
+
+            string toSend = "";
+            t.SendData += (sender, args) =>
+            {
+                toSend = Encoding.ASCII.GetString(args.Data);
+            };
+
+            // PUSH "\e[2\"q"
+            // PUSH "\eP\$q\"q\e\\"
+            //   output "\eP1\$r2\"q\e\\"
+            Push(d, "".DECSCA(2).DECRQSS("\"q"));
+            Assert.Equal("\u001bP1$r2\"q\u001b\\", toSend);
+        }
+
+        //  "000000000111111111122222222223333333333444444444455555555556666666666777777777788
+        //  "123456789012345678901234567890123456789012345678901234567890123456789012345678901"
+        public static readonly string ExpectAfterInsertCharacter =
+            "A CDdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyza ";
+        public static readonly string ExpectAfterInsertMoreCharacters =
+            "AB   CDdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwx ";
 
         // WANTSTATE -s+m
         // 
@@ -1557,7 +1682,50 @@ namespace VtNetCoreUnitTests
         // PUSH "\e[3@"
         //   moverect 0..1,2..77 -> 0..1,5..80
         //   erase 0..1,2..5
-        // 
+        [Fact]
+        public void ICHMoveAndErase()
+        {
+            string s;
+            var t = new VirtualTerminalController();
+            var d = new DataConsumer(t);
+            t.ResizeView(80, 25);
+            t.TestPatternScrollingDiagonalLower();
+
+            // PUSH "ACD"
+            // PUSH "\e[2D"
+            //   ?cursor = 0,1
+            Push(d, "ACD".CUB(2));
+            Assert.True(IsCursor(t, 0, 1));
+
+            // PUSH "\e[@"
+            //   moverect 0..1,1..79 -> 0..1,2..80
+            //   erase 0..1,1..2
+            //   ?cursor = 0,1
+            Push(d, "".ICH());
+            s = t.GetVisibleChars(0, 0, 81);
+            Assert.Equal(ExpectAfterInsertCharacter, s);
+            Assert.True(IsCursor(t, 0, 1));
+
+            // PUSH "B"
+            //   ?cursor = 0,2
+            Push(d, "B");
+            Assert.True(IsCursor(t, 0, 2));
+
+            // PUSH "\e[3@"
+            //   moverect 0..1,2..77 -> 0..1,5..80
+            //   erase 0..1,2..5
+            Push(d, "".ICH(3));
+            s = t.GetVisibleChars(0, 0, 81);
+            Assert.Equal(ExpectAfterInsertMoreCharacters, s);
+        }
+
+        //  "000000000111111111122222222223333333333444444444455555555556666666666777777777788
+        //  "123456789012345678901234567890123456789012345678901234567890123456789012345678901"
+        public static readonly string ExpectAfterDeleteCharacter =
+            "ABCefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzab  ";
+        public static readonly string ExpectAfterDeleteMoreCharacters =
+            "Afghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzab     ";
+
         // !DCH move+erase emulation
         // RESET
         //   erase 0..25,0..80
@@ -1573,6 +1741,38 @@ namespace VtNetCoreUnitTests
         //   moverect 0..1,4..80 -> 0..1,1..77
         //   erase 0..1,77..80
         //   ?cursor = 0,1
+        [Fact]
+        public void DCHMoveAndErase()
+        {
+            string s;
+            var t = new VirtualTerminalController();
+            var d = new DataConsumer(t);
+            t.ResizeView(80, 25);
+            t.TestPatternScrollingDiagonalLower();
 
+            // PUSH "ABBC"
+            // PUSH "\e[3D"
+            //   ?cursor = 0,1
+            Push(d, "ABBC".CUB(3));
+            Assert.True(IsCursor(t, 0, 1));
+
+            // PUSH "\e[P"
+            //   moverect 0..1,2..80 -> 0..1,1..79
+            //   erase 0..1,79..80
+            //   ?cursor = 0,1
+            Push(d, "".DCH());
+            s = t.GetVisibleChars(0, 0, 81);
+            Assert.Equal(ExpectAfterDeleteCharacter, s);
+            Assert.True(IsCursor(t, 0, 1));
+
+            // PUSH "\e[3P"
+            //   moverect 0..1,4..80 -> 0..1,1..77
+            //   erase 0..1,77..80
+            //   ?cursor = 0,1
+            Push(d, "".DCH(3));
+            s = t.GetVisibleChars(0, 0, 81);
+            Assert.Equal(ExpectAfterDeleteMoreCharacters, s);
+            Assert.True(IsCursor(t, 0, 1));
+        }
     }
 }
