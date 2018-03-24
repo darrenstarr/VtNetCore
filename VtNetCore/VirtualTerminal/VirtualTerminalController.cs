@@ -94,6 +94,12 @@
         /// </summary>
         public bool Debugging { get; set; }
 
+        public int ScrollTop { get; set; }
+        public int ScrollBottom { get; set; } = -1;
+        public int LeftMargin { get; set; }
+        public int RightMargin { get; set; } = -1;
+        public bool LeftAndRightMarginEnabled = false;
+
         /// <summary>
         /// Provides a dump of the current state of this control.
         /// </summary>
@@ -283,6 +289,29 @@
         /// Returns the visible text on the screen as per TopRow and the logical rows and columns
         /// </summary>
         /// <returns>The screen text with each line separated by a line feed</returns>
+        internal string ScreenText
+        {
+            get
+            {
+                string result = "";
+
+                for (var y = 0; y < Rows; y++)
+                {
+                    for (var x = 0; x < Columns; x++)
+                        result += GetVisibleChar(x, y);
+
+                    if (y < (Rows - 1))
+                        result += '\n';
+                }
+
+                return result;
+            }
+        }
+
+        /// <summary>
+        /// Returns the visible text on the screen as per TopRow and the logical rows and columns
+        /// </summary>
+        /// <returns>The screen text with each line separated by a line feed</returns>
         internal string GetScreenText()
         {
             string result = "";
@@ -417,6 +446,11 @@
 
             SavedCursorState = null;
             CursorState = new TerminalCursorState();
+            ScrollTop = 0;
+            ScrollBottom = -1;
+            LeftMargin = 0;
+            RightMargin = -1;
+            LeftAndRightMarginEnabled = false;
 
             Columns = VisibleColumns;
             Rows = VisibleRows;
@@ -671,13 +705,13 @@
 
         public void Scroll(int rows)
         {
-            if (CursorState.LeftAndRightMarginEnabled && CursorState.CurrentColumn >= CursorState.LeftMargin && CursorState.CurrentColumn <= CursorState.RightMargin)
+            if (CursorState.LeftAndRightMarginEnabled && CursorState.CurrentColumn >= LeftMargin && CursorState.CurrentColumn <= RightMargin)
             {
                 ScrollVisualRect(
-                    CursorState.LeftMargin,
-                    CursorState.ScrollTop,
-                    CursorState.RightMargin,
-                    CursorState.ScrollBottom == -1 ? Rows - 1 : CursorState.ScrollBottom,
+                    LeftMargin,
+                    ScrollTop,
+                    RightMargin,
+                    ScrollBottom == -1 ? Rows - 1 : ScrollBottom,
                     rows
                 );
             }
@@ -685,9 +719,9 @@
             {
                 ScrollVisualRect(
                    0,
-                   CursorState.ScrollTop,
+                   ScrollTop,
                    VisibleColumns - 1,
-                   CursorState.ScrollBottom == -1 ? Rows - 1 : CursorState.ScrollBottom,
+                   ScrollBottom == -1 ? Rows - 1 : ScrollBottom,
                    rows
                );
             }
@@ -707,19 +741,19 @@
                 _rawText[_rawTextLength++] = '\n';
             }
 
-            if (CursorState.LeftAndRightMarginEnabled && CursorState.CurrentColumn >= CursorState.LeftMargin && CursorState.CurrentColumn <= CursorState.RightMargin)
+            if (CursorState.LeftAndRightMarginEnabled && CursorState.CurrentColumn >= LeftMargin && CursorState.CurrentColumn <= RightMargin)
             {
                 CursorState.CurrentRow++;
                 if (
-                    (CursorState.ScrollBottom == -1 && CursorState.CurrentRow >= VisibleRows) ||
-                    (CursorState.ScrollBottom >= 0 && CursorState.CurrentRow == CursorState.ScrollBottom + 1)
+                    (ScrollBottom == -1 && CursorState.CurrentRow >= VisibleRows) ||
+                    (ScrollBottom >= 0 && CursorState.CurrentRow == ScrollBottom + 1)
                 )
                 {
                     ScrollVisualRect(
-                        CursorState.LeftMargin,
-                        CursorState.ScrollTop,
-                        CursorState.RightMargin,
-                        CursorState.ScrollBottom == -1 ? Rows - 1 : CursorState.ScrollBottom,
+                        LeftMargin,
+                        ScrollTop,
+                        RightMargin,
+                        ScrollBottom == -1 ? Rows - 1 : ScrollBottom,
                         1
                     );
                     CursorState.CurrentRow--;
@@ -729,7 +763,7 @@
             {
                 CursorState.CurrentRow++;
 
-                if (CursorState.ScrollBottom == -1 && CursorState.CurrentRow >= VisibleRows)
+                if (ScrollBottom == -1 && CursorState.CurrentRow >= VisibleRows)
                 {
                     LogController("Scroll all (before:" + TopRow.ToString() + ",after:" + (TopRow + 1).ToString() + ")");
                     TopRow++;
@@ -741,14 +775,14 @@
                         TopRow--;
                     }
                 }
-                else if (CursorState.ScrollBottom >= 0 && CursorState.CurrentRow == CursorState.ScrollBottom + 1)
+                else if (ScrollBottom >= 0 && CursorState.CurrentRow == ScrollBottom + 1)
                 {
                     LogController("Scroll region");
 
-                    if (Buffer.Count > (CursorState.ScrollBottom + TopRow))
-                        Buffer.Insert(CursorState.ScrollBottom + TopRow + 1, new TerminalLine());
+                    if (Buffer.Count > (ScrollBottom + TopRow))
+                        Buffer.Insert(ScrollBottom + TopRow + 1, new TerminalLine());
 
-                    Buffer.RemoveAt(CursorState.ScrollTop + TopRow);
+                    Buffer.RemoveAt(ScrollTop + TopRow);
 
                     CursorState.CurrentRow--;
                 }
@@ -780,23 +814,23 @@
 
             if (
                 CursorState.LeftAndRightMarginEnabled &&
-                CursorState.CurrentColumn >= CursorState.LeftMargin &&
-                CursorState.CurrentColumn <= CursorState.RightMargin
+                CursorState.CurrentColumn >= LeftMargin &&
+                CursorState.CurrentColumn <= RightMargin
             )
             {
                 CursorState.CurrentRow--;
-                if (CursorState.CurrentRow == (CursorState.ScrollTop - 1))
+                if (CursorState.CurrentRow == (ScrollTop - 1))
                 {
                     var scrollBottom = 0;
-                    if (CursorState.ScrollBottom == -1)
+                    if (ScrollBottom == -1)
                         scrollBottom = TopRow + VisibleRows - 1;
                     else
-                        scrollBottom = CursorState.ScrollBottom;
+                        scrollBottom = ScrollBottom;
 
                     ScrollVisualRect(
-                        CursorState.LeftMargin,
-                        CursorState.ScrollTop,
-                        CursorState.RightMargin,
+                        LeftMargin,
+                        ScrollTop,
+                        RightMargin,
                         scrollBottom,
                         -1
                     );
@@ -807,18 +841,18 @@
             {
                 CursorState.CurrentRow--;
 
-                if (CursorState.CurrentRow == (CursorState.ScrollTop - 1))
+                if (CursorState.CurrentRow == (ScrollTop - 1))
                 {
                     var scrollBottom = 0;
-                    if (CursorState.ScrollBottom == -1)
+                    if (ScrollBottom == -1)
                         scrollBottom = TopRow + VisibleRows - 1;
                     else
-                        scrollBottom = TopRow + CursorState.ScrollBottom;
+                        scrollBottom = TopRow + ScrollBottom;
 
                     if (Buffer.Count > scrollBottom)
                         Buffer.RemoveAt(scrollBottom);
 
-                    Buffer.Insert(TopRow + CursorState.ScrollTop, new TerminalLine());
+                    Buffer.Insert(TopRow + ScrollTop, new TerminalLine());
 
                     CursorState.CurrentRow++;
                 }
@@ -862,10 +896,10 @@
             LogController("MoveCursorRelative(x:" + x.ToString() + ",y:" + y.ToString() + ",vis:[" + VisibleColumns.ToString() + "," + VisibleRows.ToString() + "]" + ")");
 
             CursorState.CurrentRow += y;
-            if (CursorState.CurrentRow < CursorState.ScrollTop)
-                CursorState.CurrentRow = CursorState.ScrollTop;
+            if (CursorState.CurrentRow < ScrollTop)
+                CursorState.CurrentRow = ScrollTop;
 
-            var scrollBottom = (CursorState.ScrollBottom == -1) ? Rows - 1 : CursorState.ScrollBottom;
+            var scrollBottom = (ScrollBottom == -1) ? Rows - 1 : ScrollBottom;
             if (CursorState.CurrentRow > scrollBottom)
                 CursorState.CurrentRow = scrollBottom;
 
@@ -882,22 +916,22 @@
         {
             LogController("SetCursorPosition(column:" + column.ToString() + ",row:" + row.ToString() + ")");
 
-            CursorState.CurrentRow = row - 1 + (CursorState.OriginMode ? CursorState.ScrollTop : 0);
+            CursorState.CurrentRow = row - 1 + (CursorState.OriginMode ? ScrollTop : 0);
             if (CursorState.CurrentRow < 0)
                 CursorState.CurrentRow = 0;
 
-            if (CursorState.OriginMode && CursorState.ScrollBottom > -1 && CursorState.CurrentRow > CursorState.ScrollBottom)
-                CursorState.CurrentRow = CursorState.ScrollBottom;
-            else if (CursorState.ScrollBottom == -1 && CursorState.CurrentRow >= VisibleRows)
+            if (CursorState.OriginMode && ScrollBottom > -1 && CursorState.CurrentRow > ScrollBottom)
+                CursorState.CurrentRow = ScrollBottom;
+            else if (ScrollBottom == -1 && CursorState.CurrentRow >= VisibleRows)
                 CursorState.CurrentRow = TopRow + VisibleRows - 1;
 
             CursorState.CurrentColumn = column - 1;
             if (CursorState.LeftAndRightMarginEnabled)
             {
-                if (CursorState.OriginMode && CursorState.CurrentColumn < CursorState.LeftMargin)
-                    CursorState.CurrentColumn = CursorState.LeftMargin;
-                if (CursorState.CurrentColumn >= CursorState.RightMargin)
-                    CursorState.RightMargin = CursorState.RightMargin;
+                if (CursorState.OriginMode && CursorState.CurrentColumn < LeftMargin)
+                    CursorState.CurrentColumn = LeftMargin;
+                if (CursorState.CurrentColumn >= RightMargin)
+                    RightMargin = RightMargin;
             }
 
             if (CursorState.WordWrap && CursorState.CurrentColumn > CurrentLineColumns)
@@ -1439,8 +1473,8 @@
         public void ClearScrollingRegion()
         {
             LogController("ClearScrollingRegion()");
-            CursorState.ScrollTop = 0;
-            CursorState.ScrollBottom = -1;
+            ScrollTop = 0;
+            ScrollBottom = -1;
         }
 
         public void SetAutomaticNewLine(bool enable)
@@ -1481,11 +1515,11 @@
                 ClearScrollingRegion();
             else
             {
-                CursorState.ScrollTop = top - 1;
-                CursorState.ScrollBottom = bottom - 1;
+                ScrollTop = top - 1;
+                ScrollBottom = bottom - 1;
 
                 if (CursorState.OriginMode)
-                    CursorState.CurrentRow = CursorState.ScrollTop;
+                    CursorState.CurrentRow = ScrollTop;
             }
         }
 
@@ -1496,8 +1530,8 @@
             if (!CursorState.LeftAndRightMarginEnabled)
                 return;
 
-            CursorState.LeftMargin = left - 1;
-            CursorState.RightMargin = right - 1;
+            LeftMargin = left - 1;
+            RightMargin = right - 1;
 
             if (CursorState.OriginMode)
                 SetCursorPosition(1, 1);
@@ -1602,16 +1636,16 @@
             LogController("DeleteLines(count:" + count.ToString() + ")");
 
             if (
-                CursorState.CurrentRow < CursorState.ScrollTop ||
-                (CursorState.ScrollBottom >= 0 && CursorState.CurrentRow > CursorState.ScrollBottom)
+                CursorState.CurrentRow < ScrollTop ||
+                (ScrollBottom >= 0 && CursorState.CurrentRow > ScrollBottom)
             )
                 return;
 
             if (
                 CursorState.LeftAndRightMarginEnabled &&
                 (
-                    CursorState.CurrentColumn < CursorState.LeftMargin ||
-                    CursorState.CurrentColumn > CursorState.RightMargin
+                    CursorState.CurrentColumn < LeftMargin ||
+                    CursorState.CurrentColumn > RightMargin
                 )
             )
                 return;
@@ -1622,18 +1656,18 @@
             if (CursorState.LeftAndRightMarginEnabled)
             {
                 var scrollTop = CursorState.CurrentRow;
-                var scrollBottom = CursorState.ScrollBottom;
+                var scrollBottom = ScrollBottom;
                 if (scrollBottom == +1)
                     scrollBottom = Rows - 1;
 
                 if (scrollTop < scrollBottom)
-                    ScrollVisualRect(CursorState.LeftMargin, scrollTop, CursorState.RightMargin, scrollBottom, count);
+                    ScrollVisualRect(LeftMargin, scrollTop, RightMargin, scrollBottom, count);
             }
             else
             {
                 int lineToInsert = TopRow + VisibleRows;
-                if (CursorState.ScrollBottom != -1)
-                    lineToInsert = TopRow + CursorState.ScrollBottom;
+                if (ScrollBottom != -1)
+                    lineToInsert = TopRow + ScrollBottom;
 
                 while ((count--) > 0)
                 {
@@ -1657,8 +1691,8 @@
             if (
                 CursorState.LeftAndRightMarginEnabled &&
                 (
-                    CursorState.CurrentColumn < CursorState.LeftMargin ||
-                    CursorState.CurrentColumn > CursorState.RightMargin
+                    CursorState.CurrentColumn < LeftMargin ||
+                    CursorState.CurrentColumn > RightMargin
                 )
             )
                 return;
@@ -1672,7 +1706,7 @@
 
             var removeAt = Columns;
             if (CursorState.LeftAndRightMarginEnabled)
-                removeAt = CursorState.RightMargin + 1;
+                removeAt = RightMargin + 1;
 
             for (var i = 0; i < count; i++)
             {
@@ -1690,8 +1724,8 @@
             if (
                 CursorState.LeftAndRightMarginEnabled &&
                 (
-                    CursorState.CurrentColumn < CursorState.LeftMargin ||
-                    CursorState.CurrentColumn > CursorState.RightMargin
+                    CursorState.CurrentColumn < LeftMargin ||
+                    CursorState.CurrentColumn > RightMargin
                 )
             )
                 return;
@@ -1703,7 +1737,7 @@
 
             var insertAt = Columns + 1;
             if (CursorState.LeftAndRightMarginEnabled)
-                insertAt = CursorState.RightMargin;
+                insertAt = RightMargin;
 
             while (count > 0 && CursorState.CurrentColumn < line.Count)
             {
@@ -1731,22 +1765,22 @@
             LogController("InsertColumn(count:" + count.ToString() + ")");
 
             if (
-                CursorState.CurrentRow < CursorState.ScrollTop ||
-                (CursorState.ScrollBottom >= 0 && CursorState.CurrentRow > CursorState.ScrollBottom)
+                CursorState.CurrentRow < ScrollTop ||
+                (ScrollBottom >= 0 && CursorState.CurrentRow > ScrollBottom)
             )
                 return;
 
             if (
                 CursorState.LeftAndRightMarginEnabled &&
                 (
-                    CursorState.CurrentColumn < CursorState.LeftMargin ||
-                    CursorState.CurrentColumn > CursorState.RightMargin
+                    CursorState.CurrentColumn < LeftMargin ||
+                    CursorState.CurrentColumn > RightMargin
                 )
             )
                 return;
 
             var insertTop = CursorState.CurrentRow;
-            var insertBottom = CursorState.ScrollBottom;
+            var insertBottom = ScrollBottom;
             if (insertBottom == -1)
                 insertBottom = Rows - 1;
 
@@ -1764,22 +1798,22 @@
             LogController("InsertColumn(count:" + count.ToString() + ")");
 
             if (
-                CursorState.CurrentRow < CursorState.ScrollTop ||
-                (CursorState.ScrollBottom >= 0 && CursorState.CurrentRow > CursorState.ScrollBottom)
+                CursorState.CurrentRow < ScrollTop ||
+                (ScrollBottom >= 0 && CursorState.CurrentRow > ScrollBottom)
             )
                 return;
 
             if (
                 CursorState.LeftAndRightMarginEnabled &&
                 (
-                    CursorState.CurrentColumn < CursorState.LeftMargin ||
-                    CursorState.CurrentColumn > CursorState.RightMargin
+                    CursorState.CurrentColumn < LeftMargin ||
+                    CursorState.CurrentColumn > RightMargin
                 )
             )
                 return;
 
             var insertTop = CursorState.CurrentRow;
-            var insertBottom = CursorState.ScrollBottom;
+            var insertBottom = ScrollBottom;
             if (insertBottom == -1)
                 insertBottom = Rows - 1;
 
@@ -1797,16 +1831,16 @@
             LogController("InsertLines(count:" + count.ToString() + ")");
 
             if (
-                CursorState.CurrentRow < CursorState.ScrollTop ||
-                (CursorState.ScrollBottom >= 0 && CursorState.CurrentRow > CursorState.ScrollBottom)
+                CursorState.CurrentRow < ScrollTop ||
+                (ScrollBottom >= 0 && CursorState.CurrentRow > ScrollBottom)
             )
                 return;
 
             if (
                 CursorState.LeftAndRightMarginEnabled &&
                 (
-                    CursorState.CurrentColumn < CursorState.LeftMargin ||
-                    CursorState.CurrentColumn > CursorState.RightMargin
+                    CursorState.CurrentColumn < LeftMargin ||
+                    CursorState.CurrentColumn > RightMargin
                 )
             )
                 return;
@@ -1817,18 +1851,18 @@
             if (CursorState.LeftAndRightMarginEnabled)
             {
                 var scrollTop = CursorState.CurrentRow;
-                var scrollBottom = CursorState.ScrollBottom;
+                var scrollBottom = ScrollBottom;
                 if (scrollBottom == +1)
                     scrollBottom = Rows - 1;
 
                 if (scrollTop < scrollBottom)
-                    ScrollVisualRect(CursorState.LeftMargin, scrollTop, CursorState.RightMargin, scrollBottom, -count);
+                    ScrollVisualRect(LeftMargin, scrollTop, RightMargin, scrollBottom, -count);
             }
             else
             {
                 int lineToRemove = TopRow + VisibleRows;
-                if (CursorState.ScrollBottom != -1)
-                    lineToRemove = TopRow + CursorState.ScrollBottom;
+                if (ScrollBottom != -1)
+                    lineToRemove = TopRow + ScrollBottom;
 
                 while ((count--) > 0)
                 {
@@ -1946,8 +1980,8 @@
             {
                 if (enable)
                 {
-                    CursorState.LeftMargin = 0;
-                    CursorState.RightMargin = Columns;
+                    LeftMargin = 0;
+                    RightMargin = Columns;
                 }
                 CursorState.LeftAndRightMarginEnabled = enable;
             }
@@ -1981,7 +2015,7 @@
         {
             LogController("ReportCursorPosition()");
 
-            var rcp = "\u001b[" + (CursorState.CurrentRow - CursorState.ScrollTop + 1).ToString() + ";" + (CursorState.CurrentColumn - CursorState.LeftMargin + 1).ToString() + "R";
+            var rcp = "\u001b[" + (CursorState.CurrentRow - ScrollTop + 1).ToString() + ";" + (CursorState.CurrentColumn - LeftMargin + 1).ToString() + "R";
 
             SendData.Invoke(this, new SendDataEventArgs { Data = Encoding.UTF8.GetBytes(rcp) });
         }
@@ -1990,7 +2024,7 @@
         {
             LogController("ReportExtendedCursorPosition()");
 
-            var rcp = "\u001b[?" + (CursorState.CurrentRow - CursorState.ScrollTop + 1).ToString() + ";" + (CursorState.CurrentColumn - CursorState.LeftMargin + 1).ToString() + "R";
+            var rcp = "\u001b[?" + (CursorState.CurrentRow - ScrollTop + 1).ToString() + ";" + (CursorState.CurrentColumn - LeftMargin + 1).ToString() + "R";
 
             SendData.Invoke(this, new SendDataEventArgs { Data = Encoding.UTF8.GetBytes(rcp) });
         }

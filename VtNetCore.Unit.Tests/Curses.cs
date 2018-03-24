@@ -246,6 +246,18 @@ namespace VtNetCoreUnitTests
             return x.CSI().Command(rows, 'S');
         }
 
+        // CSI Pm m  Character Attributes (SGR).
+        public static string SGR(this string x, int mode)
+        {
+            return x.CSI().Command(mode, 'm');
+        }
+
+        // CSI Pm m  Character Attributes (SGR).
+        public static string SGR(this string x)
+        {
+            return x.CSI().T("m");
+        }
+
         // CSI Ps T  Scroll down Ps lines (default = 1) (SD).
         public static string SD(this string x, int rows = 1)
         {
@@ -692,6 +704,18 @@ namespace VtNetCoreUnitTests
         public static string DECSCL(this string x, int level, int eightBitControl)
         {
             return x.CSI().Command(level, eightBitControl, "\"p");
+        }
+
+        // ESC 7     Save Cursor (DECSC).
+        public static string DECSC(this string x)
+        {
+            return x + ESC().T("7");
+        }
+
+        // ESC 8     Restore Cursor (DECRC).
+        public static string DECRC(this string x)
+        {
+            return x + ESC().T("8");
         }
 
         public static string vt_hilite(this string x, bool enabled)

@@ -64,19 +64,6 @@
         public bool ReverseVideoMode = false;
 
         /// <summary>
-        /// Specifies the top line of the current scrolling region in terms of screen coordinates
-        /// </summary>
-        public int ScrollTop = 0;
-
-        /// <summary>
-        /// Specifies the bottom line of the current scrolling region in terms of screen coordinates
-        /// </summary>
-        /// <remarks>
-        /// If this value is -1, then the bottom of the visible screen should be assumed.
-        /// </remarks>
-        public int ScrollBottom = -1;
-
-        /// <summary>
         /// Specifies whether the coordinate system is relative to the currently configured scrolling region
         /// </summary>
         public bool OriginMode = false;
@@ -85,16 +72,6 @@
         /// Specifies whether the terminal should auto insert or replace text on the screen.
         /// </summary>
         public EInsertReplaceMode InsertMode = EInsertReplaceMode.Replace;
-
-        /// <summary>
-        /// When left and right margins are enabled, specifies the left margin
-        /// </summary>
-        public int LeftMargin { get; set; }
-
-        /// <summary>
-        /// When left and right margins are enabled, specifies the left margin
-        /// </summary>
-        public int RightMargin { get; set; }
 
         /// <summary>
         /// Configures that left and right margins should be used
@@ -186,16 +163,12 @@
                 TabStops = TabStops.ToList(),
                 WordWrap = WordWrap,
                 ReverseVideoMode = ReverseVideoMode,
-                ScrollTop = ScrollTop,
-                ScrollBottom = ScrollBottom,
                 OriginMode = OriginMode,
                 InsertMode = InsertMode,
                 ShowCursor = ShowCursor,
                 BlinkingCursor = BlinkingCursor,
                 CursorShape = CursorShape,
                 LeftAndRightMarginEnabled = LeftAndRightMarginEnabled,
-                LeftMargin = LeftMargin,
-                RightMargin = RightMargin,
                 Utf8 = Utf8,
                 CharacterSetMode = CharacterSetMode,
                 G0 = G0,
@@ -226,16 +199,12 @@
                 "TabStops:" + string.Join(",", TabStops.Select(x => x.ToString()).ToList()) + "\n" +
                 "WordWrap:" + WordWrap.ToString() + "\n" +
                 "ReverseVideoMode:" + ReverseVideoMode.ToString() + "\n" +
-                "ScrollTop:" + ScrollTop.ToString() + "\n" +
-                "ScrollBottom:" + ScrollBottom.ToString() + "\n" +
                 "OriginMode:" + OriginMode.ToString() + "\n" +
                 "InsertMode:" + InsertMode.ToString() + "\n" +
                 "ShowCursor:" + ShowCursor.ToString() + "\n" +
                 "BlinkingCursor:" + BlinkingCursor.ToString() + "\n" +
                 "CursorShape:" + CursorShape.ToString() + "\n" + 
                 "LeftAndRightMarginEnabled:" + LeftAndRightMarginEnabled.ToString() + "\n" +
-                "LeftMargin:" + LeftMargin.ToString() + "\n" +
-                "RightMargin:" + RightMargin.ToString() + "\n" +
                 "Utf8:" + Utf8.ToString() + "\n" +
                 "CharacterSetMode:" + CharacterSetMode.ToString() + "\n" +
                 "G0:" + G0.ToString() + "\n" +
