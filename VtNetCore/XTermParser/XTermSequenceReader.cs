@@ -36,7 +36,7 @@
                 {
                     if (currentParameter == -1)
                     {
-                        currentParameter = 1;       // ctrlseqs.txt seems to always default to 1 here. Might not be a great idea
+                        //currentParameter = 1;       // ctrlseqs.txt seems to always default to 1 here. Might not be a great idea
                         atStart = false;
                         //throw new EscapeSequenceException("Invalid position for ';' in CSI", stream.Stacked);
                     }
@@ -392,6 +392,9 @@
                 case ']':
                     return ConsumeOSC(stream);
 
+                case 'P':
+                    return ConsumeDeviceControlStringSequence(stream);
+
                 case '#':
                     return ConsumeCharacterSize(stream);
 
@@ -413,13 +416,13 @@
                 case 'Y':
                     var vt52mc = new Vt52MoveCursorSequence
                     {
-                        Row = stream.Read() - 37,
-                        Column = stream.Read() - 37
+                        Row = stream.ReadRaw() - ' ',
+                        Column = stream.ReadRaw() - ' '
                     };
 
                     stream.Commit();
 
-                    //System.Diagnostics.Debug.WriteLine(vt52mc.ToString());
+                    System.Diagnostics.Debug.WriteLine(vt52mc.ToString());
                     return vt52mc;
 
                 default:
@@ -465,6 +468,127 @@
             return ss3;
         }
 
+        private static TerminalSequence ConsumeDeviceControlStringSequence(XTermInputBuffer stream)
+        {
+            stream.PushState();
+
+            string command = "";
+            bool readingCommand = false;
+            bool atStart = true;
+            bool isQuery = false;
+            bool isSend = false;
+            bool isBang = false;
+            char? modifier = null;
+
+            int currentParameter = -1;
+            List<int> Parameters = new List<int>();
+
+            while (!stream.AtEnd)
+            {
+                var next = stream.Read();
+
+                if (readingCommand)
+                {
+                    if (next == 0x07 || next == 0x9C)        // BEL or ST
+                    {
+                        var dcs = new DcsSequence
+                        {
+                            Parameters = Parameters,
+                            IsQuery = isQuery,
+                            IsSend = isSend,
+                            IsBang = isBang,
+                            Command = (modifier.HasValue ? modifier.Value.ToString() : "") + command
+                        };
+
+                        stream.Commit();
+
+                        //System.Diagnostics.Debug.WriteLine(dcs.ToString());
+
+                        return dcs;
+                    }
+                    else if(next == 0x1B)               // ESC
+                    {
+                        var stChar = stream.Read();
+                        if(stChar == '\\')
+                        {
+                            var dcs = new DcsSequence
+                            {
+                                Parameters = Parameters,
+                                IsQuery = isQuery,
+                                IsSend = isSend,
+                                IsBang = isBang,
+                                Command = (modifier.HasValue ? modifier.Value.ToString() : "") + command
+                            };
+
+                            stream.Commit();
+
+                            //System.Diagnostics.Debug.WriteLine(dcs.ToString());
+
+                            return dcs;
+                        }
+                        else
+                            throw new EscapeSequenceException("ESC \\ is needed to terminate DCS. Encounterd wrong character.", stream.Stacked);
+                    }
+                    else
+                    {
+                        command += next;
+                    }
+                }
+                else
+                {
+                    if (atStart && next == '?')
+                        isQuery = true;
+                    else if (atStart && next == '>')
+                        isSend = true;
+                    else if (atStart && next == '!')
+                        isBang = true;
+                    else if (next == ';')
+                    {
+                        if (currentParameter == -1)
+                            throw new EscapeSequenceException("Invalid position for ';' in DCS", stream.Stacked);
+
+                        Parameters.Add(currentParameter);
+                        currentParameter = -1;
+                    }
+                    else if (char.IsDigit(next))
+                    {
+                        atStart = false;
+                        if (currentParameter == -1)
+                            currentParameter = Convert.ToInt32(next - '0');
+                        else
+                            currentParameter = (currentParameter * 10) + Convert.ToInt32(next - '0');
+                    }
+                    else if (next == '$' || next == '"' || next == ' ')
+                    {
+                        if (modifier.HasValue)
+                            throw new EscapeSequenceException("There appears to be two modifiers in a row", stream.Stacked);
+
+                        if (currentParameter != -1)
+                        {
+                            Parameters.Add(currentParameter);
+                            currentParameter = -1;
+                        }
+
+                        modifier = next;
+                    }
+                    else
+                    {
+                        if (currentParameter != -1)
+                        {
+                            Parameters.Add(currentParameter);
+                            currentParameter = -1;
+                        }
+
+                        command += next;
+                        readingCommand = true;
+                    }
+                }
+            }
+
+            stream.PopState();
+            return null;
+        }
+
         public static TerminalSequence ConsumeNextSequence(XTermInputBuffer stream, bool utf8)
         {
             stream.PushState();
@@ -483,6 +607,10 @@
 
                 case '\u008f':      // SS3
                     sequence = ConsumeSS3Sequence(stream);
+                    break;
+
+                case '\u0090':      // DCS
+                    sequence = ConsumeDeviceControlStringSequence(stream);
                     break;
 
                 default:

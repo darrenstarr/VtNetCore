@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace VtNetCoreUnitTests
@@ -121,6 +122,17 @@ namespace VtNetCoreUnitTests
             return x.CSI().Command(left, right, 's');
         }
 
+        // Ps = 2  -> Designate USASCII for character sets G0-G3 (DECANM), and set VT100 mode.
+        public static string SetVt100Mode(this string x)
+        {
+            return x.CSI().Query().Command(2, 'h');
+        }
+
+        // Ps = 2  -> Designate VT52 mode (DECANM).
+        public static string SetVt52Mode(this string x)
+        {
+            return x.CSI().Query().Command(2, 'l');
+        }
         // Ps = 7  -> Wraparound Mode (DECAWM).
         public static string EnableWrapAround(this string x)
         {
@@ -556,6 +568,126 @@ namespace VtNetCoreUnitTests
         public static string ChangeWindowTitle(this string x, string title)
         {
             return x.OSC(2, title);
+        }
+
+        // DCS $ q Pt ST
+        //   Request Status String (DECRQSS).  The string following the "q"
+        //   is one of the following:
+        //     " q     -> DECSCA
+        //     " p     -> DECSCL
+        //     r       -> DECSTBM
+        //     s       -> DECSLRM
+        //     m       -> SGR
+        //     SP q    -> DECSCUSR
+        //   xterm responds with DCS 1 $ r Pt ST for valid requests,
+        //   replacing the Pt with the corresponding CSI string, or DCS 0 $
+        //   r Pt ST for invalid requests.
+        public static string DECRQSS(this string x, string mode)
+        {
+            return x + "\u0090$q" + mode + "\u001b\\";
+        }
+
+        // ESC <     Exit VT52 mode (Enter VT100 mode).
+        public static string EnterANSIMode(this string x)
+        {
+            return x + ESC() + "<";
+        }
+
+        // ESC A     Cursor up.
+        public static string Vt52cuu1(this string x)
+        {
+            return x + ESC() + "A";
+        }
+
+        // ESC B     Cursor down.
+        public static string Vt52cud1(this string x)
+        {
+            return x + ESC() + "B";
+        }
+
+        // ESC C     Cursor right.
+        public static string Vt52cuf1(this string x)
+        {
+            return x + ESC() + "C";
+        }
+
+        // ESC D     Cursor left.
+        public static string Vt52cub1(this string x)
+        {
+            return x + ESC() + "D";
+        }
+
+        // ESC H     Move the cursor to the home position.
+        public static string Vt52Home(this string x)
+        {
+            return x + ESC() + "H";
+        }
+
+        // ESC I     Reverse line feed.
+        public static string Vt52ri(this string x)
+        {
+            return x + ESC() + "I";
+        }
+
+        // ESC J     Erase from the cursor to the end of the screen.
+        public static string Vt52ed(this string x)
+        {
+            return x + ESC() + "J";
+        }
+
+        // ESC K     Erase from the cursor to the end of the line.
+        public static string Vt52el(this string x)
+        {
+            return x + ESC() + "K";
+        }
+
+        // ESC Y Ps Ps - Move the cursor to given row and column.
+        public static string Vt52cup(this string x, int row, int column)
+        {
+            return x + ESC() + "Y" + (char)(row + 31) + (char)(column + 31);
+        }
+
+        // ESC Z     Identify.
+        public static string DECID(this string x)
+        {
+            return x + ESC() + "Z";
+        }
+
+        // CSI Ps ; Ps " p  - Set conformance level (DECSCL).
+        //
+        // Valid values for the first parameter:
+        //     Ps = 6 1  -> VT100.
+        //     Ps = 6 2  -> VT200.
+        //     Ps = 6 3  -> VT300.
+        //
+        // Valid values for the second parameter:
+        //     Ps = 0  -> 8-bit controls.
+        //     Ps = 1  -> 7-bit controls (always set for VT100).
+        //     Ps = 2  -> 8-bit controls.
+        public static string DECSCL(this string x, int level, int eightBitControl)
+        {
+            return x.CSI().Command(level, eightBitControl, "\"p");
+        }
+
+        public static string vt_hilite(this string x, bool enabled)
+        {
+            if(enabled)
+                return x.CSI().Command(7, "m");
+
+            return x.CSI().T("m");
+        }
+
+        public static string ChrPrint2(char ch)
+        {
+            if(ch <= ' ' || ch >= '\u007F')
+                return "  ".vt_hilite(true).T(" <" + ((int)ch).ToString() + "> ").vt_hilite(false);
+
+            return "  ".vt_hilite(true).T(" <" + ch + "> ").vt_hilite(false);
+        }
+
+        public static string ChrPrint(this string x, string chrs)
+        {
+            return string.Join("", chrs.Select(y => ChrPrint2(y)));
         }
     }
 }

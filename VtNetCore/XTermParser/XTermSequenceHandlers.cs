@@ -101,7 +101,8 @@
                 Description = "Index (IND  is 0x84).",
                 SequenceType = SequenceHandler.ESequenceType.Escape,
                 CsiCommand = "D",
-                Handler = (sequence, controller) => controller.NewLine()
+                Handler = (sequence, controller) => controller.NewLine(),
+                Vt52 = SequenceHandler.Vt52Mode.No
             },
             new SequenceHandler
             {
@@ -118,7 +119,8 @@
                 Description = "Tab Set",
                 SequenceType = SequenceHandler.ESequenceType.Escape,
                 CsiCommand = "H",
-                Handler = (sequence, controller) => controller.TabSet()
+                Handler = (sequence, controller) => controller.TabSet(),
+                Vt52 = SequenceHandler.Vt52Mode.No
             },
             new SequenceHandler
             {
@@ -313,6 +315,10 @@
                                 controller.EnableApplicationCursorKeys(true);
                                 break;
 
+                            case 2:     // Ps = 2  -> Designate USASCII for character sets G0-G3 (DECANM), and set VT100 mode.
+                                controller.SetVt52Mode(false);
+                                break;
+
                             case 3:     // Ps = 3  -> 132 Column Mode (DECCOLM).
                                 controller.Enable132ColumnMode(true);
                                 break;
@@ -453,6 +459,10 @@
                                 controller.EnableApplicationCursorKeys(false);
                                 break;
 
+                            case 2:     // Ps = 2  -> Designate VT52 mode (DECANM).
+                                controller.SetVt52Mode(true);
+                                break;
+
                             case 3:     // Ps = 3  -> 80 Column Mode (DECCOLM).
                                 controller.Enable132ColumnMode(false);
                                 break;
@@ -534,6 +544,7 @@
                 Description = "Character Attributes (SGR).",
                 SequenceType = SequenceHandler.ESequenceType.CSI,
                 CsiCommand = "m",
+                DefaultParamValue = 0,
                 Handler = (sequence, controller) =>
                 {
                     var csiSequence = sequence as CsiSequence;
@@ -600,6 +611,22 @@
                 CsiCommand = "$p",
                 ExactParameterCount = 1,
                 Handler = (sequence, controller) => controller.RequestDecPrivateMode(sequence.Parameters[0])
+            },
+            new SequenceHandler
+            {
+                Description = "Set conformance level (DECSCL).",
+                SequenceType = SequenceHandler.ESequenceType.CSI,
+                CsiCommand = "\"p",
+                MinimumParameterCount = 1,
+                Handler = (sequence, controller) =>
+                {
+                    controller.SetConformanceLevel(
+                        sequence.Parameters[0], 
+                        sequence.Parameters.Count > 1 ? 
+                            (sequence.Parameters[1] == 1 ? false : true) : 
+                            true
+                        );
+                }
             },
             new SequenceHandler
             {
@@ -1111,6 +1138,136 @@
                 CsiCommand = "G",
                 Handler = (sequence, controller) => controller.SetUTF8()
             },
+            new SequenceHandler
+            {
+                Description = "Request Status String (DECRQSS) - DECSCL",
+                SequenceType = SequenceHandler.ESequenceType.DCS,
+                CsiCommand = "$q\"p",
+                Handler = (sequence, controller) => controller.RequestStatusStringSetConformanceLevel()
+            },
+            new SequenceHandler
+            {
+                // TODO : Figure out if I'm even close here
+                Description = "VT52 Mode - Exit VT52 mode (Enter VT100 mode)",
+                SequenceType = SequenceHandler.ESequenceType.Escape,
+                CsiCommand = "<",
+                Handler = (sequence, controller) => controller.Vt52EnterAnsiMode(),
+                Vt52 = SequenceHandler.Vt52Mode.Yes
+            },
+            new SequenceHandler
+            {
+                Description = "VT52 Mode - Enter alternate keypad mode.",
+                SequenceType = SequenceHandler.ESequenceType.Escape,
+                CsiCommand = "=",
+                Handler = (sequence, controller) => controller.SetVt52AlternateKeypadMode(true),
+                Vt52 = SequenceHandler.Vt52Mode.Yes
+            },
+            new SequenceHandler
+            {
+                Description = "VT52 Mode - Exit alternate keypad mode.",
+                SequenceType = SequenceHandler.ESequenceType.Escape,
+                CsiCommand = ">",
+                Handler = (sequence, controller) => controller.SetVt52AlternateKeypadMode(false),
+                Vt52 = SequenceHandler.Vt52Mode.Yes
+            },
+            new SequenceHandler
+            {
+                Description = "VT52 Mode - Cursor up.",
+                SequenceType = SequenceHandler.ESequenceType.Escape,
+                CsiCommand = "A",
+                Handler = (sequence, controller) => controller.MoveCursorRelative(0, -1),
+                Vt52 = SequenceHandler.Vt52Mode.Yes
+            },
+            new SequenceHandler
+            {
+                Description = "VT52 Mode - Cursor down.",
+                SequenceType = SequenceHandler.ESequenceType.Escape,
+                CsiCommand = "B",
+                Handler = (sequence, controller) => controller.MoveCursorRelative(0, 1),
+                Vt52 = SequenceHandler.Vt52Mode.Yes
+            },
+            new SequenceHandler
+            {
+                Description = "VT52 Mode - Cursor right.",
+                SequenceType = SequenceHandler.ESequenceType.Escape,
+                CsiCommand = "C",
+                Handler = (sequence, controller) => controller.MoveCursorRelative(1, 0),
+                Vt52 = SequenceHandler.Vt52Mode.Yes
+            },
+            new SequenceHandler
+            {
+                Description = "VT52 Mode - Cursor left.",
+                SequenceType = SequenceHandler.ESequenceType.Escape,
+                CsiCommand = "D",
+                Handler = (sequence, controller) => controller.MoveCursorRelative(-1, 0),
+                Vt52 = SequenceHandler.Vt52Mode.Yes
+            },
+            new SequenceHandler
+            {
+                Description = "VT52 Mode - Enter graphics mode.",
+                SequenceType = SequenceHandler.ESequenceType.Escape,
+                CsiCommand = "F",
+                Handler = (sequence, controller) => controller.SetVt52GraphicsMode(true),
+                Vt52 = SequenceHandler.Vt52Mode.Yes
+            },
+            new SequenceHandler
+            {
+                Description = "VT52 Mode - Exit graphics mode.",
+                SequenceType = SequenceHandler.ESequenceType.Escape,
+                CsiCommand = "G",
+                Handler = (sequence, controller) => controller.SetVt52GraphicsMode(false),
+                Vt52 = SequenceHandler.Vt52Mode.Yes
+            },
+            new SequenceHandler
+            {
+                Description = "VT52 Mode - Move the cursor to the home position.",
+                SequenceType = SequenceHandler.ESequenceType.Escape,
+                CsiCommand = "H",
+                Handler = (sequence, controller) => controller.SetCursorPosition(1, 1),
+                Vt52 = SequenceHandler.Vt52Mode.Yes
+            },
+            new SequenceHandler
+            {
+                Description = "VT52 Mode - Reverse line feed.",
+                SequenceType = SequenceHandler.ESequenceType.Escape,
+                CsiCommand = "I",
+                Handler = (sequence, controller) => controller.ReverseIndex(),
+                Vt52 = SequenceHandler.Vt52Mode.Yes
+            },
+            new SequenceHandler
+            {
+                Description = "VT52 Mode - Erase from the cursor to the end of the screen.",
+                SequenceType = SequenceHandler.ESequenceType.Escape,
+                CsiCommand = "J",
+                Handler = (sequence, controller) => controller.EraseBelow(),
+                Vt52 = SequenceHandler.Vt52Mode.Yes
+            },
+            new SequenceHandler
+            {
+                Description = "VT52 Mode - Erase from the cursor to the end of the line.",
+                SequenceType = SequenceHandler.ESequenceType.Escape,
+                CsiCommand = "K",
+                Handler = (sequence, controller) => controller.EraseToEndOfLine(),
+                Vt52 = SequenceHandler.Vt52Mode.Yes
+            },
+            new SequenceHandler
+            {
+                Description = "VT52 Mode - Move the cursor to given row and column.",
+                SequenceType = SequenceHandler.ESequenceType.VT52mc,
+                Handler = (sequence, controller) =>
+                {
+                    var vt52Sequence = sequence as Vt52MoveCursorSequence;
+                    controller.SetCursorPosition(vt52Sequence.Column + 1, vt52Sequence.Row + 1);
+                }
+            },
+            new SequenceHandler
+            {
+                Description = "VT52 Mode - Identify",
+                SequenceType = SequenceHandler.ESequenceType.Escape,
+                CsiCommand = "Z",
+                Handler = (sequence, controller) => controller.Vt52Identify(),
+                Vt52 = SequenceHandler.Vt52Mode.Yes
+            },
         };
 
         public static void ProcessSequence(TerminalSequence sequence, IVirtualTerminalController controller)
@@ -1181,6 +1338,16 @@
                 if (handler == null)
                     throw new Exception("There are no CsiSequence handlers configured for sequence: " + sequence.ToString());
 
+                // This is necessary since the default value is contextual
+                if(sequence.Parameters != null)
+                {
+                    for(var i=0; i<sequence.Parameters.Count; i++)
+                    {
+                        if (sequence.Parameters[i] == -1)
+                            sequence.Parameters[i] = handler.DefaultParamValue;
+                    }
+                }
+
                 handler.Handler(sequence, controller);
 
                 return;
@@ -1214,9 +1381,13 @@
             if (sequence is EscapeSequence)
             {
                 var handler = Handlers
-                    .Where(x => 
+                    .Where(x =>
                         x.SequenceType == SequenceHandler.ESequenceType.Escape &&
-                        x.CsiCommand == sequence.Command
+                        x.CsiCommand == sequence.Command &&
+                        (
+                            x.Vt52 == SequenceHandler.Vt52Mode.Irrelevent ||
+                            x.Vt52 == (controller.IsVt52Mode() ? SequenceHandler.Vt52Mode.Yes : SequenceHandler.Vt52Mode.No)
+                        )
                     )
                     .SingleOrDefault();
 
@@ -1265,6 +1436,39 @@
             if (sequence is SS3Sequence)
             {
                 controller.PutG3Char(sequence.Command[0]);
+                return;
+            }
+
+            if (sequence is DcsSequence)
+            {
+                var handler = Handlers
+                    .Where(x => 
+                        x.SequenceType == SequenceHandler.ESequenceType.DCS && 
+                        x.CsiCommand == sequence.Command
+                    )
+                    .SingleOrDefault();
+
+                if (handler == null)
+                    throw new Exception("There are no sequence handlers configured for type DcsSequence with param0 = " + sequence.Parameters[0].ToString());
+
+                handler.Handler(sequence, controller);
+
+                return;
+            }
+
+            if(sequence is Vt52MoveCursorSequence)
+            {
+                var handler = Handlers
+                    .Where(x =>
+                        x.SequenceType == SequenceHandler.ESequenceType.VT52mc
+                    )
+                    .SingleOrDefault();
+
+                if (handler == null)
+                    throw new Exception("There are no sequence handlers configured for type Vt52MoveCursorSequence");
+
+                handler.Handler(sequence, controller);
+
                 return;
             }
 

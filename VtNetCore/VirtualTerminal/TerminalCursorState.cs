@@ -152,6 +152,16 @@
         public ECharacterSet Vt300G3 { get; set; } = ECharacterSet.USASCII;
 
         /// <summary>
+        /// Sets the VT-52 alternate keypad mode
+        /// </summary>
+        public bool Vt52AlternateKeypad { get; set; }
+
+        /// <summary>
+        /// Sets the VT-52 graphics mode
+        /// </summary>
+        public bool Vt52GraphicsMode { get; set; }
+
+        /// <summary>
         /// Specifies whether LF should assume CR
         /// </summary>
         public bool AutomaticNewLine { get; set; }
@@ -195,6 +205,8 @@
                 Vt300G1 = Vt300G1,
                 Vt300G2 = Vt300G2,
                 Vt300G3 = Vt300G3,
+                Vt52AlternateKeypad = Vt52AlternateKeypad,
+                Vt52GraphicsMode = Vt52GraphicsMode,
                 AutomaticNewLine = AutomaticNewLine,
                 ConfiguredColumns = ConfiguredColumns
             };
@@ -233,6 +245,8 @@
                 "Vt300G1:" + Vt300G1.ToString() + "\n" +
                 "Vt300G2:" + Vt300G2.ToString() + "\n" +
                 "Vt300G3:" + Vt300G3.ToString() + "\n" +
+                "Vt52AlternateKeypad: " + Vt52AlternateKeypad.ToString() + "\n" + 
+                "Vt52GraphicsMode: " + Vt52GraphicsMode.ToString() + "\n" + 
                 "AutomaticNewLine:" + AutomaticNewLine.ToString() + "\n" +
                 "ConfiguredColumns:" + ConfiguredColumns.ToString() + "\n"
                 ;

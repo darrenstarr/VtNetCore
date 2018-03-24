@@ -61,8 +61,33 @@
         public TerminalCursorState CursorState { get; set; } = new TerminalCursorState();
 
         public bool HighlightMouseTracking { get; set; }
+
         public bool CellMotionMouseTracking { get; set; }
+
         public bool SgrMouseMode { get; set; }
+        
+        /// <summary>
+        /// Set to true when Vt52 Mode is enabled.
+        /// </summary>
+        /// <remarks>
+        /// This is necessary for contextual parsing of input streams as well as supporting VT52 keystrokes
+        /// and terminal requests.
+        /// </remarks>
+        public bool Vt52Mode { get; set; }
+
+        /// <summary>
+        /// Implements the IsVt52Mode interface from IVirtualTerminalController
+        /// </summary>
+        /// <returns>true when the terminal is in Vt52 Mode</returns>
+        public bool IsVt52Mode()
+        {
+            return Vt52Mode;
+        }
+
+        /// <summary>
+        /// Specifies whetehr VT52 ANSI Mode has been entered.
+        /// </summary>
+        public bool Vt52AnsiMode { get; set; }
 
         /// <summary>
         /// When enabled causes logging to System.Diagnostics.Debug
@@ -349,6 +374,7 @@
             alternativeBufferTopRow = alternativeBuffer.Count;
             normalBufferTopRow = normalBuffer.Count;
             TopRow = normalBufferTopRow;
+            Vt52Mode = false;
 
             ActiveBuffer = EActiveBuffer.Normal;
 
@@ -1176,10 +1202,8 @@
                 case 95:
                 case 96:
                 case 97:
-                    CursorState.Attributes.ForegroundRgb = null;
-                    CursorState.Attributes.ForegroundColor = (ETerminalColor)(parameter - 90);
-                    CursorState.Attributes.Bright = true;
-                    LogController("SetCharacterAttribute(foreground:" + CursorState.Attributes.ForegroundColor.ToString() + ")");
+                    CursorState.Attributes.ForegroundRgb = new TerminalColor((ETerminalColor)(parameter - 90), true);
+                    LogController("SetCharacterAttribute(foregroundRgb:" + CursorState.Attributes.ForegroundRgb.ToString() + ")");
                     break;
 
                 case 100:
@@ -1887,20 +1911,20 @@
             }
         }
 
-        public static readonly byte[] VT102DeviceAttributes = { 0x1B, (byte)'[', (byte)'?', (byte)'6', (byte)'C' };
+        public static readonly string DeviceAttributes = "\u001b[?64;1;2;6;9;15;18;21;22c";
 
         public void SendDeviceAttributes()
         {
             LogController("SendDeviceAttributes()");
-            SendData.Invoke(this, new SendDataEventArgs { Data = VT102DeviceAttributes });
+            SendData.Invoke(this, new SendDataEventArgs { Data = Encoding.ASCII.GetBytes(DeviceAttributes) });
         }
 
-        public static readonly byte[] XTermDeviceAttributesSecondary = { 0x1B, (byte)'[', (byte)'>', (byte)'0', (byte)';', (byte)'1', (byte)'3', (byte)'6', (byte)';', (byte)'0', (byte)'c' };
+        public static readonly string XTermSecondaryAttributes = "\u001b[>41;136;0c";
 
         public void SendDeviceAttributesSecondary()
         {
             LogController("SendDeviceAttributesSecondary()");
-            SendData.Invoke(this, new SendDataEventArgs { Data = XTermDeviceAttributesSecondary });
+            SendData.Invoke(this, new SendDataEventArgs { Data = Encoding.ASCII.GetBytes(XTermSecondaryAttributes) });
         }
 
         public static readonly byte[] DsrOk = { 0x1B, (byte)'[', (byte)'0', (byte)'n' };
@@ -1915,7 +1939,7 @@
         {
             LogController("ReportCursorPosition()");
 
-            var rcp = "\u001b[" + (CursorState.CurrentRow + 1).ToString() + ";" + (CursorState.CurrentColumn + 1).ToString() + "R";
+            var rcp = "\u001b[" + (CursorState.CurrentRow - CursorState.ScrollTop + 1).ToString() + ";" + (CursorState.CurrentColumn - CursorState.LeftMargin + 1).ToString() + "R";
 
             SendData.Invoke(this, new SendDataEventArgs { Data = Encoding.UTF8.GetBytes(rcp) });
         }
@@ -2035,6 +2059,52 @@
                 );
         }
 
+        public void SetConformanceLevel(int level, bool eightBit)
+        {
+            LogController("SetConformanceLevel(level:" + level + ", 8bit:" + eightBit + ")");
+
+            if (level == 0)
+                SetVt52Mode(true);
+            else
+                SetVt52Mode(false);
+        }
+
+        public void SetVt52Mode(bool enabled)
+        {
+            LogController("SetVt52Mode(enabled:" + enabled + ")");
+            Vt52Mode = enabled;
+            Vt52AnsiMode = false;
+
+            if(!enabled)
+            {
+                CursorState.G0 = ECharacterSet.USASCII;
+                CursorState.G1 = ECharacterSet.USASCII;
+                CursorState.G2 = ECharacterSet.USASCII;
+                CursorState.G3 = ECharacterSet.USASCII;
+                CursorState.Vt300G1 = ECharacterSet.USASCII;
+                CursorState.Vt300G2 = ECharacterSet.USASCII;
+                CursorState.Vt300G3 = ECharacterSet.USASCII;
+            }
+        }
+
+        public void Vt52EnterAnsiMode()
+        {
+            Vt52AnsiMode = true;
+        }
+
+        public void SetVt52AlternateKeypadMode(bool enabled)
+        {
+            LogController("SetVt52AlternateKeypadMode(enabled:" + enabled + ")");
+            CursorState.Vt52AlternateKeypad = enabled;
+        }
+
+
+        public void SetVt52GraphicsMode(bool enabled)
+        {
+            LogController("SetVt52GraphicsMode(enabled:" + enabled + ")");
+            CursorState.Vt52GraphicsMode = enabled;
+        }
+
         public void RequestDecPrivateMode(int mode)
         {
             LogController("RequestDecPrivateMode(mode:" + mode.ToString() + ")");
@@ -2057,6 +2127,27 @@
                     SendData.Invoke(this, new SendDataEventArgs { Data = DecUnknownPrivateModeResponse(mode) });
                     break;
             }
+        }
+
+        public static readonly string ConformanceLevelResponse = "\u0090$r64\u009c";      // VT420 compliance?
+
+        public void RequestStatusStringSetConformanceLevel()
+        {
+            LogController("RequestStatusStringSetConformanceLevel()");
+
+            if (Vt52Mode)
+                return;
+
+            SendData.Invoke(this, new SendDataEventArgs { Data = Encoding.ASCII.GetBytes(ConformanceLevelResponse) });
+        }
+
+        public static readonly string Vt52Identification = "\u001b/Z";
+
+        public void Vt52Identify()
+        {
+            LogController("Vt52Identify()");
+
+            SendData.Invoke(this, new SendDataEventArgs { Data = Encoding.ASCII.GetBytes(Vt52Identification) });
         }
 
         public void SetCursorStyle(ECursorShape shape, bool blink)

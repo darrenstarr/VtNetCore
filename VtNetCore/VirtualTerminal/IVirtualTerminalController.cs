@@ -1,12 +1,14 @@
 ﻿namespace VtNetCore.VirtualTerminal
 {
     using VtNetCore.VirtualTerminal.Enums;
+    using VtNetCore.XTermParser;
 
     /// <summary>
     /// Provides the interfaces needed by a terminal in order to manipulate the model.
     /// </summary>
     public interface IVirtualTerminalController
     {
+
         /// <summary>
         /// Clears the change tracking of the model.
         /// </summary>
@@ -15,6 +17,7 @@
         /// </remarks>
         void ClearChanges();
         bool IsUtf8();
+        bool IsVt52Mode();
 
         void Backspace();
         void Bell();
@@ -61,6 +64,7 @@
         void PutG2Char(char character);
         void PutG3Char(char character);
         void RequestDecPrivateMode(int mode);
+        void RequestStatusStringSetConformanceLevel();
         void ReportCursorPosition();
         void RestoreCursor();
         void RestoreEnableNormalBuffer();
@@ -87,12 +91,20 @@
         void SetCharacterAttribute(int parameter);
         void SetCharacterSet(ECharacterSet characterSet, ECharacterSetMode mode);
         void SetCharacterSize(ECharacterSize size);
+        void SetConformanceLevel(int level, bool eightBit);
         void SetCursorPosition(int column, int row);
         void SetCursorStyle(ECursorShape shape, bool blink);
         void SetInsertReplaceMode(EInsertReplaceMode mode);
+        void SetIso8613PaletteBackground(int paletteEntry);
+        void SetIso8613PaletteForeground(int paletteEntry);
         void SetLatin1();
         void SetLeftAndRightMargins(int left, int right);
         void SetKeypadType(EKeypadType type);
+        void SetRgbBackgroundColor(int red, int green, int blue);
+        void SetRgbForegroundColor(int red, int green, int blue);
+        void SetVt52AlternateKeypadMode(bool enabled);
+        void SetVt52GraphicsMode(bool enabled);
+        void SetVt52Mode(bool enabled);
         void SetWindowTitle(string title);
         void SetScrollingRegion(int top, int bottom);
         void SetUTF8();
@@ -104,9 +116,7 @@
         void UseCellMotionMouseTracking(bool enable);
         void UseHighlightMouseTracking(bool enable);
         void VerticalTab();
-        void SetRgbForegroundColor(int red, int green, int blue);
-        void SetRgbBackgroundColor(int red, int green, int blue);
-        void SetIso8613PaletteForeground(int paletteEntry);
-        void SetIso8613PaletteBackground(int paletteEntry);
+        void Vt52EnterAnsiMode();
+        void Vt52Identify();
     }
 }
