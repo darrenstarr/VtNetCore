@@ -53,6 +53,11 @@ information.
 
 ### 24-March-2018
 
+Pleased to say that I've fixed the nano bug. It seems that saving scrolling margins isn't part of the cursor state. This seems silly since it means that
+the scroll regions would need to be reset when flipping between main and alternate buffer. So be it.
+
+### 24-March-2018
+
 Well, I've been working on integrating [Nil.js](https://github.com/nilproject/NiL.JS) as a scripting engine to for the project and have run into complications
 due to things being hairy as always when working with multithreaded environments and scripting engines (that also happen to be commented in Russian). The Nil.js
 engine is quite lovely though and I've been able to spawn multiple terminals and control them using JavaScript async from within the engine.
