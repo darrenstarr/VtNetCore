@@ -51,6 +51,28 @@ information.
 
 ## Progress
 
+### 24-March-2018
+
+Well, I've been working on integrating [Nil.js](https://github.com/nilproject/NiL.JS) as a scripting engine to for the project and have run into complications
+due to things being hairy as always when working with multithreaded environments and scripting engines (that also happen to be commented in Russian). The Nil.js
+engine is quite lovely though and I've been able to spawn multiple terminals and control them using JavaScript async from within the engine.
+
+There has been some considerable progress on the VtNetCore in the sense that thanks to [Dan Walmsley](https://github.com/danwalmsley) from the 
+[AvalonStudio Project](https://github.com/VitalElement/AvalonStudio) getting involved. He has integrated the engine with his IDE and has been giving excellent
+changes, bug reports and feedback.
+
+So far, I have implemented the Windows UWP version and also the Mac Cocoa version and Dan has implemented the Avalon Studio version. So at this time, VtNetCore
+should be operational on most major platforms. I've also been looking at the possibility of native ports to Android and GTK as porting doesn't really take more
+than a few hours.
+
+At this time, the control is reaching a pretty impressive level of compatibility. I don't think I'm anywhere near XTerm and possibly libvterm, but VTNetCore is 
+certain further along than Putty at the moment. I have one really naughty looking bug associated with scrolling in Nano that I need to look into, but otherwise
+it's pretty far along. I would easily refer to it as almost ready for production and I'm sure Dan will provide a lot of feedback over time which will help me
+along.
+
+I've been asked for pictures of what VtNetCore looks like. This is obviously useful since people don't like investing time into using libraries unless there
+is some evidence that they are worth the effort. Once I fix the Nano thing, I'll put some work into making some pretty pictures and putting them online.
+
 ### 08-March-2018
 
 So, thanks again to [Paul "LeoNerd" Evans](https://launchpad.net/~leonerd) libvterm unit tests which I've spent much time porting to C# and into
