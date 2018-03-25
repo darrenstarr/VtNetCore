@@ -21,6 +21,8 @@
 
         public int MaximumHistoryLines { get; set; } = 2001;
 
+        public TerminalAttribute NullAttribute = new TerminalAttribute();
+
         /// <summary>
         /// The current buffer
         /// </summary>
@@ -362,6 +364,73 @@
         }
 
         /// <summary>
+        /// Assembles a string which represents the page as a series of spans with attributes for testing
+        /// </summary>
+        internal string PageAsSpans
+        {
+            get
+            {
+                var currentAttribute = new TerminalAttribute();
+
+                string result = "";
+
+                for (var y = 0; y < Rows; y++)
+                {
+                    for (var x = 0; x < Columns; x++)
+                    {
+                        var ch = GetVisibleCharModel(x, y);
+
+                        if (ch == null)
+                        {
+                            result += "→";
+                        }
+                        else
+                        {
+                            if (!currentAttribute.Equals(ch.Attributes))
+                            {
+                                if (currentAttribute.Blink != ch.Attributes.Blink)
+                                    result += ch.Attributes.Blink ? "<blink>" : "</blink>";
+
+                                if (currentAttribute.Bright != ch.Attributes.Bright)
+                                    result += ch.Attributes.Bright ? "<bright>" : "</bright>";
+
+                                if (currentAttribute.Hidden != ch.Attributes.Hidden)
+                                    result += ch.Attributes.Blink ? "<hidden>" : "</hidden>";
+
+                                if (currentAttribute.Protected != ch.Attributes.Protected)
+                                    result += "<protected mode='" + ch.Attributes.Protected + "' />";
+
+                                if (currentAttribute.Reverse != ch.Attributes.Reverse)
+                                    result += ch.Attributes.Reverse ? "<reverse>" : "</reverse>";
+
+                                if (currentAttribute.Standout != ch.Attributes.Standout)
+                                    result += ch.Attributes.Blink ? "<standout>" : "</standout>";
+
+                                if (currentAttribute.Underscore != ch.Attributes.Underscore)
+                                    result += ch.Attributes.Underscore ? "<underscore>" : "</underscore>";
+
+                                if (currentAttribute.WebColor != ch.Attributes.WebColor)
+                                    result += "<foreground value='" + ch.Attributes.WebColor + "' />";
+
+                                if (currentAttribute.BackgroundWebColor != ch.Attributes.BackgroundWebColor)
+                                    result += "<background value='" + ch.Attributes.BackgroundWebColor + "' />";
+
+                                currentAttribute = ch.Attributes.Clone();
+                            }
+
+                            result += ch.Char + ((ch.CombiningCharacters == null) ? "" : ch.CombiningCharacters);
+                        }
+                    }
+
+                    if (y < (Rows - 1))
+                        result += "↵";
+                }
+
+                return result;
+            }
+        }
+
+        /// <summary>
         /// Returns the text specified by the provided range
         /// </summary>
         /// <remarks>
@@ -454,6 +523,7 @@
 
             SavedCursorState = null;
             CursorState = new TerminalCursorState();
+            NullAttribute = new TerminalAttribute();
 
             ScrollTop = 0;
             ScrollBottom = -1;
@@ -1373,9 +1443,10 @@
 
         public void ScreenAlignmentTest()
         {
+            var attribute = new TerminalAttribute();
             for (var y = 0; y < VisibleRows; y++)
                 for (var x = 0; x < VisibleColumns; x++)
-                    SetCharacter(x, y, 'E', CursorState.Attributes);
+                    SetCharacter(x, y, 'E', attribute);
         }
 
         public void SaveCursor()
@@ -1743,7 +1814,7 @@
 
             var line = Buffer[row];
             while (line.Count < CursorState.CurrentColumn)
-                line.Add(new TerminalCharacter());
+                line.Add(new TerminalCharacter { Attributes = NullAttribute.Clone() } );
 
             var removeAt = Columns;
             if (CursorState.LeftAndRightMarginEnabled)
@@ -1751,7 +1822,7 @@
 
             for (var i = 0; i < count; i++)
             {
-                line.Insert(CursorState.CurrentColumn, new TerminalCharacter());
+                line.Insert(CursorState.CurrentColumn, new TerminalCharacter { Attributes = NullAttribute.Clone() } );
 
                 if (removeAt < line.Count)
                     line.RemoveAt(removeAt);
@@ -1920,6 +1991,8 @@
         public void EraseAll(bool ignoreProtected = true)
         {
             LogController("EraseAll(ignoreProtected: " + ignoreProtected + ")");
+
+            NullAttribute = CursorState.Attributes.Clone();
 
             if(!ignoreProtected)
             {
@@ -2154,13 +2227,13 @@
 
             var line = Buffer[currentRow + TopRow];
             while (line.Count < (currentColumn + 1))
-                line.Add(new TerminalCharacter { Char = ' ', Attributes = CursorState.Attributes });
+                line.Add(new TerminalCharacter { Char = ' ', Attributes = NullAttribute.Clone() });
 
             var character = line[currentColumn];
             if (overwriteProtected || (!overwriteProtected && character.Attributes.Protected != 1))
             {
                 character.Char = ch;
-                character.Attributes = attribute.Clone();
+                character.Attributes = CursorState.Attributes.Clone();
                 character.CombiningCharacters = "";
             }
 

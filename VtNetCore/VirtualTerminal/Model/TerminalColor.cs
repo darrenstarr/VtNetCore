@@ -30,6 +30,27 @@ namespace VtNetCore.VirtualTerminal.Model
             Set(color, bright);
         }
 
+        public override bool Equals(object obj)
+        {
+            if (this == null && obj == null)
+                return true;
+
+            if (this == null || obj == null)
+                return false;
+
+            if (ReferenceEquals(this, obj))
+                return true;
+
+            var other = obj as TerminalColor;
+
+            return ARGB == other.ARGB;
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+
         public override string ToString()
         {
             return WebColor;

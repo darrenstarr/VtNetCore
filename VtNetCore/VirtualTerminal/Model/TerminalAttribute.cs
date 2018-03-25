@@ -1,5 +1,6 @@
 ﻿namespace VtNetCore.VirtualTerminal.Model
 {
+    using System;
     using VtNetCore.VirtualTerminal.Enums;
 
     /// <summary>
@@ -22,6 +23,51 @@
         public TerminalColor ForegroundRgb { get; set; }
 
         public TerminalColor BackgroundRgb { get; set; }
+
+        public override bool Equals(object obj)
+        {
+            if (this == null && obj == null)
+                return true;
+
+            if (this == null || obj == null)
+                return false;
+
+            if (ReferenceEquals(this, obj))
+                return true;
+
+            var other = obj as TerminalAttribute;
+
+            if (other == null)
+                return false;
+
+            if (
+                (ForegroundRgb == null && other.ForegroundRgb != null) ||
+                (ForegroundRgb != null && other.ForegroundRgb == null) ||
+                (
+                    (ForegroundRgb != null && other.ForegroundRgb != null) &&
+                    !ForegroundRgb.Equals(other.ForegroundRgb)
+                )
+            )
+                return false;
+
+            if (
+                (BackgroundRgb == null && other.BackgroundRgb != null) ||
+                (BackgroundRgb != null && other.BackgroundRgb == null) ||
+                (
+                    (BackgroundRgb != null && other.BackgroundRgb != null) &&
+                    !BackgroundRgb.Equals(other.BackgroundRgb)
+                )
+            )
+                return false;
+
+            return
+                InternalBits == other.InternalBits;
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
 
         /// <summary>
         /// The foreground color of the text
@@ -193,6 +239,34 @@
                 ForegroundRgb = ForegroundRgb == null ? null : new TerminalColor(ForegroundRgb),
                 BackgroundRgb = BackgroundRgb == null ? null : new TerminalColor(BackgroundRgb)
             };
+        }
+
+        /// <summary>
+        /// Returns the foreground color as a web color
+        /// </summary>
+        public string WebColor
+        {
+            get
+            {
+                if (ForegroundRgb != null)
+                    return ForegroundRgb.WebColor;
+
+                return (new TerminalColor(ForegroundColor, Bright)).WebColor;
+            }
+        }
+
+        /// <summary>
+        /// Returns the background color as a web color
+        /// </summary>
+        public string BackgroundWebColor
+        {
+            get
+            {
+                if (BackgroundRgb != null)
+                    return BackgroundRgb.WebColor;
+
+                return (new TerminalColor(BackgroundColor, Bright)).WebColor;
+            }
         }
 
         /// <summary>
