@@ -395,7 +395,7 @@
                                     result += ch.Attributes.Bright ? "<bright>" : "</bright>";
 
                                 if (currentAttribute.Hidden != ch.Attributes.Hidden)
-                                    result += ch.Attributes.Blink ? "<hidden>" : "</hidden>";
+                                    result += ch.Attributes.Hidden ? "<hidden>" : "</hidden>";
 
                                 if (currentAttribute.Protected != ch.Attributes.Protected)
                                     result += "<protected mode='" + ch.Attributes.Protected + "' />";
