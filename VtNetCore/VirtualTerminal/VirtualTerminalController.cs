@@ -98,7 +98,15 @@
         public int ScrollBottom { get; set; } = -1;
         public int LeftMargin { get; set; }
         public int RightMargin { get; set; } = -1;
-        public bool LeftAndRightMarginEnabled = false;
+
+        /// <summary>
+        /// Holds a reference to the last character set.
+        /// </summary>
+        /// <remarks>
+        /// This is used for repeating characters as per (Repeat the preceding graphic character Ps times (REP).)
+        /// however I'm not convinced it will always used wholesomely. 
+        /// </remarks>
+        private TerminalCharacter LastCharacter { get; set; }
 
         /// <summary>
         /// Provides a dump of the current state of this control.
@@ -446,11 +454,13 @@
 
             SavedCursorState = null;
             CursorState = new TerminalCursorState();
+
             ScrollTop = 0;
             ScrollBottom = -1;
             LeftMargin = 0;
             RightMargin = -1;
-            LeftAndRightMarginEnabled = false;
+
+            LastCharacter = null;
 
             Columns = VisibleColumns;
             Rows = VisibleRows;
@@ -979,6 +989,33 @@
             CursorState.Attributes.Protected = protect;
         }
 
+        public void RepeatLastCharacter(int count)
+        {
+            LogController("RepeatLastCharacter(count:" + count.ToString() + ")");
+
+            if (LastCharacter == null)
+            {
+                LogController("  RepeatLastCharacter() doesn't make sense, not character in hold");
+                return;
+            }
+
+            var character = LastCharacter.Clone();
+            for(var i=0; i<count; i++)
+            {
+                PutChar(character.Char);
+                if(!string.IsNullOrEmpty(character.CombiningCharacters))
+                {
+                    foreach (var ch in character.CombiningCharacters)
+                        PutChar(ch);
+                }
+            }
+
+            // The following line is to make this pass vttest for REP. It claims this
+            // is not necessary as ECMA doesn't define otherwise, but XTerm handles it
+            // like this.
+            LastCharacter = null;
+        }
+
         public void PutChar(char character)
         {
             LogExtreme("PutChar(ch:'" + character + "'=" + ((int)character).ToString() + ")");
@@ -1001,7 +1038,10 @@
             if (IsCombiningCharacter(character) && CursorState.CurrentColumn > 0)
             {
                 // TODO : Find a better solution to ensure that combining marks work
-                SetCombiningCharacter(CursorState.CurrentColumn - 1, CursorState.CurrentRow, character);
+                var changedCharacter = SetCombiningCharacter(CursorState.CurrentColumn - 1, CursorState.CurrentRow, character);
+                if(changedCharacter != null)
+                    LastCharacter = changedCharacter.Clone();
+
                 return;
             }
 
@@ -1023,7 +1063,8 @@
                 NewLine();
             }
 
-            SetCharacter(CursorState.CurrentColumn, CursorState.CurrentRow, character, CursorState.Attributes);
+            
+            LastCharacter = SetCharacter(CursorState.CurrentColumn, CursorState.CurrentRow, character, CursorState.Attributes).Clone();
             CursorState.CurrentColumn++;
 
             if (CursorState.CurrentColumn >= CurrentLineColumns && !CursorState.WordWrap)
@@ -2106,7 +2147,7 @@
             SendData.Invoke(this, new SendDataEventArgs { Data = v });
         }
 
-        private void SetCharacter(int currentColumn, int currentRow, char ch, TerminalAttribute attribute, bool overwriteProtected=true)
+        private TerminalCharacter SetCharacter(int currentColumn, int currentRow, char ch, TerminalAttribute attribute, bool overwriteProtected=true)
         {
             while (Buffer.Count < (currentRow + TopRow + 1))
                 Buffer.Add(new TerminalLine());
@@ -2122,13 +2163,21 @@
                 character.Attributes = attribute.Clone();
                 character.CombiningCharacters = "";
             }
+
+            return character;
         }
 
-        private void SetCombiningCharacter(int column, int row, char combiningCharacter)
+        private TerminalCharacter SetCombiningCharacter(int column, int row, char combiningCharacter)
         {
             var line = GetVisualLine(row);
+
             if (line != null && column < line.Count)
+            {
                 line[column].CombiningCharacters += combiningCharacter;
+                return line[column];
+            }
+
+            return null;
         }
 
         private static byte [] DecPrivateModeResponse(int mode, bool response)

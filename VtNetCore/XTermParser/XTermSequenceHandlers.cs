@@ -198,6 +198,16 @@
             },
             new SequenceHandler
             {
+                Description = "Repeat the preceding graphic character Ps times (REP).",
+                SequenceType = SequenceHandler.ESequenceType.CSI,
+                CsiCommand = "b",
+                ExactParameterCountOrDefault = 1,
+                Handler = (sequence, controller) => {
+                    controller.RepeatLastCharacter(sequence.Parameters[0]);
+                }
+            },
+            new SequenceHandler
+            {
                 Description = "Send Device Attributes (Secondary DA).",
                 SequenceType = SequenceHandler.ESequenceType.CSI,
                 Send = true,

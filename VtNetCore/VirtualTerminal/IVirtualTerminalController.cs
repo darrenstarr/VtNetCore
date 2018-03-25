@@ -63,6 +63,7 @@
         void PutChar(char character);
         void PutG2Char(char character);
         void PutG3Char(char character);
+        void RepeatLastCharacter(int count);
         void RequestDecPrivateMode(int mode);
         void RequestStatusStringSetConformanceLevel();
         void RequestStatusStringSetProtectionAttribute();
@@ -119,6 +120,6 @@
         void UseHighlightMouseTracking(bool enable);
         void VerticalTab();
         void Vt52EnterAnsiMode();
-        void Vt52Identify();        
+        void Vt52Identify();
     }
 }
