@@ -353,6 +353,10 @@
                                 controller.EnableAutoRepeatKeys(true);
                                 break;
 
+                            case 9:     // Ps = 9  -> Send Mouse X & Y on button press.
+                                controller.SetX10SendMouseXYOnButton(true);
+                                break;
+
                             case 12:    // Ps = 1 2  -> Start Blinking Cursor (AT&T 610).
                                 controller.EnableBlinkingCursor(true);
                                 break;
@@ -377,12 +381,28 @@
                                 controller.EnableLeftAndRightMarginMode(true);
                                 break;
 
+                            case 1000:  // Send Mouse X & Y on button press and release.
+                                controller.SetX11SendMouseXYOnButton(true);
+                                break;
+
                             case 1001:  // Ps = 1 0 0 1  -> Use Hilite Mouse Tracking.
                                 controller.UseHighlightMouseTracking(true);
                                 break;
 
                             case 1002:  // Ps = 1 0 0 2  -> Use Cell Motion Mouse Tracking.
                                 controller.UseCellMotionMouseTracking(true);
+                                break;
+
+                            case 1003:  // Ps = 1 0 0 3  -> Use All Motion Mouse Tracking.
+                                controller.SetUseAllMouseTracking(true);
+                                break;
+
+                            case 1004:  // Ps = 1 0 0 4  -> Send FocusIn/FocusOut events.
+                                controller.SetSendFocusInAndFocusOutEvents(true);
+                                break;
+
+                            case 1005:  // Ps = 1 0 0 5  -> Enable UTF-8 Mouse Mode.
+                                controller.SetUtf8MouseMode(true);
                                 break;
 
                             case 1006:  // Ps = 1 0 0 6  -> Enable SGR Mouse Mode.
@@ -497,6 +517,10 @@
                                 controller.EnableAutoRepeatKeys(false);
                                 break;
 
+                            case 9:     // Ps = 9  -> Don't send Mouse X & Y on button press.
+                                controller.SetX10SendMouseXYOnButton(false);
+                                break;
+
                             case 12:    // Ps = 1 2  -> Stop Blinking Cursor (AT&T 610).
                                 controller.EnableBlinkingCursor(false);
                                 break;
@@ -521,12 +545,28 @@
                                 controller.EnableLeftAndRightMarginMode(false);
                                 break;
 
+                            case 1000:  // Don't send Mouse X & Y on button press and release.
+                                controller.SetX11SendMouseXYOnButton(false);
+                                break;
+
                             case 1001:  // Ps = 1 0 0 1  -> Don't use Hilite Mouse Tracking.
                                 controller.UseHighlightMouseTracking(false);
                                 break;
 
                             case 1002:  // Ps = 1 0 0 2  -> Don't use Cell Motion Mouse Tracking.
                                 controller.UseCellMotionMouseTracking(false);
+                                break;
+
+                            case 1003:  // Ps = 1 0 0 3  -> Don't use All Motion Mouse Tracking.
+                                controller.SetUseAllMouseTracking(false);
+                                break;
+
+                            case 1004:  // Ps = 1 0 0 4  -> Don't send FocusIn/FocusOut events.
+                                controller.SetSendFocusInAndFocusOutEvents(false);
+                                break;
+
+                            case 1005:  // Ps = 1 0 0 5  -> Disable UTF-8 Mouse Mode.
+                                controller.SetUtf8MouseMode(false);
                                 break;
 
                             case 1006:  // Ps = 1 0 0 6  -> Disable SGR Mouse Mode.

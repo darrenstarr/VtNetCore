@@ -67,7 +67,23 @@
         public bool CellMotionMouseTracking { get; set; }
 
         public bool SgrMouseMode { get; set; }
-        
+
+        public bool SendFocusInAndFocusOutEvents { get; set; }
+
+        public bool UseAllMouseTracking { get; set; }
+
+        public bool Utf8MouseMode { get; set; }
+
+        /// <summary>
+        /// X10 Protocol send mouse XY on button press
+        /// </summary>
+        public bool X10SendMouseXYOnButton { get; set; }
+
+        /// <summary>
+        /// X11 Protocol send mouse XY on button press
+        /// </summary>
+        public bool X11SendMouseXYOnButton { get; set; }
+
         /// <summary>
         /// Set to true when Vt52 Mode is enabled.
         /// </summary>
@@ -2313,6 +2329,36 @@
             CursorState.Vt52GraphicsMode = enabled;
         }
 
+        public void SetX10SendMouseXYOnButton(bool enabled)
+        {
+            LogController("SetVt52GraphicsMode(enabled:" + enabled + ")");
+            X10SendMouseXYOnButton = enabled;
+        }
+
+        public void SetSendFocusInAndFocusOutEvents(bool enabled)
+        {
+            LogController("SetSendFocusInAndFocusOutEvents(enabled:" + enabled + ")");
+            SendFocusInAndFocusOutEvents = enabled;
+        }
+
+        public void SetUseAllMouseTracking(bool enabled)
+        {
+            LogController("SetUseAllMouseTracking(enabled:" + enabled + ")");
+            UseAllMouseTracking = enabled;
+        }
+
+        public void SetUtf8MouseMode(bool enabled)
+        {
+            LogController("SetUtf8MouseMode(enabled:" + enabled + ")");
+            Utf8MouseMode = enabled;
+        }
+
+        public void SetX11SendMouseXYOnButton(bool enabled)
+        {
+            LogController("SetVt52GraphicsMode(enabled:" + enabled + ")");
+            X11SendMouseXYOnButton = enabled;
+        }
+
         public void RequestDecPrivateMode(int mode)
         {
             LogController("RequestDecPrivateMode(mode:" + mode.ToString() + ")");
@@ -2323,12 +2369,44 @@
                     SendData.Invoke(this, new SendDataEventArgs { Data = DecPrivateModeResponse(mode, CursorState.OriginMode) });
                     break;
 
+                case 9:         // Ps = 9  -> (Send|Don't send) Mouse X & Y on button press.
+                    SendData.Invoke(this, new SendDataEventArgs { Data = DecPrivateModeResponse(mode, X10SendMouseXYOnButton) });
+                    break;
+
                 case 12:        // Blinking Cursor (AT&T 610).
                     SendData.Invoke(this, new SendDataEventArgs { Data = DecPrivateModeResponse(mode, CursorState.BlinkingCursor) });
                     break;
 
                 case 25:        // DECSET
                     SendData.Invoke(this, new SendDataEventArgs { Data = DecPrivateModeResponse(mode, CursorState.ShowCursor) });
+                    break;
+
+                case 1000:      // Ps = 1 0 0 0  -> (Send|Don't send) Mouse X & Y on button press and release.
+                    SendData.Invoke(this, new SendDataEventArgs { Data = DecPrivateModeResponse(mode, X11SendMouseXYOnButton) });
+                    break;
+
+                case 1001:      // Ps = 1 0 0 1  -> (Use|Don't use) Hilite Mouse Tracking.
+                    SendData.Invoke(this, new SendDataEventArgs { Data = DecPrivateModeResponse(mode, HighlightMouseTracking) });
+                    break;
+
+                case 1002:      // Ps = 1 0 0 2  -> (Use|Don't use) Cell Motion Mouse Tracking.
+                    SendData.Invoke(this, new SendDataEventArgs { Data = DecPrivateModeResponse(mode, CellMotionMouseTracking) });
+                    break;
+
+                case 1003:      // Ps = 1 0 0 3  -> (Use|Don't use) All Motion Mouse Tracking.
+                    SendData.Invoke(this, new SendDataEventArgs { Data = DecPrivateModeResponse(mode, UseAllMouseTracking) });
+                    break;
+
+                case 1004:      // Ps = 1 0 0 4  -> (Send|Don't send) FocusIn/FocusOut events.
+                    SendData.Invoke(this, new SendDataEventArgs { Data = DecPrivateModeResponse(mode, SendFocusInAndFocusOutEvents) });
+                    break;
+
+                case 1005:      // Ps = 1 0 0 5  -> (Enable|Disable) UTF-8 Mouse Mode.
+                    SendData.Invoke(this, new SendDataEventArgs { Data = DecPrivateModeResponse(mode, Utf8MouseMode) });
+                    break;
+
+                case 1006:      // Ps = 1 0 0 6  -> (Enable|Disable) SGR Mouse Mode.
+                    SendData.Invoke(this, new SendDataEventArgs { Data = DecPrivateModeResponse(mode, SgrMouseMode) });
                     break;
 
                 default:
@@ -2407,7 +2485,7 @@
         }
 
         /// <summary>
-        /// Sends a mouse press event to the server is highlight mouse tracking is enabled
+        /// Sends a mouse press event to the server when the appropriate mode is configured from the server
         /// </summary>
         /// <param name="x">X coordinate (0 based visual)</param>
         /// <param name="y">X coordinate (1 based visual)</param>
@@ -2416,25 +2494,59 @@
         /// <param name="shiftPressed">true if shift is pressed</param>
         public void MousePress(int x, int y, int buttonNumber, bool controlPressed, bool shiftPressed)
         {
-            if (!SgrMouseMode)
-                return;
+            if(X10SendMouseXYOnButton)
+            {
+                var x10Message = "\u001b[M" + (char)(buttonNumber + ' ') + (char)(' ' + x + 1) + (char)(' ' + y + 1);
 
-            var modifier =
-                (buttonNumber & 0x3) |
-                (controlPressed ? 16 : 0) |
-                (shiftPressed ? 4 : 0);
+                SendData.Invoke(this,
+                    new SendDataEventArgs
+                    {
+                        Data = Utf8MouseMode ?
+                            Encoding.UTF8.GetBytes(x10Message) :
+                            x10Message.Select(s => (byte)(s & 0xFF)).ToArray()
+                    }
+                );
+            }
 
-            var message = "\u001b[<" + modifier.ToString() + ";" + (x + 1).ToString() + ";" + (y + 1).ToString() + "M";
+            if (X11SendMouseXYOnButton || CellMotionMouseTracking || UseAllMouseTracking)
+            {
+                var x11modifier =
+                    (buttonNumber & 0x3) |
+                    (controlPressed ? 16 : 0) |
+                    (shiftPressed ? 4 : 0);
 
-            SendData.Invoke(this, 
-                new SendDataEventArgs {
-                    Data = Encoding.UTF8.GetBytes(message)
-                }
-            );
+                var x11Message = "\u001b[M" + (char)(x11modifier + ' ') + (char)(' ' + x + 1) + (char)(' ' + y + 1);
+
+                SendData.Invoke(this,
+                    new SendDataEventArgs
+                    {
+                        Data = Utf8MouseMode ?
+                            Encoding.UTF8.GetBytes(x11Message) :
+                            x11Message.Select(s => (byte)(s & 0xFF)).ToArray()
+                    }
+                );
+            }
+
+            if (SgrMouseMode)
+            {
+                var modifier =
+                    (buttonNumber & 0x3) |
+                    (controlPressed ? 16 : 0) |
+                    (shiftPressed ? 4 : 0);
+
+                var message = "\u001b[<" + modifier.ToString() + ";" + (x + 1).ToString() + ";" + (y + 1).ToString() + "M";
+
+                SendData.Invoke(this,
+                    new SendDataEventArgs
+                    {
+                        Data = Encoding.UTF8.GetBytes(message)
+                    }
+                );
+            }
         }
 
         /// <summary>
-        /// Sends a mouse press event to the server is highlight mouse tracking is enabled
+        /// Sends a mouse press event to the server when the appropriate mode is configured from the server
         /// </summary>
         /// <param name="x">X coordinate (0 based visual)</param>
         /// <param name="y">X coordinate (1 based visual)</param>
@@ -2442,22 +2554,108 @@
         /// <param name="shiftPressed">true if shift is pressed</param>
         public void MouseRelease(int x, int y, bool controlPressed, bool shiftPressed)
         {
-            if (!SgrMouseMode)
-                return;
+            if (X11SendMouseXYOnButton || CellMotionMouseTracking ||UseAllMouseTracking)
+            {
+                var x11modifier =
+                    (0x3) |
+                    (controlPressed ? 16 : 0) |
+                    (shiftPressed ? 4 : 0);
 
-            var modifier =
-                (0x3) |
-                (controlPressed ? 16 : 0) |
-                (shiftPressed ? 4 : 0);
+                var x11Message = "\u001b[M" + (char)(x11modifier + ' ') + (char)(' ' + x + 1) + (char)(' ' + y + 1);
 
-            var message = "\u001b[<" + modifier.ToString() + ";" + (x + 1).ToString() + ";" + (y + 1).ToString() + "m";
+                SendData.Invoke(this,
+                    new SendDataEventArgs
+                    {
+                        Data = Utf8MouseMode ?
+                            Encoding.UTF8.GetBytes(x11Message) :
+                            x11Message.Select(s => (byte)(s & 0xFF)).ToArray()
+                    }
+                );
+            }
 
-            SendData.Invoke(this,
-                new SendDataEventArgs
-                {
-                    Data = Encoding.UTF8.GetBytes(message)
-                }
-            );
+            if (SgrMouseMode)
+            {
+                var modifier =
+                    (0x3) |
+                    (controlPressed ? 16 : 0) |
+                    (shiftPressed ? 4 : 0);
+
+                var message = "\u001b[<" + modifier.ToString() + ";" + (x + 1).ToString() + ";" + (y + 1).ToString() + "m";
+
+                SendData.Invoke(this,
+                    new SendDataEventArgs
+                    {
+                        Data = Encoding.UTF8.GetBytes(message)
+                    }
+                );
+            }
+        }
+
+        /// <summary>
+        /// Sends a mouse move event to the server when the appropriate mode is configured from the server
+        /// </summary>
+        /// <param name="x">X coordinate (0 based visual)</param>
+        /// <param name="y">X coordinate (1 based visual)</param>
+        /// <param name="buttonNumber">Button number (left=0, right=1, middle=2, noButton=3)</param>
+        /// <param name="controlPressed">true if control is pressed</param>
+        /// <param name="shiftPressed">true if shift is pressed</param>
+        public void MouseMove(int x, int y, int buttonNumber, bool controlPressed, bool shiftPressed)
+        {
+            if (CellMotionMouseTracking && (buttonNumber != 3) || UseAllMouseTracking)
+            {
+                var x11modifier =
+                    (buttonNumber & 0x3) |
+                    (controlPressed ? 16 : 0) |
+                    (shiftPressed ? 4 : 0) |
+                    32;
+
+                var x11Message = "\u001b[M" + (char)(x11modifier + ' ') + (char)(' ' + x + 1) + (char)(' ' + y + 1);
+
+                SendData.Invoke(this,
+                    new SendDataEventArgs
+                    {
+                        Data = Utf8MouseMode ?
+                            Encoding.UTF8.GetBytes(x11Message) :
+                            x11Message.Select(s => (byte)(s & 0xFF)).ToArray()
+                    }
+                );
+            }
+        }
+
+        /// <summary>
+        /// When appropriate for the given mode transmits a got focus message
+        /// </summary>
+        public void FocusIn()
+        {
+            if(SendFocusInAndFocusOutEvents)
+            {
+                var message = "\u001b[I";
+
+                SendData.Invoke(this,
+                    new SendDataEventArgs
+                    {
+                        Data = Encoding.UTF8.GetBytes(message)
+                    }
+                );
+            }
+        }
+
+        /// <summary>
+        /// When appropriate for the given mode transmits a lost focus message
+        /// </summary>
+        public void FocusOut()
+        {
+            if (SendFocusInAndFocusOutEvents)
+            {
+                var message = "\u001b[O";
+
+                SendData.Invoke(this,
+                    new SendDataEventArgs
+                    {
+                        Data = Encoding.UTF8.GetBytes(message)
+                    }
+                );
+            }
         }
     }
 }
