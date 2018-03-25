@@ -2,6 +2,16 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Authors>Darren R. Starr</Authors>
+    <Company>Telenor Inpli AS</Company>
+    <Product>VtNet terminal emulation library</Product>
+    <Version>0.0.1</Version>
+    <Description>A library attempting to implement all features of Xterm for C# so that there's a managed version of this code.</Description>
+    <Copyright>2018 Telenor Inpli AS</Copyright>
+    <PackageProjectUrl>https://github.com/darrenstarr/VtNetCore</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/darrenstarr/VtNetCore</RepositoryUrl>
+    <RepositoryType>Github</RepositoryType>
   </PropertyGroup>
 
 </Project>

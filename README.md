@@ -51,6 +51,38 @@ information.
 
 ## Progress
 
+### 26-March-2018
+
+Let's see... status report
+
+* Colors are almost 100% identical to XTerm
+* Midnight commander is completely functional now
+* byobu is flawless, there is even support for XTerm's font colors and weights
+* Mouse tracking is almost 100%, highlight mode is not implemented because it seems naughty. URXVT is not implemented yet either
+* Character sets seem pretty good
+* Bracketed paste mode isn't there yet. Will implement that soon. It's easy.
+* ECMA-48 compliance is pretty complete except for Scroll Left and Scroll Right (probably tomorrow) and a lot of CJK, R-to-L, printing and serial communication stuff
+* Performance is pretty good
+* Unit tests are progressing pretty nicely
+* Making a switch to simplify painting which will return rows and columns
+* Blinking, concealment, all that stuff is basically implemented
+* Pretty much all vttest tests which I consider important are passing now... way way more than Putty.
+* Scroll back works almost perfect
+* There is something weird with pipe.sh which I need to figure out, there's some strange case with painting past the end of the screen.
+* There are some weird 7 vs 8 bit mode things I don't clearly understand but it shouldn't matter... for now.
+* VT-52 mode is pretty fully implemented and tested
+* I've been running A LOT of stuff and haven't had a single crash in weeks.
+* I would like to work a little on memory, but there doesn't seem to be any real show stoppers here.
+* Once I switch to spans, the host application shouldn't need to work too hard on color handling
+
+So overall, I'm tempted to slap together a user app to get this thing out in the while and thoroughly tested to see how people like it.
+
+I'll work a little on verification images and make a project wiki article on it.
+
+It's time to start making projects and creating issues.
+
+It's also really close to time for making a nuget package.
+
 ### 24-March-2018
 
 Pleased to say that I've fixed the nano bug. It seems that saving scrolling margins isn't part of the cursor state. This seems silly since it means that
