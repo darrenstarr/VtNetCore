@@ -641,6 +641,7 @@
             Columns = VisibleColumns;
             Rows = VisibleRows;
 
+            BracketedPasteMode = false;
             GuardedArea = null;
             GuardedAreaTransferMode = false;
             ErasureMode = false;
