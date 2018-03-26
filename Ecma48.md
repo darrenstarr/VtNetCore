@@ -152,7 +152,7 @@ in standards compliance with ECMA.
 | 8.3.118 SHS - SELECT CHARACTER SPACING        | Ps         | CSI Ps 02/00=' ' 04/11='K'                  | no          |
 | 8.3.119 SI - SHIFT-IN                         | C0         | 00/15 (0x0F)                                | yes         |
 | 8.3.120 SIMD - SELECT IMPLICIT MOVEMENT DIRECTION | Ps     | CSI Ps 05/14 (^)                            | no          |
-| 8.3.121 SL - SCROLL LEFT                      | Pn         | CSI Pn 02/00=' ' 04/00='@'                  | no          |
+| 8.3.121 SL - SCROLL LEFT                      | Pn         | CSI Pn 02/00=' ' 04/00='@'                  | yes         |
 | 8.3.122 SLH - SET LINE HOME                   | Pn         | CSI Pn 02/00=' ' 05/05='U'                  | no          |
 | 8.3.123 SLL - SET LINE LIMIT                  | Pn         | CSI Pn 02/00=' ' 05/06='V'                  | no          |
 | 8.3.124 SLS - SET LINE SPACING                | Pn         | CSI Pn 02/00=' ' 06/08='h'                  | no          |
@@ -165,7 +165,7 @@ in standards compliance with ECMA.
 | 8.3.132 SPI - SPACING INCREMENT               | (Pn1;Pn2)  | CSI Pn1;Pn2 02/00=' ' 04/07='G'             | no          |
 | 8.3.133 SPL - SET PAGE LIMIT                  | Pn         | CSI Pn 02/00=' ' 06/10='j'                  | no          |
 | 8.3.134 SPQR - SELECT PRINT QUALITY AND RAPIDITY | Ps      | CSI Ps 02/00=' ' 05/08='X'                  | no          |
-| 8.3.135 SR - SCROLL RIGHT                     | Pn         | CSI Pn 02/00=' ' 04/01='A'                  | no          |
+| 8.3.135 SR - SCROLL RIGHT                     | Pn         | CSI Pn 02/00=' ' 04/01='A'                  | yes         |
 | 8.3.136 SRCS - SET REDUCED CHARACTER SEPARATION | Pn       | CSI Pn 02/00=' ' 06/06='f'                  | no          |
 | 8.3.137 SRS - START REVERSED STRING           | Ps         | CSI Ps 05/11='['                            | no          |
 | 8.3.138 SSA - START OF SELECTED AREA          | C1         | 08/06 (0x86) or ESC 04/06='F'               | no          |
@@ -933,17 +933,6 @@ There are times where having a picture which describes these things would have b
 means and then see if I can find something which I can use as a reference... this of course depends on whether I want to
 bother with bidi.
 
-#### 8.3.121 SL - SCROLL LEFT
-
-> SL causes the data in the presentation component to be moved by n character positions if the line
-> orientation is horizontal, or by n line positions if the line orientation is vertical, such that the data appear
-> to move to the left; where n equals the value of Pn.
-> 
-> The active presentation position is not affected by this control function.
-
-TODO : On my list to implement. It could be a bit difficult, but I want it in there and in the unit tests before
-I start optimizing the scrolling and text layout engine for the model.
-
 #### 8.3.122 SLH - SET LINE HOME
 
 > If the DEVICE COMPONENT SELECT MODE is set to PRESENTATION, SLH is used to establish at
@@ -1137,16 +1126,6 @@ TODO : Consider implementing as DCSM
 > 2) draft print quality, highest available print speed
 
 Clearly printing related and REALLY REALLY never going to be interesting
-
-#### 8.3.135 SR - SCROLL RIGHT
-
-> SR causes the data in the presentation component to be moved by n character positions if the line
-> orientation is horizontal, or by n line positions if the line orientation is vertical, such that the data appear
-> to move to the right; where n equals the value of Pn.
-> 
-> The active presentation position is not affected by this control function. 
-
-TODO : Absolutely will implement ASAP :)
 
 #### 8.3.136 SRCS - SET REDUCED CHARACTER SEPARATION
 

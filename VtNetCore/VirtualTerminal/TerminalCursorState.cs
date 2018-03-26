@@ -20,6 +20,11 @@
         /// </summary>
         public int CurrentRow { get; set; } = 0;
 
+        public TextPosition Position {
+            get { return new TextPosition { Column = CurrentColumn, Row = CurrentRow }; }
+            set { CurrentColumn = value.Column; CurrentRow = value.Row; }
+        }
+
         /// <summary>
         /// Set to true when in application mode
         /// </summary>
@@ -72,11 +77,6 @@
         /// Specifies whether the terminal should auto insert or replace text on the screen.
         /// </summary>
         public EInsertReplaceMode InsertMode = EInsertReplaceMode.Replace;
-
-        /// <summary>
-        /// Configures that left and right margins should be used
-        /// </summary>
-        public bool LeftAndRightMarginEnabled { get; set; }
 
         /// <summary>
         /// Flags whether the current character set is meant to be read as Utf8
@@ -168,7 +168,6 @@
                 ShowCursor = ShowCursor,
                 BlinkingCursor = BlinkingCursor,
                 CursorShape = CursorShape,
-                LeftAndRightMarginEnabled = LeftAndRightMarginEnabled,
                 Utf8 = Utf8,
                 CharacterSetMode = CharacterSetMode,
                 G0 = G0,
@@ -204,7 +203,6 @@
                 "ShowCursor:" + ShowCursor.ToString() + "\n" +
                 "BlinkingCursor:" + BlinkingCursor.ToString() + "\n" +
                 "CursorShape:" + CursorShape.ToString() + "\n" + 
-                "LeftAndRightMarginEnabled:" + LeftAndRightMarginEnabled.ToString() + "\n" +
                 "Utf8:" + Utf8.ToString() + "\n" +
                 "CharacterSetMode:" + CharacterSetMode.ToString() + "\n" +
                 "G0:" + G0.ToString() + "\n" +

@@ -53,6 +53,32 @@
             return this >= start && this <= end;
         }
 
+        public bool Within(TextRange range)
+        {
+            if (range.RectangleMode)
+                return WithinRect(range.TopLeft, range.BottomRight);
+
+            return Within(range.Start, range.End);
+        }
+
+        public TextPosition Clone()
+        {
+            return new TextPosition
+            {
+                Column = Column,
+                Row = Row
+            };
+        }
+
+        public bool WithinRect(TextPosition topLeft, TextPosition bottomRight)
+        {
+            return
+                Column >= Math.Min(topLeft.Column, bottomRight.Column) &&
+                Column <= Math.Max(topLeft.Column, bottomRight.Column) &&
+                Row >= Math.Min(topLeft.Row, bottomRight.Row) &&
+                Row <= Math.Max(topLeft.Row, bottomRight.Row);
+        }
+
         public bool Equals(TextPosition other)
         {
             if (other != null)

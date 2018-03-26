@@ -87,6 +87,7 @@
         void SaveUseCellMotionMouseTracking();
         void SaveUseHighlightMouseTracking();
         void Scroll(int rows);
+        void ScrollAcross(int columns);
         void SendDeviceAttributes();
         void SendDeviceAttributesSecondary();
         void SetAbsoluteRow(int line);
@@ -97,6 +98,9 @@
         void SetConformanceLevel(int level, bool eightBit);
         void SetCursorPosition(int column, int row);
         void SetCursorStyle(ECursorShape shape, bool blink);
+        void SetEndOfGuardedArea();
+        void SetErasureMode(bool enabled);
+        void SetGuardedAreaTransferMode(bool enabled);
         void SetInsertReplaceMode(EInsertReplaceMode mode);
         void SetIso8613PaletteBackground(int paletteEntry);
         void SetIso8613PaletteForeground(int paletteEntry);
@@ -107,6 +111,8 @@
         void SetRgbForegroundColor(int red, int green, int blue);
         void SetScrollingRegion(int top, int bottom);
         void SetSendFocusInAndFocusOutEvents(bool enabled);
+        void SetStartOfGuardedArea();
+
         void SetUseAllMouseTracking(bool enabled);
         void SetUTF8();
         void SetUtf8MouseMode(bool enabled);

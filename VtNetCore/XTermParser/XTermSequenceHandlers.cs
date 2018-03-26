@@ -124,6 +124,22 @@
             },
             new SequenceHandler
             {
+                Description = "8.3.129 SPA - START OF GUARDED AREA",
+                SequenceType = SequenceHandler.ESequenceType.Escape,
+                CsiCommand = "V",
+                Handler = (sequence, controller) => controller.SetStartOfGuardedArea(),
+                Vt52 = SequenceHandler.Vt52Mode.No
+            },
+            new SequenceHandler
+            {
+                Description = "EPA - END OF GUARDED AREA ",
+                SequenceType = SequenceHandler.ESequenceType.Escape,
+                CsiCommand = "W",
+                Handler = (sequence, controller) => controller.SetEndOfGuardedArea(),
+                Vt52 = SequenceHandler.Vt52Mode.No
+            },
+            new SequenceHandler
+            {
                 Description = "Reverse Index",
                 SequenceType = SequenceHandler.ESequenceType.Escape,
                 CsiCommand = "M",
@@ -294,8 +310,16 @@
                     {
                         switch(parameter)
                         {
+                             case 1:     // Ps = 1  -> Guarded Area Transfer Mode
+                                controller.SetGuardedAreaTransferMode(true);
+                                break;
+
                             case 4:     // Ps = 4  -> Insert Mode (IRM).
                                 controller.SetInsertReplaceMode(EInsertReplaceMode.Insert);
+                                break;
+
+                            case 6:     // Ps = 6  -> Erasure Mode (ERM).
+                                controller.SetErasureMode(true);
                                 break;
 
                             case 20:    // Ps = 2 0  -> Automatic Newline (LNM).
@@ -458,8 +482,16 @@
                     {
                         switch(parameter)
                         {
+                            case 1:     // Ps = 1  -> Guarded Area Transfer Mode
+                                controller.SetGuardedAreaTransferMode(false);
+                                break;
+
                             case 4:     // Ps = 4  -> Replace Mode (IRM).
                                 controller.SetInsertReplaceMode(EInsertReplaceMode.Replace);
+                                break;
+
+                            case 6:     // Ps = 6  -> Erasure Mode (ERM).
+                                controller.SetErasureMode(false);
                                 break;
 
                             case 20:    // Ps = 2 0  -> Normal Linefeed (LNM).
@@ -1250,6 +1282,28 @@
                 SequenceType = SequenceHandler.ESequenceType.Unicode,
                 CsiCommand = "@",
                 Handler = (sequence, controller) => controller.SetLatin1()
+            },
+            new SequenceHandler
+            {
+                Description = "8.3.121 SL - SCROLL LEFT",
+                SequenceType = SequenceHandler.ESequenceType.CSI,
+                CsiCommand = " @",
+                ExactParameterCountOrDefault = 1,
+                Handler = (sequence, controller) =>
+                {
+                    controller.ScrollAcross((sequence.Parameters == null || sequence.Parameters.Count == 0) ? 1 : sequence.Parameters[0]);
+                }
+            },
+            new SequenceHandler
+            {
+                Description = "8.3.135 SR - SCROLL RIGHT",
+                SequenceType = SequenceHandler.ESequenceType.CSI,
+                CsiCommand = " A",
+                ExactParameterCountOrDefault = 1,
+                Handler = (sequence, controller) =>
+                {
+                    controller.ScrollAcross((sequence.Parameters == null || sequence.Parameters.Count == 0) ? -1 : -sequence.Parameters[0]);
+                }
             },
             new SequenceHandler
             {

@@ -19,8 +19,22 @@
         private int alternativeBufferTopRow = 0;
         private int normalBufferTopRow = 0;
 
+        /// <summary>
+        /// Configures the maximum number of lines stored in the history
+        /// </summary>
+        /// <remarks>
+        /// This value is exclusive of the active screen area.
+        /// </remarks>
         public int MaximumHistoryLines { get; set; } = 2001;
 
+        /// <summary>
+        /// Defines the attributes which should be assigned to null character values
+        /// </summary>
+        /// <remarks>
+        /// When drawing the background of the terminal, this attribute should be used to calculate
+        /// the value of the color. The colors set here are the colors which were applied during the
+        /// last screen erase.
+        /// </remarks>
         public TerminalAttribute NullAttribute = new TerminalAttribute();
 
         /// <summary>
@@ -64,15 +78,35 @@
 
         public bool HighlightMouseTracking { get; set; }
 
+        /// <summary>
+        /// Enables sending mouse events including press, release and move only when a button is pressed.
+        /// </summary>
         public bool CellMotionMouseTracking { get; set; }
 
+        /// <summary>
+        /// Enables SGR (Select Graphic Rendition) mouse mode
+        /// </summary>
         public bool SgrMouseMode { get; set; }
 
+        /// <summary>
+        /// Informs the server when the terminal has focus or not
+        /// </summary>
         public bool SendFocusInAndFocusOutEvents { get; set; }
 
+        /// <summary>
+        /// Enables sending mouse events including press, release and move even when no button is pressed.
+        /// </summary>
         public bool UseAllMouseTracking { get; set; }
 
+        /// <summary>
+        /// Signifies that mouse pointer locations should be transmitted as UTF-8 text allowing extents past column 255
+        /// </summary>
         public bool Utf8MouseMode { get; set; }
+
+        /// <summary>
+        /// Encapsulates pasted text so that receiving applications know it was explicitly pasted.
+        /// </summary>
+        public bool BracketedPasteMode { get; set; }
 
         /// <summary>
         /// X10 Protocol send mouse XY on button press
@@ -83,6 +117,21 @@
         /// X11 Protocol send mouse XY on button press
         /// </summary>
         public bool X11SendMouseXYOnButton { get; set; }
+
+        /// <summary>
+        /// Guarded text area range
+        /// </summary>
+        public TextRange GuardedArea { get; set; }
+
+        /// <summary>
+        /// Erasure mode (ERM)
+        /// </summary>
+        public bool ErasureMode { get; set; }
+
+        /// <summary>
+        /// Guarded Area Transfer Mode
+        /// </summary>
+        public bool GuardedAreaTransferMode { get; set; }
 
         /// <summary>
         /// Set to true when Vt52 Mode is enabled.
@@ -112,10 +161,35 @@
         /// </summary>
         public bool Debugging { get; set; }
 
+        /// <summary>
+        /// Specifies the visual scrolling region top in base 0
+        /// </summary>
         public int ScrollTop { get; set; }
+
+        /// <summary>
+        /// Specifies the visual scrolling region bottom in base 0. -1 signifies no bottom set.
+        /// </summary>
+        /// <remarks>
+        /// When there is no bottom set and scrolling passes the bottom of the screen, then the history
+        /// buffer is advanced. But if the scrolling region is configured to be a portion of the screen
+        /// the history buffer is simply adjusted (overwritten) in place.
+        /// </remarks>
         public int ScrollBottom { get; set; } = -1;
+
+        /// <summary>
+        /// Specifies the left margin in base 0.
+        /// </summary>
         public int LeftMargin { get; set; }
+
+        /// <summary>
+        /// Specifies the right margin in base 0. -1 specifies no right margin is currently set.
+        /// </summary>
         public int RightMargin { get; set; } = -1;
+
+        /// <summary>
+        /// Configures that left and right margins should be used
+        /// </summary>
+        public bool LeftAndRightMarginEnabled { get; set; }
 
         /// <summary>
         /// Holds a reference to the last character set.
@@ -129,6 +203,9 @@
         /// <summary>
         /// Provides a dump of the current state of this control.
         /// </summary>
+        /// <todo>
+        /// This is in desperate need of updating.
+        /// </todo>
         public string DebugText
         {
             get
@@ -267,6 +344,12 @@
         /// </summary>
         public bool Changed { get { return ChangeCount > 0; } }
 
+        /// <summary>
+        /// Returns the character at the given screen location
+        /// </summary>
+        /// <param name="x">The column in base-0 coordinates</param>
+        /// <param name="y">The row in base 0 coordinates</param>
+        /// <returns>The character or null if none present</returns>
         internal TerminalCharacter GetVisibleCharModel(int x, int y)
         {
             if ((TopRow + y) >= Buffer.Count)
@@ -279,6 +362,12 @@
             return line[x];
         }
 
+        /// <summary>
+        /// Returns a character at the given visible screen position
+        /// </summary>
+        /// <param name="x">The column in base-0 coordinates</param>
+        /// <param name="y">The row in base 0 coordinates</param>
+        /// <returns>The character or space if none present</returns>
         internal string GetVisibleChar(int x, int y)
         {
             if ((TopRow + y) >= Buffer.Count)
@@ -368,7 +457,7 @@
                     for (var x = 0; x < Columns; x++)
                     {
                         var ch = GetVisibleCharModel(x, y);
-                        result += (ch != null && ch.Attributes.Protected == 1) ? "X" : ".";
+                        result += (ch != null && (ch.Attributes.Protected == 1 || (GuardedArea != null && GuardedArea.Within(x, y)))) ? "X" : ".";
                     }
 
                     if (y < (Rows - 1))
@@ -545,11 +634,16 @@
             ScrollBottom = -1;
             LeftMargin = 0;
             RightMargin = -1;
+            LeftAndRightMarginEnabled = false;
 
             LastCharacter = null;
 
             Columns = VisibleColumns;
             Rows = VisibleRows;
+
+            GuardedArea = null;
+            GuardedAreaTransferMode = false;
+            ErasureMode = false;
 
             ChangeCount++;
         }
@@ -712,14 +806,14 @@
             return GetLine(TopRow + CursorState.CurrentRow);
         }
 
-        private TerminalCharacter GetCurrentCharacter()
-        {
-            var line = GetCurrentLine();
-            if (line == null || line.Count <= CursorState.CurrentColumn)
-                return null;
+        //private TerminalCharacter GetCurrentCharacter()
+        //{
+        //    var line = GetCurrentLine();
+        //    if (line == null || line.Count <= CursorState.CurrentColumn)
+        //        return null;
 
-            return line[CursorState.CurrentColumn];
-        }
+        //    return line[CursorState.CurrentColumn];
+        //}
 
         private TerminalCharacter GetCharacterAt(int row, int column)
         {
@@ -749,19 +843,35 @@
             return GetLine(y + TopRow);
         }
 
+        /// <summary>
+        /// Returns the character at the given position or a new blank character if none is present
+        /// </summary>
+        /// <param name="x">The column in base 0</param>
+        /// <param name="y">The row in base zero relative to the full history buffer</param>
+        /// <returns></returns>
         private TerminalCharacter GetCharacter(int x, int y)
         {
             var line = GetVisualLine(y);
+
             if (line == null || x >= line.Count)
+            {
                 return new TerminalCharacter
                 {
                     Char = ' ',
-                    Attributes = CursorState.Attributes
+                    Attributes = NullAttribute.Clone()
                 };
+            }
 
             return line[x];
         }
 
+        /// <summary>
+        /// Copies a vertical span of characters from one line to another
+        /// </summary>
+        /// <param name="x1">The 0-based left column</param>
+        /// <param name="x2">The 0-based right column</param>
+        /// <param name="fromLine">The 0-based source row relative to the buffer</param>
+        /// <param name="toLine">The 0-based destination row relative to the buffer</param>
         private void MoveCharacters(int x1, int x2, int fromLine, int toLine)
         {
             for (int x = x1; x <= x2; x++)
@@ -771,9 +881,20 @@
             }
         }
 
+        /// <summary>
+        /// Scrolls the contents of the buffer vertically by the given number of rows
+        /// </summary>
+        /// <param name="x1">The zero based left column</param>
+        /// <param name="y1">The zero based top row relative to the active area</param>
+        /// <param name="x2">The zero based right column</param>
+        /// <param name="y2">The zero based bottom row relative to the active area</param>
+        /// <param name="count">The number of rows to scroll. Positive scrolls up, negative scrolls down</param>
         private void ScrollVisualRect(int x1, int y1, int x2, int y2, int count)
         {
             LogController("ScrollVisualRect(x1:" + x1.ToString() + ",y1:" + y1.ToString() + ",x2:" + x2.ToString() + ",y2:" + y2.ToString() + ",count:" + count.ToString() + ")");
+
+            if (count == 0)
+                return;
 
             int height = y2 - y1 + 1;
             if (Math.Abs(count) >= height)
@@ -799,9 +920,16 @@
             }
         }
 
+        /// <summary>
+        /// Scrolls the current buffer by the given number of rows
+        /// </summary>
+        /// <remarks>
+        /// This function takes into consideration the margins (for left and right as well as top and bottom)
+        /// </remarks>
+        /// <param name="rows"></param>
         public void Scroll(int rows)
         {
-            if (CursorState.LeftAndRightMarginEnabled && CursorState.CurrentColumn >= LeftMargin && CursorState.CurrentColumn <= RightMargin)
+            if (LeftAndRightMarginEnabled && CursorState.CurrentColumn >= LeftMargin && CursorState.CurrentColumn <= RightMargin)
             {
                 ScrollVisualRect(
                     LeftMargin,
@@ -823,6 +951,89 @@
             }
         }
 
+        /// <summary>
+        /// Copies a vertical span of characters from one line to another
+        /// </summary>
+        /// <param name="y1">The 0-based top row</param>
+        /// <param name="y2">The 0-based bottom row</param>
+        /// <param name="fromColumn">The 0-based source column relative to the buffer</param>
+        /// <param name="toColumn">The 0-based destination column relative to the buffer</param>
+        private void MoveCharactersAcross(int y1, int y2, int fromColumn, int toColumn)
+        {
+            for (int y = y1; y <= y2; y++)
+            {
+                var ch = GetCharacter(fromColumn, y);
+                SetCharacter(toColumn, y, ch.Char, ch.Attributes);
+            }
+        }
+
+        /// <summary>
+        /// Scrolls the contents of the buffer horizontally by the given number of columns
+        /// </summary>
+        /// <param name="x1">The zero based left column</param>
+        /// <param name="y1">The zero based top row relative to the active area</param>
+        /// <param name="x2">The zero based right column</param>
+        /// <param name="y2">The zero based bottom row relative to the active area</param>
+        /// <param name="count">The number of columns to scroll. Positive scrolls right, negative scrolls left</param>
+        private void ScrollVisualRectAcross(int x1, int y1, int x2, int y2, int count)
+        {
+            LogController("ScrollVisualRectAcross(x1:" + x1.ToString() + ",y1:" + y1.ToString() + ",x2:" + x2.ToString() + ",y2:" + y2.ToString() + ",count:" + count.ToString() + ")");
+
+            if (count == 0)
+                return;
+
+            int width = x2 - x1 + 1;
+            if (Math.Abs(count) >= width)
+            {
+                FillVisualRect(x1, y1, x2, y2, ' ', CursorState.Attributes);
+                return;
+            }
+
+            if (count > 0)
+            {
+                for (var i = 0; i < width - count; i++)
+                    MoveCharactersAcross(y1, y2, x1 + i + count, x1 + i);
+
+                FillVisualRect(x1 + width - count, y1, x2, y2, ' ', CursorState.Attributes);
+            }
+            else
+            {
+                count = Math.Abs(count);
+                for (var i = 0; i < width - count; i++)
+                    MoveCharactersAcross(y1, y2, x2 - i - count, x2 - i);
+
+                FillVisualRect(x1, y1, x1 + count - 1, y2, ' ', CursorState.Attributes);
+            }
+        }
+
+        /// <summary>
+        /// Scrolls the buffer the given number of columns within the margins
+        /// </summary>
+        /// <param name="columns">The number of columns to scroll</param>
+        public void ScrollAcross(int columns)
+        {
+            if (LeftAndRightMarginEnabled && CursorState.CurrentColumn >= LeftMargin && CursorState.CurrentColumn <= RightMargin)
+            {
+                ScrollVisualRectAcross(
+                    LeftMargin,
+                    ScrollTop,
+                    RightMargin,
+                    ScrollBottom == -1 ? Rows - 1 : ScrollBottom,
+                    columns
+                );
+            }
+            else
+            {
+                ScrollVisualRectAcross(
+                   0,
+                   ScrollTop,
+                   VisibleColumns - 1,
+                   ScrollBottom == -1 ? Rows - 1 : ScrollBottom,
+                   columns
+               );
+            }
+        }
+
         public void NewLine()
         {
             LogExtreme("NewLine()");
@@ -837,7 +1048,7 @@
                 _rawText[_rawTextLength++] = '\n';
             }
 
-            if (CursorState.LeftAndRightMarginEnabled && CursorState.CurrentColumn >= LeftMargin && CursorState.CurrentColumn <= RightMargin)
+            if (LeftAndRightMarginEnabled && CursorState.CurrentColumn >= LeftMargin && CursorState.CurrentColumn <= RightMargin)
             {
                 CursorState.CurrentRow++;
                 if (
@@ -892,12 +1103,25 @@
                 CarriageReturn();
         }
 
+        /// <summary>
+        /// Moves the cursor to the next vertical tab stop
+        /// </summary>
+        /// <todo>
+        /// This is not completely implemented as vertical tab stops are not implemented.
+        /// Instead this code makes the assumption that all lines are vertical tab stops.
+        /// </todo>
         public void VerticalTab()
         {
             LogController("VerticalTab()");
             MoveCursorRelative(0, 1);
         }
 
+        /// <summary>
+        /// Moves the cursor down one line similar to new line.
+        /// </summary>
+        /// <remarks>
+        /// I don't see anything more definitive for how to process form feed on a screen
+        /// </remarks>
         public void FormFeed()
         {
             LogController("FormFeed()");
@@ -909,7 +1133,7 @@
             LogController("ReverseIndex()");
 
             if (
-                CursorState.LeftAndRightMarginEnabled &&
+                LeftAndRightMarginEnabled &&
                 CursorState.CurrentColumn >= LeftMargin &&
                 CursorState.CurrentColumn <= RightMargin
             )
@@ -955,6 +1179,13 @@
             }
         }
 
+        /// <summary>
+        /// Returns the number of columns for the current line for processing tabs and mouse motion
+        /// </summary>
+        /// <remarks>
+        /// This should consider character widths. At this time, it does not support anything other than normal and
+        /// double width.
+        /// </remarks>
         private int CurrentLineColumns
         {
             get
@@ -1022,7 +1253,7 @@
                 CursorState.CurrentRow = TopRow + VisibleRows - 1;
 
             CursorState.CurrentColumn = column - 1;
-            if (CursorState.LeftAndRightMarginEnabled)
+            if (LeftAndRightMarginEnabled)
             {
                 if (CursorState.OriginMode && CursorState.CurrentColumn < LeftMargin)
                     CursorState.CurrentColumn = LeftMargin;
@@ -1163,6 +1394,14 @@
             ChangeCount++;
         }
 
+        /// <summary>
+        /// Returns whether the character is considered to be "Right Graphics"
+        /// </summary>
+        /// <todo>
+        /// I believe this is good enough for now.
+        /// </todo>
+        /// <param name="character">The character to test</param>
+        /// <returns>True if in the high character region</returns>
         private bool IsRGrCharacter(char character)
         {
             return
@@ -1579,7 +1818,8 @@
 
         public void SetBracketedPasteMode(bool enable)
         {
-            LogController("Unimplemented: SetBracketedPasteMode(enable:" + enable.ToString() + ")");
+            LogController("SetBracketedPasteMode(enable:" + enable.ToString() + ")");
+            BracketedPasteMode = enable;
         }
 
         public void SaveBracketedPasteMode()
@@ -1655,7 +1895,7 @@
         {
             LogController("SetLeftAndRightMargins(left:" + left.ToString() + ",right:" + right.ToString() + ")");
 
-            if (!CursorState.LeftAndRightMarginEnabled)
+            if (!LeftAndRightMarginEnabled)
                 return;
 
             LeftMargin = left - 1;
@@ -1770,7 +2010,7 @@
                 return;
 
             if (
-                CursorState.LeftAndRightMarginEnabled &&
+                LeftAndRightMarginEnabled &&
                 (
                     CursorState.CurrentColumn < LeftMargin ||
                     CursorState.CurrentColumn > RightMargin
@@ -1781,7 +2021,7 @@
             if ((CursorState.CurrentRow + TopRow) >= Buffer.Count)
                 return;
 
-            if (CursorState.LeftAndRightMarginEnabled)
+            if (LeftAndRightMarginEnabled)
             {
                 var scrollTop = CursorState.CurrentRow;
                 var scrollBottom = ScrollBottom;
@@ -1817,7 +2057,7 @@
             LogController("InsertBlank(count:" + count.ToString() + ")");
 
             if (
-                CursorState.LeftAndRightMarginEnabled &&
+                LeftAndRightMarginEnabled &&
                 (
                     CursorState.CurrentColumn < LeftMargin ||
                     CursorState.CurrentColumn > RightMargin
@@ -1833,7 +2073,7 @@
                 line.Add(new TerminalCharacter { Attributes = NullAttribute.Clone() } );
 
             var removeAt = Columns;
-            if (CursorState.LeftAndRightMarginEnabled)
+            if (LeftAndRightMarginEnabled)
                 removeAt = RightMargin + 1;
 
             for (var i = 0; i < count; i++)
@@ -1850,7 +2090,7 @@
             LogController("DeleteCharacter(count:" + count.ToString() + ", row:" + row.ToString() + ")");
 
             if (
-                CursorState.LeftAndRightMarginEnabled &&
+                LeftAndRightMarginEnabled &&
                 (
                     CursorState.CurrentColumn < LeftMargin ||
                     CursorState.CurrentColumn > RightMargin
@@ -1864,7 +2104,7 @@
             var line = Buffer[row];
 
             var insertAt = Columns + 1;
-            if (CursorState.LeftAndRightMarginEnabled)
+            if (LeftAndRightMarginEnabled)
                 insertAt = RightMargin;
 
             while (count > 0 && CursorState.CurrentColumn < line.Count)
@@ -1899,7 +2139,7 @@
                 return;
 
             if (
-                CursorState.LeftAndRightMarginEnabled &&
+                LeftAndRightMarginEnabled &&
                 (
                     CursorState.CurrentColumn < LeftMargin ||
                     CursorState.CurrentColumn > RightMargin
@@ -1932,7 +2172,7 @@
                 return;
 
             if (
-                CursorState.LeftAndRightMarginEnabled &&
+                LeftAndRightMarginEnabled &&
                 (
                     CursorState.CurrentColumn < LeftMargin ||
                     CursorState.CurrentColumn > RightMargin
@@ -1965,7 +2205,7 @@
                 return;
 
             if (
-                CursorState.LeftAndRightMarginEnabled &&
+                LeftAndRightMarginEnabled &&
                 (
                     CursorState.CurrentColumn < LeftMargin ||
                     CursorState.CurrentColumn > RightMargin
@@ -1976,7 +2216,7 @@
             if ((CursorState.CurrentRow + TopRow) >= Buffer.Count)
                 return;
 
-            if (CursorState.LeftAndRightMarginEnabled)
+            if (LeftAndRightMarginEnabled)
             {
                 var scrollTop = CursorState.CurrentRow;
                 var scrollBottom = ScrollBottom;
@@ -2010,7 +2250,7 @@
 
             NullAttribute = CursorState.Attributes.Clone();
 
-            if(!ignoreProtected)
+            if(!ignoreProtected || GuardedArea != null)
             {
                 EraseAbove(ignoreProtected);
                 EraseBelow(ignoreProtected);
@@ -2106,14 +2346,14 @@
         {
             LogController("EnableLeftAndRightMarginMode(enable:" + enable.ToString() + ")");
 
-            if (CursorState.LeftAndRightMarginEnabled != enable)
+            if (LeftAndRightMarginEnabled != enable)
             {
                 if (enable)
                 {
                     LeftMargin = 0;
                     RightMargin = Columns;
                 }
-                CursorState.LeftAndRightMarginEnabled = enable;
+                LeftAndRightMarginEnabled = enable;
             }
         }
 
@@ -2231,9 +2471,20 @@
                     SetCharacter(x, y, (char)('A' + Math.Abs(x - y) % 26), CursorState.Attributes);
         }
 
-        private void Send(byte[] v)
+        private void Send(byte[] value)
         {
-            SendData.Invoke(this, new SendDataEventArgs { Data = v });
+            SendData.Invoke(this, new SendDataEventArgs { Data = value });
+        }
+
+        private static readonly byte[] BracketedPasteModePrefix = Encoding.ASCII.GetBytes("\u001b[200~,");
+        private static readonly byte[] BracketedPasteModePostfix = Encoding.ASCII.GetBytes("\u001b[200~,");
+
+        public void Paste(byte [] toPaste)
+        {
+            if (BracketedPasteMode)
+                Send(BracketedPasteModePrefix.Concat(toPaste).Concat(BracketedPasteModePostfix).ToArray());
+            else
+                Send(toPaste);
         }
 
         private TerminalCharacter SetCharacter(int currentColumn, int currentRow, char ch, TerminalAttribute attribute, bool overwriteProtected=true)
@@ -2246,7 +2497,7 @@
                 line.Add(new TerminalCharacter { Char = ' ', Attributes = NullAttribute.Clone() });
 
             var character = line[currentColumn];
-            if (overwriteProtected || (!overwriteProtected && character.Attributes.Protected != 1))
+            if ((GuardedArea == null && overwriteProtected) || (!overwriteProtected && character.Attributes.Protected != 1) || (GuardedArea != null && !GuardedArea.Within(currentColumn, currentRow)))
             {
                 character.Char = ch;
                 character.Attributes = CursorState.Attributes.Clone();
@@ -2357,6 +2608,50 @@
         {
             LogController("SetVt52GraphicsMode(enabled:" + enabled + ")");
             X11SendMouseXYOnButton = enabled;
+        }
+
+        public void SetStartOfGuardedArea()
+        {
+            LogController("SetStartOfGuardedArea()");
+
+            if (GuardedArea == null)
+            {
+                GuardedArea = new TextRange
+                {
+                    Start = CursorState.Position.Clone(),
+                    End = CursorState.Position.Clone()
+                };
+            }
+            else
+                GuardedArea.Start = CursorState.Position.Clone();
+        }
+
+        public void SetEndOfGuardedArea()
+        {
+            LogController("SetEndOfGuardedArea()");
+
+            if (GuardedArea == null)
+            {
+                GuardedArea = new TextRange
+                {
+                    Start = CursorState.Position.Clone(),
+                    End = CursorState.Position.Clone()
+                };
+            }
+            else
+                GuardedArea.End = CursorState.Position.Clone();
+        }
+
+        public void SetErasureMode(bool enabled)
+        {
+            LogController("SetErasureMode(enabled:" + enabled + ")");
+            ErasureMode = enabled;
+        }
+
+        public void SetGuardedAreaTransferMode(bool enabled)
+        {
+            LogController("SetGuardedAreaTransferMode(enabled:" + enabled + ")");
+            GuardedAreaTransferMode = enabled;
         }
 
         public void RequestDecPrivateMode(int mode)
