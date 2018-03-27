@@ -242,6 +242,23 @@
         }
 
         /// <summary>
+        /// Returns a deep copy of the attribute with reversed colors
+        /// </summary>
+        /// <returns>A deep copy operation</returns>
+        public TerminalAttribute Inverse
+        {
+            get
+            {
+                return new TerminalAttribute
+                {
+                    InternalBits = (ushort)((InternalBits & 0xFFC0) | ((InternalBits & 0x0007) << 3) | ((InternalBits >> 3) & 0x0007)),
+                    ForegroundRgb = BackgroundRgb == null ? null : new TerminalColor(BackgroundRgb),
+                    BackgroundRgb = ForegroundRgb == null ? null : new TerminalColor(ForegroundRgb),
+                };
+            }
+        }
+
+        /// <summary>
         /// Returns the foreground color as a web color
         /// </summary>
         public string WebColor
@@ -265,7 +282,7 @@
                 if (BackgroundRgb != null)
                     return BackgroundRgb.WebColor;
 
-                return (new TerminalColor(BackgroundColor, Bright)).WebColor;
+                return (new TerminalColor(BackgroundColor, false)).WebColor;
             }
         }
 

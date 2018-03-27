@@ -1,7 +1,7 @@
 ﻿namespace VtNetCore.VirtualTerminal
 {
     using System;
-    using System.Collections;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Text;
     using VtNetCore.VirtualTerminal.Encodings;
@@ -457,7 +457,7 @@
                     for (var x = 0; x < Columns; x++)
                     {
                         var ch = GetVisibleCharModel(x, y);
-                        result += (ch != null && (ch.Attributes.Protected == 1 || (GuardedArea != null && GuardedArea.Within(x, y)))) ? "X" : ".";
+                        result += (ch != null && (ch.Attributes.Protected == 1 || (GuardedArea != null && GuardedArea.Contains(x, y)))) ? "X" : ".";
                     }
 
                     if (y < (Rows - 1))
@@ -466,6 +466,121 @@
 
                 return result;
             }
+        }
+
+        /// <summary>
+        /// Returns a visible structure of the screen organized as rows and spans.
+        /// </summary>
+        /// <param name="startingLine">The zero based line to return relative to the history buffer</param>
+        /// <param name="lineCount">The number of lines to return. -1 returns everything from the start of the buffer</param>
+        /// <param name="width">The fixed width of the screen. If this is less than 1, then no right padding will be applied</param>
+        /// <param name="invertedRange">Specifies the range to invert. This is so that text selection can be handled.</param>
+        /// <returns>A list of rows and spans for painting</returns>
+        public List<Layout.LayoutRow> GetPageSpans(int startingLine, int lineCount, int width=-1, TextRange invertedRange=null)
+        {
+            var result = new List<Layout.LayoutRow>();
+
+            if (invertedRange == null)
+                invertedRange = 
+                    new TextRange
+                    {
+                        Start = new TextPosition
+                        {
+                            Row = -1
+                        },
+                        End = new TextPosition
+                        {
+                            Row = -1
+                        }
+                    };
+
+            var currentAttribute = new TerminalAttribute();
+
+            if (lineCount == -1)
+                lineCount = Buffer.Count - startingLine;
+
+            for(var y=0; y<lineCount; y++)
+            {
+                var sourceLine = GetLine(y + startingLine);
+                var sourceChar = (sourceLine == null || sourceLine.Count == 0) ? null : sourceLine[0];
+
+                currentAttribute = sourceChar == null ? NullAttribute : ((CursorState.ReverseVideoMode ^ invertedRange.Contains(0, y) ^ sourceChar.Attributes.Reverse) ? sourceChar.Attributes.Inverse : sourceChar.Attributes);
+
+                var currentRow = new Layout.LayoutRow
+                {
+                    LogicalRowNumber = y + startingLine,
+                    DoubleWidth = (sourceLine == null) ? false : sourceLine.DoubleWidth,
+                    DoubleHeightTop = (sourceLine == null) ? false : sourceLine.DoubleHeightTop,
+                    DoubleHeightBottom = (sourceLine == null) ? false : sourceLine.DoubleHeightBottom
+                };
+                result.Add(currentRow);
+
+                var currentSpan = new Layout.LayoutSpan
+                {
+                    ForgroundColor = currentAttribute.WebColor,
+                    BackgroundColor = currentAttribute.BackgroundWebColor,
+                    Hidden = currentAttribute.Hidden,
+                    Blink = currentAttribute.Blink,
+                    Bold = currentAttribute.Bright,
+                    Italic = false,
+                    Underline = currentAttribute.Underscore,
+                    Text = ""
+                };
+                currentRow.Spans.Add(currentSpan);
+
+                if (sourceLine == null && width > 0)
+                    currentSpan.Text = string.Empty.PadRight(width, ' ');
+                else if (sourceLine != null)
+                {
+                    var lineWidth = width > 0 ? width : sourceLine.Count;
+                    if (sourceLine.DoubleWidth)
+                        lineWidth /= 2;
+
+                    var x = 0;
+                    while (x < lineWidth && x < sourceLine.Count)
+                    {
+                        var attributeAtThisPosition = ((CursorState.ReverseVideoMode ^ invertedRange.Contains(x, y) ^ sourceLine[x].Attributes.Reverse) ? sourceLine[x].Attributes.Inverse : sourceLine[x].Attributes);
+                        if (!currentAttribute.Equals(attributeAtThisPosition))
+                        {
+                            currentAttribute = attributeAtThisPosition;
+
+                            currentSpan = new Layout.LayoutSpan
+                            {
+                                ForgroundColor = currentAttribute.WebColor,
+                                BackgroundColor = currentAttribute.BackgroundWebColor,
+                                Hidden = currentAttribute.Hidden,
+                                Blink = currentAttribute.Blink,
+                                Bold = currentAttribute.Bright,
+                                Italic = false,
+                                Underline = currentAttribute.Underscore,
+                                Text = ""
+                            };
+                            currentRow.Spans.Add(currentSpan);
+                        }
+
+                        currentSpan.Text += sourceLine[x].Char + sourceLine[x].CombiningCharacters;
+                        x++;
+                    }
+
+                    if (x < lineWidth)
+                    {
+                        currentSpan = new Layout.LayoutSpan
+                        {
+                            ForgroundColor = CursorState.ReverseVideoMode ? NullAttribute.BackgroundWebColor : NullAttribute.WebColor,
+                            BackgroundColor = CursorState.ReverseVideoMode ? NullAttribute.WebColor : NullAttribute.BackgroundWebColor,
+                            Hidden = NullAttribute.Hidden,
+                            Blink = NullAttribute.Blink,
+                            Bold = NullAttribute.Bright,
+                            Italic = false,
+                            Underline = NullAttribute.Underscore,
+                            Text = string.Empty.PadRight(lineWidth - x, ' ')
+                        };
+                        currentRow.Spans.Add(currentSpan);
+                    }
+                }
+            }
+
+            return result;
         }
 
         /// <summary>
@@ -831,12 +946,17 @@
             return character == null ? false : (character.Attributes.Protected == 1);
         }
 
-        private TerminalLine GetLine(int y)
+        /// <summary>
+        /// Returns the specified line within the buffer or null if past end
+        /// </summary>
+        /// <param name="lineNumber">The line number</param>
+        /// <returns>The line requested or null</returns>
+        private TerminalLine GetLine(int lineNumber)
         {
-            if (y >= Buffer.Count)
+            if (lineNumber >= Buffer.Count)
                 return null;
 
-            return Buffer[y];
+            return Buffer[lineNumber];
         }
 
         private TerminalLine GetVisualLine(int y)
@@ -2498,7 +2618,7 @@
                 line.Add(new TerminalCharacter { Char = ' ', Attributes = NullAttribute.Clone() });
 
             var character = line[currentColumn];
-            if ((GuardedArea == null && overwriteProtected) || (!overwriteProtected && character.Attributes.Protected != 1) || (GuardedArea != null && !GuardedArea.Within(currentColumn, currentRow)))
+            if ((GuardedArea == null && overwriteProtected) || (!overwriteProtected && character.Attributes.Protected != 1) || (GuardedArea != null && !GuardedArea.Contains(currentColumn, currentRow)))
             {
                 character.Char = ch;
                 character.Attributes = CursorState.Attributes.Clone();

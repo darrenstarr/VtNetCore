@@ -9,7 +9,7 @@
 
         public bool RectangleMode { get; set; }
 
-        public bool Within(TextPosition position)
+        public bool Contains(TextPosition position)
         {
             if (RectangleMode)
                 position.WithinRect(TopLeft, BottomRight);
@@ -17,7 +17,7 @@
             return position.Within(Start, End);
         }
 
-        public bool Within(int column, int row)
+        public bool Contains(int column, int row)
         {
             if(RectangleMode)
                 return (new TextPosition { Column = column, Row = row }).WithinRect(TopLeft, BottomRight);
