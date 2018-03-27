@@ -1,5 +1,8 @@
 # VtNetCore
 
+![Build status](https://ci.appveyor.com/api/projects/status/9ugagv9y9qqyl8ym?svg=true "Release")
+
+
 ## Introduction
 
 This is a VT100/XTerm style terminal emulator library for the .NET Standard 2.0 framework. 
