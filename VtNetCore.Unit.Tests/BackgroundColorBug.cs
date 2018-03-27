@@ -77,30 +77,30 @@ namespace VtNetCoreUnitTests
         }
 
         public static readonly string ExpectedDarkBackgroundPage =
-        "<foreground value='#CDCD00' /><background value='#0000CD' />                   Graphic rendition test pattern:→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→↵" + 
-        "→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→↵" + 
-        "→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→↵" + 
-        "<foreground value='#CDCDCD' /><background value='#000000' />vanilla<foreground value='#CDCD00' /><background value='#0000CD' />                                <bright><foreground value='#FFFFFF' /><background value='#7F7F7F' />bold→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→↵" + 
-        "→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→↵" + 
-        "</bright><foreground value='#CDCD00' /><background value='#0000CD' />     <underscore><foreground value='#CDCDCD' /><background value='#000000' />underline</underscore><foreground value='#CDCD00' /><background value='#0000CD' />                              <bright><underscore><foreground value='#FFFFFF' /><background value='#7F7F7F' />bold underline→→→→→→→→→→→→→→→→→→→→→→↵" + 
-        "→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→↵" + 
-        "<blink></bright></underscore><foreground value='#CDCDCD' /><background value='#000000' />blink</blink><foreground value='#CDCD00' /><background value='#0000CD' />                                  <blink><bright><foreground value='#FFFFFF' /><background value='#7F7F7F' />bold blink→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→↵" + 
-        "→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→↵" + 
-        "</blink></bright><foreground value='#CDCD00' /><background value='#0000CD' />     <blink><underscore><foreground value='#CDCDCD' /><background value='#000000' />underline blink</blink></underscore><foreground value='#CDCD00' /><background value='#0000CD' />                        <blink><bright><underscore><foreground value='#FFFFFF' /><background value='#7F7F7F' />bold underline blink→→→→→→→→→→→→→→→→↵" + 
-        "→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→↵" + 
-        "</blink></bright><reverse></underscore><foreground value='#CDCDCD' /><background value='#000000' />negative</reverse><foreground value='#CDCD00' /><background value='#0000CD' />                               <bright><reverse><foreground value='#FFFFFF' /><background value='#7F7F7F' />bold negative→→→→→→→→→→→→→→→→→→→→→→→→→→→→↵" + 
-        "→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→↵" + 
-        "</bright></reverse><foreground value='#CDCD00' /><background value='#0000CD' />     <reverse><underscore><foreground value='#CDCDCD' /><background value='#000000' />underline negative</reverse></underscore><foreground value='#CDCD00' /><background value='#0000CD' />                     <bright><reverse><underscore><foreground value='#FFFFFF' /><background value='#7F7F7F' />bold underline negative→→→→→→→→→→→→→↵" + 
-        "→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→↵" + 
-        "<blink></bright></underscore><foreground value='#CDCDCD' /><background value='#000000' />blink negative</blink></reverse><foreground value='#CDCD00' /><background value='#0000CD' />                         <blink><bright><reverse><foreground value='#FFFFFF' /><background value='#7F7F7F' />bold blink negative→→→→→→→→→→→→→→→→→→→→→→↵" + 
-        "→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→↵" + 
-        "</blink></bright></reverse><foreground value='#CDCD00' /><background value='#0000CD' />     <blink><reverse><underscore><foreground value='#CDCDCD' /><background value='#000000' />underline blink negative</blink></reverse></underscore><foreground value='#CDCD00' /><background value='#0000CD' />               <blink><bright><reverse><underscore><foreground value='#FFFFFF' /><background value='#7F7F7F' />bold underline blink negative→→→→→→→↵" + 
-        "→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→↵" + 
-        "→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→↵" + 
-        "→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→↵" + 
-        "→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→↵" + 
-        "</blink></bright></reverse></underscore><foreground value='#CDCDCD' /><background value='#000000' />Dark background.Push<RETURN>                                                    ↵" + 
-        "→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→";
+            "<foreground value='#CDCD00' /><background value='#0000CD' />                   Graphic rendition test pattern:→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→↵" + 
+            "→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→↵" + 
+            "→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→↵" + 
+            "<foreground value='#CDCDCD' /><background value='#000000' />vanilla<foreground value='#CDCD00' /><background value='#0000CD' />                                <bright><foreground value='#FFFFFF' /><background value='#000000' />bold→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→↵" + 
+            "→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→↵" + 
+            "</bright><foreground value='#CDCD00' /><background value='#0000CD' />     <underscore><foreground value='#CDCDCD' /><background value='#000000' />underline</underscore><foreground value='#CDCD00' /><background value='#0000CD' />                              <bright><underscore><foreground value='#FFFFFF' /><background value='#000000' />bold underline→→→→→→→→→→→→→→→→→→→→→→↵" + 
+            "→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→↵" + 
+            "<blink></bright></underscore><foreground value='#CDCDCD' />blink</blink><foreground value='#CDCD00' /><background value='#0000CD' />                                  <blink><bright><foreground value='#FFFFFF' /><background value='#000000' />bold blink→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→↵" + 
+            "→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→↵" + 
+            "</blink></bright><foreground value='#CDCD00' /><background value='#0000CD' />     <blink><underscore><foreground value='#CDCDCD' /><background value='#000000' />underline blink</blink></underscore><foreground value='#CDCD00' /><background value='#0000CD' />                        <blink><bright><underscore><foreground value='#FFFFFF' /><background value='#000000' />bold underline blink→→→→→→→→→→→→→→→→↵" + 
+            "→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→↵" + 
+            "</blink></bright><reverse></underscore><foreground value='#CDCDCD' />negative</reverse><foreground value='#CDCD00' /><background value='#0000CD' />                               <bright><reverse><foreground value='#FFFFFF' /><background value='#000000' />bold negative→→→→→→→→→→→→→→→→→→→→→→→→→→→→↵" + 
+            "→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→↵" + 
+            "</bright></reverse><foreground value='#CDCD00' /><background value='#0000CD' />     <reverse><underscore><foreground value='#CDCDCD' /><background value='#000000' />underline negative</reverse></underscore><foreground value='#CDCD00' /><background value='#0000CD' />                     <bright><reverse><underscore><foreground value='#FFFFFF' /><background value='#000000' />bold underline negative→→→→→→→→→→→→→↵" + 
+            "→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→↵" + 
+            "<blink></bright></underscore><foreground value='#CDCDCD' />blink negative</blink></reverse><foreground value='#CDCD00' /><background value='#0000CD' />                         <blink><bright><reverse><foreground value='#FFFFFF' /><background value='#000000' />bold blink negative→→→→→→→→→→→→→→→→→→→→→→↵" + 
+            "→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→↵" + 
+            "</blink></bright></reverse><foreground value='#CDCD00' /><background value='#0000CD' />     <blink><reverse><underscore><foreground value='#CDCDCD' /><background value='#000000' />underline blink negative</blink></reverse></underscore><foreground value='#CDCD00' /><background value='#0000CD' />               <blink><bright><reverse><underscore><foreground value='#FFFFFF' /><background value='#000000' />bold underline blink negative→→→→→→→↵" + 
+            "→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→↵" + 
+            "→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→↵" + 
+            "→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→↵" + 
+            "→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→↵" + 
+            "</blink></bright></reverse></underscore><foreground value='#CDCDCD' />Dark background.Push<RETURN>                                                    ↵" + 
+            "→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→→";
 
         private void DarkBackgroundPage(VirtualTerminalController t, DataConsumer d)
         {
