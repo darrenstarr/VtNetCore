@@ -11,5 +11,7 @@
     <PackageProjectUrl>https://github.com/darrenstarr/VtNetCore</PackageProjectUrl>
     <RepositoryUrl>https://github.com/darrenstarr/VtNetCore</RepositoryUrl>
     <RepositoryType>Github</RepositoryType>
+    <PackageLicenseUrl>https://github.com/darrenstarr/VtNetCore/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageTags>VT-100 VT220 xterm NetCore</PackageTags>
   </PropertyGroup>
 </Project>
