@@ -5,9 +5,9 @@
     <Authors>Darren R. Starr</Authors>
     <Company>Telenor Inpli AS</Company>
     <Product>VtNet terminal emulation library</Product>
-    <Version>0.0.1</Version>
-    <Description>A library attempting to implement all features of Xterm for C# so that there's a managed version of this code.</Description>
-    <Copyright>2018 Telenor Inpli AS</Copyright>
+    <Version>$version$</Version>
+    <Description>A VT100/XTerm style terminal emulator library for the .NET Standard 2.0 framework</Description>
+    <Copyright>2018 Darren R. Starr - Telenor Inpli AS</Copyright>
     <PackageProjectUrl>https://github.com/darrenstarr/VtNetCore</PackageProjectUrl>
     <RepositoryUrl>https://github.com/darrenstarr/VtNetCore</RepositoryUrl>
     <RepositoryType>Github</RepositoryType>
