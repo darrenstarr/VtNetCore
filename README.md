@@ -49,6 +49,11 @@ is archaic and difficult to read, but is more verbose than most other sources re
 incomplete as there have been many vendor proprietary extensions since. In this case, it is necessary to refer to projects like libvterm for additional
 information.
 
+### VT100 Series Video Terminal Technical Manual
+
+[VT100 Series Video Terminal Technical Manual](http://bitsavers.trailing-edge.com/pdf/dec/terminal/vt100/EK-VT100-TM-003_VT100_Technical_Manual_Jul82.pdf) is what appears to be the original
+technical manual for the VT100 terminal. I haven't reviewed this very far yet, but will spend a little time writing a series of unit tests to verify that I'm at least VT100 compliant.
+
 ## Progress
 
 ### 26-March-2018

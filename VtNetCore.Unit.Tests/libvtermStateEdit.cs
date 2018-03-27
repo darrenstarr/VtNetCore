@@ -1639,7 +1639,6 @@ namespace VtNetCoreUnitTests
         [Fact]
         public void DECRQSSonDECSCA()
         {
-            string s;
             var t = new VirtualTerminalController();
             var d = new DataConsumer(t);
             t.ResizeView(80, 25);

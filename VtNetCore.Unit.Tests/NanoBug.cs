@@ -90,7 +90,6 @@ namespace VtNetCoreUnitTests
         [Fact]
         public void NanoScrollingBug()
         {
-            string s;
             var t = new VirtualTerminalController();
             var d = new DataConsumer(t);
             t.ResizeView(64, 18);
