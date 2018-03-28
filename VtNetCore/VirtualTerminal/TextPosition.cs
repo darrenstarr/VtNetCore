@@ -8,10 +8,30 @@
 
         public int Row { get; set; }
 
+        public TextPosition()
+        {
+        }
+
+        public TextPosition(int column, int row)
+        {
+            Set(column, row);
+        }
+
+        public TextPosition(TextPosition other)
+        {
+            Set(other);
+        }
+
         public void Set(TextPosition other)
         {
             Column = other.Column;
             Row = other.Row;
+        }
+
+        public void Set(int column, int row)
+        {
+            Column = column;
+            Row = row;
         }
 
         public TextPosition OffsetBy(int columns, int rows)
@@ -77,6 +97,11 @@
                 Column <= Math.Max(topLeft.Column, bottomRight.Column) &&
                 Row >= Math.Min(topLeft.Row, bottomRight.Row) &&
                 Row <= Math.Max(topLeft.Row, bottomRight.Row);
+        }
+
+        public bool Equals(int column, int row)
+        {
+            return Column == column && Row == row;
         }
 
         public bool Equals(TextPosition other)

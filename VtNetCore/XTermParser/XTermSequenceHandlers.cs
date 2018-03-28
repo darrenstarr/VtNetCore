@@ -433,6 +433,10 @@
                                 controller.EnableSgrMouseMode(true);
                                 break;
 
+                            case 1015:  // Ps = 1 0 1 5  -> Enable urxvt Mouse Mode.
+                                controller.EnableUrxvtMouseMode(true);
+                                break;
+
                             case 1049:  // Ps = 1 0 4 9  -> Save cursor as in DECSC and use Alternate Screen Buffer, clearing it first.
                                 controller.SaveCursor();
                                 controller.EnableAlternateBuffer();
@@ -603,6 +607,10 @@
 
                             case 1006:  // Ps = 1 0 0 6  -> Disable SGR Mouse Mode.
                                 controller.EnableSgrMouseMode(false);
+                                break;
+
+                            case 1015:  // Ps = 1 0 1 5  -> Disable urxvt Mouse Mode.
+                                controller.EnableUrxvtMouseMode(false);
                                 break;
 
                             case 1049:  // Ps = 1 0 4 9  -> Use Normal Screen Buffer and restore cursor as in DECRC.

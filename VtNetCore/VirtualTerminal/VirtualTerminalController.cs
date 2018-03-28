@@ -89,6 +89,11 @@
         public bool SgrMouseMode { get; set; }
 
         /// <summary>
+        /// Enables URXVT Mouse mode
+        /// </summary>
+        public bool UrxvtMouseMode { get; set; }
+
+        /// <summary>
         /// Informs the server when the terminal has focus or not
         /// </summary>
         public bool SendFocusInAndFocusOutEvents { get; set; }
@@ -132,6 +137,16 @@
         /// Guarded Area Transfer Mode
         /// </summary>
         public bool GuardedAreaTransferMode { get; set; }
+
+        /// <summary>
+        /// Smooth scroll Mode (DECSCLM)
+        /// </summary>
+        public bool SmoothScrollMode { get; set; }
+
+        /// <summary>
+        /// Reverse wrap around mode
+        /// </summary>
+        public bool ReverseWrapAroundMode { get; set; }
 
         /// <summary>
         /// Set to true when Vt52 Mode is enabled.
@@ -199,6 +214,11 @@
         /// however I'm not convinced it will always used wholesomely. 
         /// </remarks>
         private TerminalCharacter LastCharacter { get; set; }
+
+        /// <summary>
+        /// Holds the last transmitted mouse position and should be -1,-1 when it is forgotten
+        /// </summary>
+        public TextPosition LastMousePosition = new TextPosition(-1, -1);
 
         /// <summary>
         /// Provides a dump of the current state of this control.
@@ -760,6 +780,10 @@
             GuardedArea = null;
             GuardedAreaTransferMode = false;
             ErasureMode = false;
+            ReverseWrapAroundMode = false;
+            SmoothScrollMode = false;
+
+            LastMousePosition.Set(-1, -1);
 
             ChangeCount++;
         }
@@ -1885,15 +1909,52 @@
 
         public void UseCellMotionMouseTracking(bool enable)
         {
-            LogController("Unimplemented: UseCellMotionMouseTracking(enable:" + enable.ToString() + ")");
+            LogController("UseCellMotionMouseTracking(enable:" + enable.ToString() + ")");
             CellMotionMouseTracking = enable;
+            if(enable)
+            {
+                UseAllMouseTracking = false;
+                HighlightMouseTracking = false;
+                SgrMouseMode = false;
+                X10SendMouseXYOnButton = false;
+                X11SendMouseXYOnButton = false;
+            }
+
+            LastMousePosition.Set(-1, -1);
             ChangeCount++;
         }
 
         public void EnableSgrMouseMode(bool enable)
         {
-            LogController("Unimplemented: EnableSgrMouseMode(enable:" + enable.ToString() + ")");
+            LogController("EnableSgrMouseMode(enable:" + enable.ToString() + ")");
             SgrMouseMode = enable;
+            if (enable)
+            {
+                Utf8MouseMode = false;
+                UrxvtMouseMode = false;
+                UseAllMouseTracking = false;
+                CellMotionMouseTracking = false;
+                HighlightMouseTracking = false;
+                X10SendMouseXYOnButton = false;
+                X11SendMouseXYOnButton = false;
+            }
+
+            LastMousePosition.Set(-1, -1);
+            ChangeCount++;
+        }
+
+        public void EnableUrxvtMouseMode(bool enabled)
+        {
+            LogController("EnableUrxvtMouseMode(enabled:" + enabled.ToString() + ")");
+            UrxvtMouseMode = enabled;
+
+            if(enabled)
+            {
+                Utf8MouseMode = false;
+                SgrMouseMode = false;
+            }
+
+            LastMousePosition.Set(-1, -1);
             ChangeCount++;
         }
 
@@ -2408,6 +2469,7 @@
         public void EnableSmoothScrollMode(bool enable)
         {
             LogController("Unimplemented: EnableSmoothScrollMode(enable:" + enable.ToString() + ")");
+            SmoothScrollMode = enable;
         }
 
         public void EnableReverseVideoMode(bool enable)
@@ -2461,6 +2523,7 @@
         public void EnableReverseWrapAroundMode(bool enable)
         {
             LogController("Unimplemented: EnableReverseWrapAroundMode(enable:" + enable.ToString() + ")");
+            ReverseWrapAroundMode = enable;
         }
 
         public void EnableLeftAndRightMarginMode(bool enable)
@@ -2705,6 +2768,16 @@
         {
             LogController("SetVt52GraphicsMode(enabled:" + enabled + ")");
             X10SendMouseXYOnButton = enabled;
+            if (enabled)
+            {
+                UseAllMouseTracking = false;
+                CellMotionMouseTracking = false;
+                HighlightMouseTracking = false;
+                SgrMouseMode = false;
+                X11SendMouseXYOnButton = false;
+            }
+
+            LastMousePosition.Set(-1, -1);
         }
 
         public void SetSendFocusInAndFocusOutEvents(bool enabled)
@@ -2717,18 +2790,42 @@
         {
             LogController("SetUseAllMouseTracking(enabled:" + enabled + ")");
             UseAllMouseTracking = enabled;
+            if (enabled)
+            {
+                CellMotionMouseTracking = false;
+                HighlightMouseTracking = false;
+                SgrMouseMode = false;
+                X10SendMouseXYOnButton = false;
+                X11SendMouseXYOnButton = false;
+            }
+            LastMousePosition.Set(-1, -1);
         }
 
         public void SetUtf8MouseMode(bool enabled)
         {
             LogController("SetUtf8MouseMode(enabled:" + enabled + ")");
             Utf8MouseMode = enabled;
+            if (Utf8MouseMode)
+            {
+                UrxvtMouseMode = false;
+                SgrMouseMode = false;
+            }
         }
 
         public void SetX11SendMouseXYOnButton(bool enabled)
         {
             LogController("SetVt52GraphicsMode(enabled:" + enabled + ")");
             X11SendMouseXYOnButton = enabled;
+            if (enabled)
+            {
+                UseAllMouseTracking = false;
+                CellMotionMouseTracking = false;
+                HighlightMouseTracking = false;
+                SgrMouseMode = false;
+                X10SendMouseXYOnButton = false;
+            }
+
+            LastMousePosition.Set(-1, -1);
         }
 
         public void SetStartOfGuardedArea()
@@ -2781,8 +2878,32 @@
 
             switch (mode)
             {
+                case 1:         // Ps = 1  -> Application Cursor Keys (DECCKM). | Ps = 1  -> Normal Cursor Keys (DECCKM).
+                    SendData.Invoke(this, new SendDataEventArgs { Data = DecPrivateModeResponse(mode, CursorState.ApplicationCursorKeysMode) });
+                    break;
+
+                case 2:         // Ps = 2  -> Designate USASCII for character sets G0-G3 (DECANM), and set VT100 mode. | Designate VT52 mode (DECANM).
+                    SendData.Invoke(this, new SendDataEventArgs { Data = DecPrivateModeResponse(mode, CursorState.ApplicationCursorKeysMode) });
+                    break;
+
+                case 3:         // Ps = 3  -> 132 Column Mode (DECCOLM). | Ps = 3  -> 80 Column Mode (DECCOLM).
+                    SendData.Invoke(this, new SendDataEventArgs { Data = DecPrivateModeResponse(mode, CursorState.ConfiguredColumns == 132) });
+                    break;
+
+                case 4:         // Ps = 4  -> Smooth (Slow) Scroll (DECSCLM). | Ps = 4  -> Jump (Fast) Scroll (DECSCLM).
+                    SendData.Invoke(this, new SendDataEventArgs { Data = DecPrivateModeResponse(mode, SmoothScrollMode) });
+                    break;
+
+                case 5:         // Ps = 5  -> Reverse Video (DECSCNM). | Ps = 5  -> Normal Video (DECSCNM).
+                    SendData.Invoke(this, new SendDataEventArgs { Data = DecPrivateModeResponse(mode, CursorState.ReverseVideoMode) });
+                    break;
+
                 case 6:         // DECOM
                     SendData.Invoke(this, new SendDataEventArgs { Data = DecPrivateModeResponse(mode, CursorState.OriginMode) });
+                    break;
+
+                case 7:         // Ps = 7  -> Wraparound Mode (DECAWM). | Ps = 7  -> No Wraparound Mode (DECAWM).
+                    SendData.Invoke(this, new SendDataEventArgs { Data = DecPrivateModeResponse(mode, CursorState.WordWrap) });
                     break;
 
                 case 9:         // Ps = 9  -> (Send|Don't send) Mouse X & Y on button press.
@@ -2795,6 +2916,10 @@
 
                 case 25:        // DECSET
                     SendData.Invoke(this, new SendDataEventArgs { Data = DecPrivateModeResponse(mode, CursorState.ShowCursor) });
+                    break;
+
+                case 45:        // Ps = 4 5  -> Reverse-wraparound Mode. | Ps = 4 5  -> No Reverse-wraparound Mode.
+                    SendData.Invoke(this, new SendDataEventArgs { Data = DecPrivateModeResponse(mode, ReverseWrapAroundMode) });
                     break;
 
                 case 1000:      // Ps = 1 0 0 0  -> (Send|Don't send) Mouse X & Y on button press and release.
@@ -2823,6 +2948,18 @@
 
                 case 1006:      // Ps = 1 0 0 6  -> (Enable|Disable) SGR Mouse Mode.
                     SendData.Invoke(this, new SendDataEventArgs { Data = DecPrivateModeResponse(mode, SgrMouseMode) });
+                    break;
+
+                case 1015:      // Ps = 1 0 1 5  -> (Enable|Disable) urxvt Mouse Mode.
+                    SendData.Invoke(this, new SendDataEventArgs { Data = DecPrivateModeResponse(mode, UrxvtMouseMode) });
+                    break;
+
+                case 1049:      // Ps = 1 0 4 9  ->  Normal|Alternative screen buffer
+                    SendData.Invoke(this, new SendDataEventArgs { Data = DecPrivateModeResponse(mode, ActiveBuffer == EActiveBuffer.Normal) });
+                    break;
+
+                case 2004:      // Ps = 2 0 0 4  -> Set bracketed paste mode.
+                    SendData.Invoke(this, new SendDataEventArgs { Data = DecPrivateModeResponse(mode, BracketedPasteMode) });
                     break;
 
                 default:
@@ -2919,7 +3056,7 @@
                     {
                         Data = Utf8MouseMode ?
                             Encoding.UTF8.GetBytes(x10Message) :
-                            x10Message.Select(s => (byte)(s & 0xFF)).ToArray()
+                            x10Message.Select(s => (byte)(Math.Min(255, (int)s))).ToArray()
                     }
                 );
             }
@@ -2938,7 +3075,7 @@
                     {
                         Data = Utf8MouseMode ?
                             Encoding.UTF8.GetBytes(x11Message) :
-                            x11Message.Select(s => (byte)(s & 0xFF)).ToArray()
+                            x11Message.Select(s => (byte)(Math.Min(255, (int)s))).ToArray()
                     }
                 );
             }
@@ -2970,6 +3107,8 @@
         /// <param name="shiftPressed">true if shift is pressed</param>
         public void MouseRelease(int x, int y, bool controlPressed, bool shiftPressed)
         {
+            LastMousePosition.Set(-1, -1);
+
             if (X11SendMouseXYOnButton || CellMotionMouseTracking ||UseAllMouseTracking)
             {
                 var x11modifier =
@@ -2984,7 +3123,7 @@
                     {
                         Data = Utf8MouseMode ?
                             Encoding.UTF8.GetBytes(x11Message) :
-                            x11Message.Select(s => (byte)(s & 0xFF)).ToArray()
+                            x11Message.Select(s => (byte)(Math.Min(255, (int)s))).ToArray()
                     }
                 );
             }
@@ -3017,6 +3156,9 @@
         /// <param name="shiftPressed">true if shift is pressed</param>
         public void MouseMove(int x, int y, int buttonNumber, bool controlPressed, bool shiftPressed)
         {
+            if (LastMousePosition.Equals(x, y))
+                return;
+
             if (CellMotionMouseTracking && (buttonNumber != 3) || UseAllMouseTracking)
             {
                 var x11modifier =
@@ -3027,12 +3169,14 @@
 
                 var x11Message = "\u001b[M" + (char)(x11modifier + ' ') + (char)(' ' + x + 1) + (char)(' ' + y + 1);
 
+                LastMousePosition.Set(x, y);
+
                 SendData.Invoke(this,
                     new SendDataEventArgs
                     {
                         Data = Utf8MouseMode ?
                             Encoding.UTF8.GetBytes(x11Message) :
-                            x11Message.Select(s => (byte)(s & 0xFF)).ToArray()
+                            x11Message.Select(s => (byte)(Math.Min(0xFF, (int)s))).ToArray()
                     }
                 );
             }

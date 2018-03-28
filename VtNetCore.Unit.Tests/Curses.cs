@@ -122,6 +122,18 @@ namespace VtNetCoreUnitTests
             return x.CSI().Command(left, right, 's');
         }
 
+        // CSI ? Pm h - DEC Private Mode Set(DECSET).
+        public static string DECSET(this string x, int mode)
+        {
+            return x.CSI().Query().Command(mode, 'h');
+        }
+
+        // CSI ? Pm l - DEC Private Mode Reset(DECRST).
+        public static string DECRST(this string x, int mode)
+        {
+            return x.CSI().Query().Command(mode, 'l');
+        }
+
         // Ps = 2  -> Designate USASCII for character sets G0-G3 (DECANM), and set VT100 mode.
         public static string SetVt100Mode(this string x)
         {
@@ -133,6 +145,7 @@ namespace VtNetCoreUnitTests
         {
             return x.CSI().Query().Command(2, 'l');
         }
+
         // Ps = 7  -> Wraparound Mode (DECAWM).
         public static string EnableWrapAround(this string x)
         {
@@ -173,14 +186,14 @@ namespace VtNetCoreUnitTests
 
         // CSI? Pm h -DEC Private Mode Set(DECSET).
         //     Ps = 2 5  -> Show Cursor(DECTCEM).
-        public static string EnableDECSET(this string x)
+        public static string EnableDECTCEM(this string x)
         {
             return x.CSI().Query().Command(25, 'h');
         }
 
         // CSI? Pm l - DEC Private Mode Reset (DECRST).
         //     Ps = 2 5  -> Hide Cursor (DECTCEM).
-        public static string DisableDECSET(this string x)
+        public static string DisableDECTCEM(this string x)
         {
             return x.CSI().Query().Command(25, 'l');
         }
@@ -455,6 +468,13 @@ namespace VtNetCoreUnitTests
         public static string DecDECRQM(this string x, int mode)
         {
             return x.CSI().Query().T(mode.ToString()).T("$p");
+        }
+
+        // CSI? Ps$ p - Request DEC private mode(DECRQM).
+        //    For VT300 and up, reply is CSI? Ps; Pm$ y
+        public static string DecDECRQMResponse(this string x, int mode, int value)
+        {
+            return x.CSI().Query().T(mode.ToString()).T(";").T(value.ToString()).T("$y");
         }
 
         // CSI Ps SP q - Set cursor style(DECSCUSR, VT520).

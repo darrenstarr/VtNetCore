@@ -42,6 +42,7 @@
         void EnableReverseWrapAroundMode(bool enable);
         void EnableSmoothScrollMode(bool enable);
         void EnableSgrMouseMode(bool enable);
+        void EnableUrxvtMouseMode(bool enabled);
         void EnableWrapAroundMode(bool enable);
         void EraseAbove(bool ignoreProtected);
         void EraseAll(bool ignoreProtected);

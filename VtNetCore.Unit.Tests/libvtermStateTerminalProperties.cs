@@ -39,14 +39,14 @@
             //   settermprop 1 true
             // PUSH "\e[?25\$p"
             //   output "\e[?25;1\$y"
-            Push(d, "".EnableDECSET().DecDECRQM(25));
+            Push(d, "".EnableDECTCEM().DecDECRQM(25));
             Assert.Equal("".CSI().Query().T("25;1$y"), toSend);
 
             // PUSH "\e[?25l"
             //   settermprop 1 false
             // PUSH "\e[?25\$p"
             //   output "\e[?25;2\$y"
-            Push(d, "".DisableDECSET().DecDECRQM(25));
+            Push(d, "".DisableDECTCEM().DecDECRQM(25));
             Assert.Equal("".CSI().Query().T("25;2$y"), toSend);
         }
 
