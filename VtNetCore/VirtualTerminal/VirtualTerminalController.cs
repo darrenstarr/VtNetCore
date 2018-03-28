@@ -69,6 +69,22 @@
         /// </summary>
         public int VisibleRows { get; set; } = 0;
 
+        /// <summary>
+        /// Returns the logical bottom row of the buffer.
+        /// </summary>
+        /// <remarks>
+        /// This is either the top row plus the number of lines or the last row of the buffer,
+        /// whichever is greater.
+        /// </remarks>
+        /// <returns>What should be the absolute maximum bottom row value</returns>
+        public int BottomRow
+        {
+            get
+            {
+                return Math.Max(Buffer.Count, TopRow + Rows - 1);
+            }
+        }
+
         private TerminalCursorState SavedCursorState { get; set; } = null;
 
         /// <summary>

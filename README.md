@@ -2,7 +2,6 @@
 
 ![Build status](https://ci.appveyor.com/api/projects/status/9ugagv9y9qqyl8ym?svg=true "Release")
 
-
 ## Introduction
 
 This is a VT100/XTerm style terminal emulator library for the .NET Standard 2.0 framework. 
@@ -58,6 +57,17 @@ information.
 technical manual for the VT100 terminal. I haven't reviewed this very far yet, but will spend a little time writing a series of unit tests to verify that I'm at least VT100 compliant.
 
 ## Progress
+
+### 27-March-2018
+
+Getting really close to beta version.
+
+Today I performed a pretty major refactoring of the code painting interface. In the paste it was the responsibility of the individual platform painters to
+traverse the buffer character by character to identify when fonts and such changed. As of now, the viewport on the terminal object is able to produce rows and spans
+that can be used quite easily to paint with.
+
+I also implemented bracketed paste mode but am not sure how to test it. I think there is also some odd characters being sent on strange mouse movements and key presses.
+I hope to identify what this is and correct it.
 
 ### 26-March-2018
 
