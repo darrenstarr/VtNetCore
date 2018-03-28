@@ -221,6 +221,24 @@
         public TextPosition LastMousePosition = new TextPosition(-1, -1);
 
         /// <summary>
+        /// Returns true if mouse tracking is enabled
+        /// </summary>
+        public bool MouseTrackingEnabled
+        {
+            get
+            {
+                return
+                    UrxvtMouseMode |
+                    UseAllMouseTracking |
+                    CellMotionMouseTracking |
+                    HighlightMouseTracking |
+                    X10SendMouseXYOnButton |
+                    X11SendMouseXYOnButton |
+                    SgrMouseMode;
+            }
+        }
+
+        /// <summary>
         /// Provides a dump of the current state of this control.
         /// </summary>
         /// <todo>
@@ -524,7 +542,7 @@
                 var sourceLine = GetLine(y + startingLine);
                 var sourceChar = (sourceLine == null || sourceLine.Count == 0) ? null : sourceLine[0];
 
-                currentAttribute = sourceChar == null ? NullAttribute : ((CursorState.ReverseVideoMode ^ invertedRange.Contains(0, y) ^ sourceChar.Attributes.Reverse) ? sourceChar.Attributes.Inverse : sourceChar.Attributes);
+                currentAttribute = sourceChar == null ? NullAttribute : ((CursorState.ReverseVideoMode ^ invertedRange.Contains(0, y+ TopRow) ^ sourceChar.Attributes.Reverse) ? sourceChar.Attributes.Inverse : sourceChar.Attributes);
 
                 var currentRow = new Layout.LayoutRow
                 {
@@ -559,7 +577,7 @@
                     var x = 0;
                     while (x < lineWidth && x < sourceLine.Count)
                     {
-                        var attributeAtThisPosition = ((CursorState.ReverseVideoMode ^ invertedRange.Contains(x, y) ^ sourceLine[x].Attributes.Reverse) ? sourceLine[x].Attributes.Inverse : sourceLine[x].Attributes);
+                        var attributeAtThisPosition = ((CursorState.ReverseVideoMode ^ invertedRange.Contains(x, y + TopRow) ^ sourceLine[x].Attributes.Reverse) ? sourceLine[x].Attributes.Inverse : sourceLine[x].Attributes);
                         if (!currentAttribute.Equals(attributeAtThisPosition))
                         {
                             currentAttribute = attributeAtThisPosition;
@@ -2704,10 +2722,10 @@
             return null;
         }
 
-        private static byte [] DecPrivateModeResponse(int mode, bool response)
+        private static byte [] DecPrivateModeResponse(int mode, bool response, bool always=false)
         {
             return Encoding.ASCII.GetBytes(
-                    "\u001b[?" + mode.ToString() + ";" + (response ? "1" : "2") + "$y"
+                    "\u001b[?" + mode.ToString() + ";" + ((always && !response) ? "4" : (response ? "1" : "2")) + "$y"
                 );
         }
 
@@ -2904,6 +2922,10 @@
 
                 case 7:         // Ps = 7  -> Wraparound Mode (DECAWM). | Ps = 7  -> No Wraparound Mode (DECAWM).
                     SendData.Invoke(this, new SendDataEventArgs { Data = DecPrivateModeResponse(mode, CursorState.WordWrap) });
+                    break;
+
+                case 8:         // Ps = 8  -> No Auto-repeat Keys (DECARM).
+                    SendData.Invoke(this, new SendDataEventArgs { Data = DecPrivateModeResponse(mode, false, true) });
                     break;
 
                 case 9:         // Ps = 9  -> (Send|Don't send) Mouse X & Y on button press.
