@@ -738,6 +738,12 @@ namespace VtNetCoreUnitTests
             return x + ESC().T("8");
         }
 
+        // ESC >     Normal Keypad (DECKPNM).
+        public static string DECKPNM(this string x)
+        {
+            return x + ESC().T(">");
+        }
+
         public static string vt_hilite(this string x, bool enabled)
         {
             if(enabled)

@@ -16,7 +16,14 @@
         /// <remarks>
         /// This describes where the terminal believes the top of the screen is.
         /// </remarks>
-        public int TopRow { get { return Parent.TopRow; } }
+        /// <todo>
+        /// Add validation to the setter
+        /// </todo>
+        public int TopRow
+        {
+            get { return Parent.TopRow; }
+            set { Parent.TopRow = value; }
+        }
 
         internal VirtualTerminalViewPort(VirtualTerminalController controller)
         {

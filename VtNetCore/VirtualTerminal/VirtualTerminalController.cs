@@ -254,6 +254,8 @@
             }
         }
 
+        public string WindowTitle { get; private set; }
+
         /// <summary>
         /// Provides a dump of the current state of this control.
         /// </summary>
@@ -297,6 +299,10 @@
         /// </summary>
         public EventHandler<TextEventArgs> WindowTitleChanged;
 
+        /// <summary>
+        /// Emitted when the terminal is configured to be a new size
+        /// </summary>
+        public EventHandler<SizeEventArgs> SizeChanged;
 
         /// <summary>
         /// Enables storing of raw text for scripting tools
@@ -558,7 +564,7 @@
                 var sourceLine = GetLine(y + startingLine);
                 var sourceChar = (sourceLine == null || sourceLine.Count == 0) ? null : sourceLine[0];
 
-                currentAttribute = sourceChar == null ? NullAttribute : ((CursorState.ReverseVideoMode ^ invertedRange.Contains(0, y+ TopRow) ^ sourceChar.Attributes.Reverse) ? sourceChar.Attributes.Inverse : sourceChar.Attributes);
+                currentAttribute = sourceChar == null ? NullAttribute : ((CursorState.ReverseVideoMode ^ invertedRange.Contains(0, y+ startingLine) ^ sourceChar.Attributes.Reverse) ? sourceChar.Attributes.Inverse : sourceChar.Attributes);
 
                 var currentRow = new Layout.LayoutRow
                 {
@@ -593,7 +599,7 @@
                     var x = 0;
                     while (x < lineWidth && x < sourceLine.Count)
                     {
-                        var attributeAtThisPosition = ((CursorState.ReverseVideoMode ^ invertedRange.Contains(x, y + TopRow) ^ sourceLine[x].Attributes.Reverse) ? sourceLine[x].Attributes.Inverse : sourceLine[x].Attributes);
+                        var attributeAtThisPosition = ((CursorState.ReverseVideoMode ^ invertedRange.Contains(x, y + startingLine) ^ sourceLine[x].Attributes.Reverse) ? sourceLine[x].Attributes.Inverse : sourceLine[x].Attributes);
                         if (!currentAttribute.Equals(attributeAtThisPosition))
                         {
                             currentAttribute = attributeAtThisPosition;
@@ -1429,7 +1435,7 @@
             if (CursorState.OriginMode && ScrollBottom > -1 && CursorState.CurrentRow > ScrollBottom)
                 CursorState.CurrentRow = ScrollBottom;
             else if (ScrollBottom == -1 && CursorState.CurrentRow >= VisibleRows)
-                CursorState.CurrentRow = TopRow + VisibleRows - 1;
+                CursorState.CurrentRow = VisibleRows - 1;
 
             CursorState.CurrentColumn = column - 1;
             if (LeftAndRightMarginEnabled)
@@ -1617,6 +1623,7 @@
         {
             LogController("SetWindowTitle(t:'" + title + "')");
 
+            WindowTitle = title;
             WindowTitleChanged.Invoke(this, new TextEventArgs { Text = title });
         }
 
@@ -2655,6 +2662,9 @@
 
             while (CursorState.TabStops.Count > 0 && CursorState.TabStops.Last() > (Columns + 1))
                 CursorState.TabStops.RemoveAt(CursorState.TabStops.Count - 1);
+
+            if (SizeChanged != null)
+                SizeChanged.Invoke(this, new SizeEventArgs { Width = columns, Height = Rows });
         }
 
         internal void TestPatternScrolling()

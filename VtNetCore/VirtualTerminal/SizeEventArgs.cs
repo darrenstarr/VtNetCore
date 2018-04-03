@@ -4,8 +4,9 @@ using System.Text;
 
 namespace VtNetCore.VirtualTerminal
 {
-    public class TextEventArgs : EventArgs
+    public class SizeEventArgs : EventArgs
     {
-        public string Text { get; set; }
+        public int Width { get; set; }
+        public int Height { get; set; }
     }
 }
