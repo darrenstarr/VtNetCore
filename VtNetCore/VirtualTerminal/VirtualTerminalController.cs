@@ -1624,7 +1624,7 @@
             LogController("SetWindowTitle(t:'" + title + "')");
 
             WindowTitle = title;
-            WindowTitleChanged.Invoke(this, new TextEventArgs { Text = title });
+            WindowTitleChanged?.Invoke(this, new TextEventArgs { Text = title });
         }
 
         public void ShiftIn()

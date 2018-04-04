@@ -122,7 +122,7 @@
             int currentParameter = -1;
             List<int> Parameters = new List<int>();
 
-            while (!stream.AtEnd)
+            while (true)
             {
                 var next = stream.Read();
 
@@ -200,9 +200,6 @@
                     }
                 }
             }
-
-            stream.PopState();
-            return null;
         }
 
         private static TerminalSequence ConsumeCompliance(XTermInputBuffer stream)
