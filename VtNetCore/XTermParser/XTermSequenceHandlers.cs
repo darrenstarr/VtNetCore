@@ -951,6 +951,148 @@
             },
             new SequenceHandler
             {
+                Description = "Window manipulation (from dtterm, as well as extensions by xterm).",
+                SequenceType = SequenceHandler.ESequenceType.CSI,
+                CsiCommand = "t",
+                Query = false,
+                ExactParameterCount = 3,
+                Handler = (sequence, controller) =>
+                {
+                    switch(sequence.Parameters[0])
+                    {
+                        case 1:
+                            System.Diagnostics.Debug.WriteLine("(Not implemented) De-iconify window");
+                            break;
+                        case 2:
+                            System.Diagnostics.Debug.WriteLine("(Not implemented) Iconify window");
+                            break;
+                        case 3:
+                            System.Diagnostics.Debug.WriteLine($"(Not implemented) Move windows to x={sequence.Parameters[1]},y={sequence.Parameters[2]}");
+                            break;
+                        case 4:
+                            System.Diagnostics.Debug.WriteLine($"(Not implemented) Resize xterm window to h={sequence.Parameters[1]}, w={sequence.Parameters[2]}");
+                            break;
+                        case 5:
+                            System.Diagnostics.Debug.WriteLine($"(Not implemented) Raise xterm window to front of the stacking order");
+                            break;
+                        case 6:
+                            System.Diagnostics.Debug.WriteLine($"(Not implemented) Lower xterm window to bottom of the stacking order");
+                            break;
+                        case 7:
+                            System.Diagnostics.Debug.WriteLine($"(Not implemented) Refresh xterm window");
+                            break;
+                        case 8:
+                            System.Diagnostics.Debug.WriteLine($"(Not implemented) Resize text area to h=${sequence.Parameters[1]}, w={sequence.Parameters[2]}");
+                            break;
+                        case 9:
+                            switch(sequence.Parameters[1])
+                            {
+                                case 0:
+                                    System.Diagnostics.Debug.WriteLine($"(Not implemented) Restore maximized window");
+                                    break;
+                                case 1:
+                                    System.Diagnostics.Debug.WriteLine($"(Not implemented) Maximize window");
+                                    break;
+                                case 2:
+                                    System.Diagnostics.Debug.WriteLine($"(Not implemented) Restore maximized window vertically");
+                                    break;
+                                case 3:
+                                    System.Diagnostics.Debug.WriteLine($"(Not implemented) Restore maximized window horizontally");
+                                    break;
+                                default:
+                                    System.Diagnostics.Debug.WriteLine($"Unknown window maximize mode operation {sequence.ToString()}");
+                                    break;
+                            }
+                            break;
+                        case 10:
+                            switch(sequence.Parameters[1])
+                            {
+                                case 0:
+                                    System.Diagnostics.Debug.WriteLine($"(Not implemented) Undo full-screen mode.");
+                                    break;
+                                case 1:
+                                    System.Diagnostics.Debug.WriteLine($"(Not implemented) Change to full-screen mode.");
+                                    break;
+                                case 2:
+                                    System.Diagnostics.Debug.WriteLine($"(Not implemented) Toggle to full-screen mode.");
+                                    break;
+                                default:
+                                    System.Diagnostics.Debug.WriteLine($"Unknown full screen mode operation {sequence.ToString()}");
+                                    break;
+                            }
+                            break;
+                        case 11:
+                            System.Diagnostics.Debug.WriteLine($"(Not implemented) Report xterm window state.");
+                            break;
+                        case 13:
+                            System.Diagnostics.Debug.WriteLine($"(Not implemented) Report xterm window position???? {sequence.ToString()}");
+                            break;
+                        case 14:
+                            System.Diagnostics.Debug.WriteLine($"(Not implemented) Report xterm text area size in pixels???? {sequence.ToString()}");
+                            break;
+                        case 15:
+                            System.Diagnostics.Debug.WriteLine($"(Not implemented) Report size of the screen in pixels. {sequence.ToString()}");
+                            break;
+                        case 16:
+                            System.Diagnostics.Debug.WriteLine($"(Not implemented) Report xterm character size in pixels. {sequence.ToString()}");
+                            break;
+                        case 18:
+                            System.Diagnostics.Debug.WriteLine($"(Not implemented) Report the size of the text area in characters. {sequence.ToString()}");
+                            break;
+                        case 19:
+                            System.Diagnostics.Debug.WriteLine($"(Not implemented) Report the size of the screen in characters. {sequence.ToString()}");
+                            break;
+                        case 20:
+                            System.Diagnostics.Debug.WriteLine($"(Not implemented) Report xterm window's icon label. {sequence.ToString()}");
+                            break;
+                        case 21:
+                            System.Diagnostics.Debug.WriteLine($"(Not implemented) Report xterm window's title. {sequence.ToString()}");
+                            break;
+                        case 22:
+                            switch(sequence.Parameters[1])
+                            {
+                                case 0:
+                                    System.Diagnostics.Debug.WriteLine($"(Not implemented) Save xterm icon and window title on stack. {sequence.ToString()}");
+                                    break;
+                                case 1:
+                                    System.Diagnostics.Debug.WriteLine($"(Not implemented) Save xterm icon title on stack. {sequence.ToString()}");
+                                    break;
+                                case 2:
+                                    System.Diagnostics.Debug.WriteLine($"(Not implemented) Save xterm window title on stack. {sequence.ToString()}");
+                                    break;
+                                default:
+                                    System.Diagnostics.Debug.WriteLine($"Unknown save window title or icon sequence {sequence.ToString()}");
+                                    break;
+                            }
+                            break;
+                        case 23:
+                            switch(sequence.Parameters[1])
+                            {
+                                case 0:
+                                    System.Diagnostics.Debug.WriteLine($"(Not implemented) Restore xterm icon and window title from {sequence.ToString()}");
+                                    break;
+                                case 1:
+                                    System.Diagnostics.Debug.WriteLine($"(Not implemented) Restore xterm icon title from stack. {sequence.ToString()}");
+                                    break;
+                                case 2:
+                                    System.Diagnostics.Debug.WriteLine($"(Not implemented) Restore xterm window title from stack. {sequence.ToString()}");
+                                    break;
+                                default:
+                                    System.Diagnostics.Debug.WriteLine($"Unknown restore window title or icon sequence {sequence.ToString()}");
+                                    break;
+                            }
+                            break;
+                        case 24:
+                            System.Diagnostics.Debug.WriteLine($"(Not implemented) Resize to Ps lines (DECSLPP) {sequence.ToString()}");
+                            break;
+                        default:
+                            System.Diagnostics.Debug.WriteLine($"Unknown DTTerm/XTerm window manipulation sequence {sequence.ToString()}");
+                            break;
+                    }
+                }
+            },
+            new SequenceHandler
+            {
                 Description = "Cursor Up Ps Times (default = 1)",
                 SequenceType = SequenceHandler.ESequenceType.CSI,
                 CsiCommand = "A",

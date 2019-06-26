@@ -2587,7 +2587,7 @@
         public void SendDeviceAttributes()
         {
             LogController("SendDeviceAttributes()");
-            SendData.Invoke(this, new SendDataEventArgs { Data = Encoding.ASCII.GetBytes(DeviceAttributes) });
+            SendData?.Invoke(this, new SendDataEventArgs { Data = Encoding.ASCII.GetBytes(DeviceAttributes) });
         }
 
         public static readonly string XTermSecondaryAttributes = "\u001b[>41;136;0c";
@@ -2595,7 +2595,7 @@
         public void SendDeviceAttributesSecondary()
         {
             LogController("SendDeviceAttributesSecondary()");
-            SendData.Invoke(this, new SendDataEventArgs { Data = Encoding.ASCII.GetBytes(XTermSecondaryAttributes) });
+            SendData?.Invoke(this, new SendDataEventArgs { Data = Encoding.ASCII.GetBytes(XTermSecondaryAttributes) });
         }
 
         public static readonly byte[] DsrOk = { 0x1B, (byte)'[', (byte)'0', (byte)'n' };
@@ -2603,7 +2603,7 @@
         public void DeviceStatusReport()
         {
             LogController("DeviceStatusReport()");
-            SendData.Invoke(this, new SendDataEventArgs { Data = DsrOk });
+            SendData?.Invoke(this, new SendDataEventArgs { Data = DsrOk });
         }
 
         public void ReportCursorPosition()
@@ -2612,7 +2612,7 @@
 
             var rcp = "\u001b[" + (CursorState.CurrentRow - ScrollTop + 1).ToString() + ";" + (CursorState.CurrentColumn - LeftMargin + 1).ToString() + "R";
 
-            SendData.Invoke(this, new SendDataEventArgs { Data = Encoding.UTF8.GetBytes(rcp) });
+            SendData?.Invoke(this, new SendDataEventArgs { Data = Encoding.UTF8.GetBytes(rcp) });
         }
 
         public void ReportExtendedCursorPosition()
@@ -2621,7 +2621,7 @@
 
             var rcp = "\u001b[?" + (CursorState.CurrentRow - ScrollTop + 1).ToString() + ";" + (CursorState.CurrentColumn - LeftMargin + 1).ToString() + "R";
 
-            SendData.Invoke(this, new SendDataEventArgs { Data = Encoding.UTF8.GetBytes(rcp) });
+            SendData?.Invoke(this, new SendDataEventArgs { Data = Encoding.UTF8.GetBytes(rcp) });
         }
 
         public void SetLatin1()
@@ -2701,7 +2701,7 @@
 
         private void Send(byte[] value)
         {
-            SendData.Invoke(this, new SendDataEventArgs { Data = value });
+            SendData?.Invoke(this, new SendDataEventArgs { Data = value });
         }
 
         private static readonly byte[] BracketedPasteModePrefix = Encoding.ASCII.GetBytes("\u001b[200~,");
@@ -2920,6 +2920,9 @@
         {
             LogController("RequestDecPrivateMode(mode:" + mode.ToString() + ")");
 
+            if (SendData == null)
+                return;
+
             switch (mode)
             {
                 case 1:         // Ps = 1  -> Application Cursor Keys (DECCKM). | Ps = 1  -> Normal Cursor Keys (DECCKM).
@@ -3025,7 +3028,7 @@
             if (Vt52Mode)
                 return;
 
-            SendData.Invoke(this, new SendDataEventArgs { Data = Encoding.ASCII.GetBytes(ConformanceLevelResponse) });
+            SendData?.Invoke(this, new SendDataEventArgs { Data = Encoding.ASCII.GetBytes(ConformanceLevelResponse) });
         }
 
         public void RequestStatusStringSetProtectionAttribute()
@@ -3036,7 +3039,7 @@
 
             // TODO : Is this for the current state or the character at the cursor position?
 
-            SendData.Invoke(this, new SendDataEventArgs { Data = Encoding.ASCII.GetBytes(result) });
+            SendData?.Invoke(this, new SendDataEventArgs { Data = Encoding.ASCII.GetBytes(result) });
         }
 
         public static readonly string Vt52Identification = "\u001b/Z";
@@ -3045,7 +3048,7 @@
         {
             LogController("Vt52Identify()");
 
-            SendData.Invoke(this, new SendDataEventArgs { Data = Encoding.ASCII.GetBytes(Vt52Identification) });
+            SendData?.Invoke(this, new SendDataEventArgs { Data = Encoding.ASCII.GetBytes(Vt52Identification) });
         }
 
         public void SetCursorStyle(ECursorShape shape, bool blink)
@@ -3056,6 +3059,9 @@
 
         public bool KeyPressed(string key, bool controlPressed, bool shiftPressed)
         {
+            if (SendData == null)
+                return false;
+
             var code = GetKeySequence(key, controlPressed, shiftPressed);
             if (code != null)
             {
@@ -3095,6 +3101,9 @@
         /// <param name="shiftPressed">true if shift is pressed</param>
         public void MousePress(int x, int y, int buttonNumber, bool controlPressed, bool shiftPressed)
         {
+            if (SendData == null)
+                return;
+
             if(X10SendMouseXYOnButton)
             {
                 var x10Message = "\u001b[M" + (char)(buttonNumber + ' ') + (char)(' ' + x + 1) + (char)(' ' + y + 1);
@@ -3155,6 +3164,9 @@
         /// <param name="shiftPressed">true if shift is pressed</param>
         public void MouseRelease(int x, int y, bool controlPressed, bool shiftPressed)
         {
+            if (SendData == null)
+                return;
+
             LastMousePosition.Set(-1, -1);
 
             if (X11SendMouseXYOnButton || CellMotionMouseTracking ||UseAllMouseTracking)
@@ -3204,6 +3216,9 @@
         /// <param name="shiftPressed">true if shift is pressed</param>
         public void MouseMove(int x, int y, int buttonNumber, bool controlPressed, bool shiftPressed)
         {
+            if (SendData == null)
+                return;
+
             if (LastMousePosition.Equals(x, y))
                 return;
 
@@ -3235,7 +3250,10 @@
         /// </summary>
         public void FocusIn()
         {
-            if(SendFocusInAndFocusOutEvents)
+            if (SendData == null)
+                return;
+
+            if (SendFocusInAndFocusOutEvents)
             {
                 var message = "\u001b[I";
 
@@ -3253,6 +3271,9 @@
         /// </summary>
         public void FocusOut()
         {
+            if (SendData == null)
+                return;
+
             if (SendFocusInAndFocusOutEvents)
             {
                 var message = "\u001b[O";
