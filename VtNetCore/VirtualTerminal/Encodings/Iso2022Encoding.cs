@@ -43,13 +43,120 @@ namespace VtNetCore.VirtualTerminal.Encodings
             { '~', '\u00B7' }, // 7/14 - U+00B7 # MIDDLE DOT
         };
 
-        public static char DecodeChar(char inChar, ECharacterSet characterSet)
+        public static readonly Dictionary<Char, Char> Latin1 = new Dictionary<char, char>
+        {
+            { '!', '¡' },
+            { '"', '¢' },
+            { '#', '£' },
+            { '$', '¤' },
+            { '%', '¥' },
+            { '&', '¦' },
+            { '\'', '§' },
+            { '(', '¨' },
+            { ')', '©' },
+            { '*', 'ª' },
+            { '+', '«' },
+            { ',', '¬' },
+            //{ '-', '\u00AD' },
+            { '.', '®' },
+            { '/', '¯' },
+            { '0', '°' },
+            { '1', '±' },
+            { '2', '²' },
+            { '3', '³' },
+            { '4', '´' },
+            { '5', 'µ' },
+            { '6', '¶' },
+            { '7', '·' },
+            { '8', '¸' },
+            { '9', '¹' },
+            { ':', 'º' },
+            { ';', '»' },
+            { '<', '¼' },
+            { '=', '½' },
+            { '>', '¾' },
+            { '?', '¿' },
+            { '@', 'À' },
+            { 'A', 'Á' },
+            { 'B', 'Â' },
+            { 'C', 'Ã' },
+            { 'D', 'Ä' },
+            { 'E', 'Å' },
+            { 'F', 'Æ' },
+            { 'G', 'Ç' },
+            { 'H', 'È' },
+            { 'I', 'É' },
+            { 'J', 'Ê' },
+            { 'K', 'Ë' },
+            { 'L', 'Ì' },
+            { 'M', 'Í' },
+            { 'N', 'Î' },
+            { 'O', 'Ï' },
+            { 'P', 'Ð' },
+            { 'Q', 'Ñ' },
+            { 'R', 'Ò' },
+            { 'S', 'Ó' },
+            { 'T', 'Ô' },
+            { 'U', 'Õ' },
+            { 'V', 'Ö' },
+            { 'W', '×' },
+            { 'X', 'Ø' },
+            { 'Y', 'Ù' },
+            { 'Z', 'Ú' },
+            { '[', 'Û' },
+            { '\\', 'Ü' },
+            { ']', 'Ý' },
+            { '^', 'Þ' },
+            { '_', 'ß' },
+            { '`', 'à' },
+            { 'a', 'á' },
+            { 'b', 'â' },
+            { 'c', 'ã' },
+            { 'd', 'ä' },
+            { 'e', 'å' },
+            { 'f', 'æ' },
+            { 'g', 'ç' },
+            { 'h', 'è' },
+            { 'i', 'é' },
+            { 'j', 'ê' },
+            { 'k', 'ë' },
+            { 'l', 'ì' },
+            { 'm', 'í' },
+            { 'n', 'î' },
+            { 'o', 'ï' },
+            { 'p', 'ð' },
+            { 'q', 'ñ' },
+            { 'r', 'ò' },
+            { 's', 'ó' },
+            { 't', 'ô' },
+            { 'u', 'õ' },
+            { 'v', 'ö' },
+            { 'w', '÷' },
+            { 'x', 'ø' },
+            { 'y', 'ù' },
+            { 'z', 'ú' },
+            { '{', 'û' },
+            { '|', 'ü' },
+            { '}', 'ý' },
+            { '~', 'þ' },
+            { (char)127, 'ÿ' }
+        };
+
+        public static char DecodeChar(char inChar, ECharacterSet characterSet, bool nationalReplacementCharacterSet)
         {
             switch(characterSet)
             {
-                case ECharacterSet.UK:
-                    if (inChar == '#')
-                        return '\u00a3';
+                case ECharacterSet.Latin1:
+                    if (nationalReplacementCharacterSet)
+                    {
+                        if (inChar == '#')
+                            return '\u00a3';
+                    }
+                    else
+                    {
+                        if (Latin1.TryGetValue(inChar, out char latin1Value))
+                            return latin1Value;
+                    }
                     return inChar;
 
                 case ECharacterSet.C0:
@@ -58,6 +165,9 @@ namespace VtNetCore.VirtualTerminal.Encodings
                     return inChar;
 
                 default:
+                    if (inChar == (char)127)
+                        return ' ';
+
                     return inChar;
             }
         }

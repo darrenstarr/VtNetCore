@@ -2,6 +2,7 @@
 {
     public enum ECharacterSetMode
     {
+        Unset,
         IsoG0,
         IsoG1,
         IsoG2,

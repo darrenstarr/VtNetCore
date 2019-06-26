@@ -84,6 +84,11 @@
         public bool Utf8 { get; set; } = true;
 
         /// <summary>
+        /// Specified which character mode to revert back to after decoding one character
+        /// </summary>
+        public ECharacterSetMode SingleShiftSelectCharacterMode { get; set; } = ECharacterSetMode.Unset;
+
+        /// <summary>
         /// Specifies the active character mode for the L region
         /// </summary>
         public ECharacterSetMode CharacterSetMode { get; set; } = ECharacterSetMode.IsoG0;
@@ -149,6 +154,11 @@
         public int ConfiguredColumns { get; set; }
 
         /// <summary>
+        /// Enable operation in 7-bit or 8-bit character mode.
+        /// </summary>
+        public bool NationalCharacterReplacementMode { get; set; }
+
+        /// <summary>
         /// Deep copy
         /// </summary>
         /// <returns>A deep copy of the state</returns>
@@ -180,7 +190,9 @@
                 Vt52AlternateKeypad = Vt52AlternateKeypad,
                 Vt52GraphicsMode = Vt52GraphicsMode,
                 AutomaticNewLine = AutomaticNewLine,
-                ConfiguredColumns = ConfiguredColumns
+                ConfiguredColumns = ConfiguredColumns,
+                NationalCharacterReplacementMode = NationalCharacterReplacementMode,
+                SingleShiftSelectCharacterMode = SingleShiftSelectCharacterMode
             };
         }
 
@@ -215,7 +227,9 @@
                 "Vt52AlternateKeypad: " + Vt52AlternateKeypad.ToString() + "\n" + 
                 "Vt52GraphicsMode: " + Vt52GraphicsMode.ToString() + "\n" + 
                 "AutomaticNewLine:" + AutomaticNewLine.ToString() + "\n" +
-                "ConfiguredColumns:" + ConfiguredColumns.ToString() + "\n"
+                "ConfiguredColumns:" + ConfiguredColumns.ToString() + "\n" +
+                "National Character Replacement Mode:" + NationalCharacterReplacementMode.ToString() + "\n" +
+                "Single shift character mode:" + SingleShiftSelectCharacterMode.ToString() + "\n"
                 ;
         }
     }

@@ -36,6 +36,7 @@
         void EnableAutoRepeatKeys(bool enable);
         void EnableBlinkingCursor(bool enable);
         void EnableLeftAndRightMarginMode(bool enable);
+        void EnableNationalReplacementCharacterSets(bool enable);
         void EnableNormalBuffer();
         void EnableOriginMode(bool enable);
         void EnableReverseVideoMode(bool enable);
@@ -125,6 +126,8 @@
         void SetX11SendMouseXYOnButton(bool enabled);
         void ShiftIn();
         void ShiftOut();
+        void SingleShiftSelectG2();
+        void SingleShiftSelectG3();
         void ShowCursor(bool show);
         void Tab();
         void TabSet();

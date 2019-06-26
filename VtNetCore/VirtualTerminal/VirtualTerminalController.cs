@@ -361,6 +361,8 @@
             }
         }
 
+        
+
         private ECharacterSet RightCharacterSet
         {
             get
@@ -859,6 +861,12 @@
             }
         }
 
+        public void EnableNationalReplacementCharacterSets(bool enable)
+        {
+            LogController($"EnableNationalReplacementCharacterSets(enable:{enable})");
+            CursorState.NationalCharacterReplacementMode = enable;
+        }
+
         public void SetCharacterSet(ECharacterSet characterSet, ECharacterSetMode mode)
         {
             LogController("SetCharacterSet(characterSet:" + characterSet.ToString() + ")");
@@ -878,13 +886,16 @@
                     CursorState.G3 = characterSet;
                     break;
                 case ECharacterSetMode.Vt300G1:
+                    CursorState.G1 = characterSet;
                     CursorState.Vt300G1 = characterSet;
                     break;
                 case ECharacterSetMode.Vt300G2:
                     CursorState.Vt300G2 = characterSet;
+                    CursorState.G2 = characterSet;
                     break;
                 case ECharacterSetMode.Vt300G3:
                     CursorState.Vt300G3 = characterSet;
+                    CursorState.G3 = characterSet;
                     break;
             }
         }
@@ -1527,9 +1538,15 @@
             LogExtreme("PutChar(ch:'" + character + "'=" + ((int)character).ToString() + ")");
 
             if (!CursorState.Utf8 && IsRGrCharacter(character))
-                character = Iso2022Encoding.DecodeChar((char)(character - (char)0x80), RightCharacterSet);
+                character = Iso2022Encoding.DecodeChar((char)(character - (char)0x80), RightCharacterSet, CursorState.NationalCharacterReplacementMode);
             else
-                character = Iso2022Encoding.DecodeChar(character, CharacterSet);
+                character = Iso2022Encoding.DecodeChar(character, CharacterSet, CursorState.NationalCharacterReplacementMode);
+
+            if (CursorState.SingleShiftSelectCharacterMode != ECharacterSetMode.Unset)
+            {
+                CursorState.CharacterSetMode = CursorState.SingleShiftSelectCharacterMode;
+                CursorState.SingleShiftSelectCharacterMode = ECharacterSetMode.Unset;
+            }
 
             if (StoreRawText)
             {
@@ -1643,6 +1660,20 @@
             LogController("ShiftOut()");
             CursorState.Utf8 = false;
             CursorState.CharacterSetMode = ECharacterSetMode.IsoG1;
+        }
+
+        public void SingleShiftSelectG2()
+        {
+            LogController("SingleShiftSelectG2()");
+            CursorState.SingleShiftSelectCharacterMode = CursorState.CharacterSetMode;
+            CursorState.CharacterSetMode = ECharacterSetMode.IsoG2;
+        }
+
+        public void SingleShiftSelectG3()
+        {
+            LogController("SingleShiftSelectG3()");
+            CursorState.SingleShiftSelectCharacterMode = CursorState.CharacterSetMode;
+            CursorState.CharacterSetMode = ECharacterSetMode.IsoG3;
         }
 
         public void InvokeCharacterSetMode(ECharacterSetMode mode)

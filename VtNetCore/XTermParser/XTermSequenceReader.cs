@@ -321,7 +321,7 @@
                     characterSet = ECharacterSet.C2;
                     break;
                 case 'A':
-                    characterSet = ECharacterSet.UK;
+                    characterSet = ECharacterSet.Latin1;
                     break;
                 case '4':
                     characterSet = ECharacterSet.Dutch;

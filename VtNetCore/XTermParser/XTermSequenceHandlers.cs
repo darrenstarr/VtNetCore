@@ -147,6 +147,20 @@
             },
             new SequenceHandler
             {
+                Description = "Single Shift Select of G2 Character Set",
+                SequenceType = SequenceHandler.ESequenceType.Escape,
+                CsiCommand = "N",
+                Handler = (sequence, controller) => controller.SingleShiftSelectG2()
+            },
+            new SequenceHandler
+            {
+                Description = "Single Shift Select of G3 Character Set",
+                SequenceType = SequenceHandler.ESequenceType.Escape,
+                CsiCommand = "O",
+                Handler = (sequence, controller) => controller.SingleShiftSelectG3()
+            },
+            new SequenceHandler
+            {
                 Description = "Invoke the G2 Character Set as GL (LS2).",
                 SequenceType = SequenceHandler.ESequenceType.Escape,
                 CsiCommand = "n",
@@ -393,6 +407,10 @@
                                 controller.Enable80132Mode(true);
                                 break;
 
+                            case 42:    // Ps = 4 2  -> Enable National Replacement Character sets (DECNRCM), VT220.
+                                controller.EnableNationalReplacementCharacterSets(true);
+                                break;
+
                             case 45:    // Ps = 4 5  -> Reverse-wraparound Mode.
                                 controller.EnableReverseWrapAroundMode(true);
                                 break;
@@ -447,7 +465,7 @@
                                 break;
 
                             default:
-                                System.Diagnostics.Debug.WriteLine("Reset Mode (RM) mode: " + parameter.ToString() + " is unknown");
+                                System.Diagnostics.Debug.WriteLine("DEC Private Mode Set (DECSET) mode: " + parameter.ToString() + " is unknown");
                                 break;
                         }
                     }
@@ -567,6 +585,10 @@
 
                             case 40:    // Ps = 4 0  -> Disallow 80 -> 132 Mode.
                                 controller.Enable80132Mode(false);
+                                break;
+
+                            case 42:    // Ps = 4 2  -> Disable National Replacement Character sets (DECNRCM), VT220.
+                                controller.EnableNationalReplacementCharacterSets(false);
                                 break;
 
                             case 45:    // Ps = 4 5  -> No Reverse-wraparound Mode.
