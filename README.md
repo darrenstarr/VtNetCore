@@ -6,11 +6,9 @@
 
 This is a VT100/XTerm style terminal emulator library for the .NET Standard 2.0 framework. 
 
-## License Status
+## License 
 
-As of the time of this writing, more or less everything is up in the air. At this time, the code is not "free" and should not be considered as such.
-We are running the MIT and Apache licenses through legal at the office and will release the code under one of these in the near future. We are also
-deciding what name to place on the license.
+MIT
 
 ## Maintainers
 
