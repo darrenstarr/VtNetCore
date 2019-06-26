@@ -589,7 +589,11 @@
                 currentRow.Spans.Add(currentSpan);
 
                 if (sourceLine == null && width > 0)
+                {
                     currentSpan.Text = string.Empty.PadRight(width, ' ');
+                    currentSpan.ForgroundColor = CursorState.ReverseVideoMode ? NullAttribute.BackgroundWebColor : NullAttribute.WebColor;
+                    currentSpan.BackgroundColor = CursorState.ReverseVideoMode ? NullAttribute.WebColor : NullAttribute.BackgroundWebColor;
+                }
                 else if (sourceLine != null)
                 {
                     var lineWidth = width > 0 ? width : sourceLine.Count;
