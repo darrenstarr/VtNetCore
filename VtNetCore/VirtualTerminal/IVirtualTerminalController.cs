@@ -61,7 +61,11 @@
         void InvokeCharacterSetModeR(ECharacterSetMode mode);
         void MoveCursorRelative(int x, int y);
         void NewLine();
+        void PopXTermWindowIcon();
+        void PopXTermWindowTitle();
         void ProtectCharacter(int protect);
+        void PushXTermWindowIcon();
+        void PushXTermWindowTitle();
         void PutChar(char character);
         void PutG2Char(char character);
         void PutG3Char(char character);
@@ -71,6 +75,8 @@
         void RequestStatusStringSetProtectionAttribute();
         void ReportCursorPosition();
         void ReportExtendedCursorPosition();
+        void ReportRGBBackgroundColor();
+        void ReportRGBForegroundColor();
         void RestoreCursor();
         void RestoreEnableNormalBuffer();
         void RestoreEnableSgrMouseMode();
@@ -114,7 +120,6 @@
         void SetScrollingRegion(int top, int bottom);
         void SetSendFocusInAndFocusOutEvents(bool enabled);
         void SetStartOfGuardedArea();
-
         void SetUseAllMouseTracking(bool enabled);
         void SetUTF8();
         void SetUtf8MouseMode(bool enabled);
@@ -136,5 +141,18 @@
         void VerticalTab();
         void Vt52EnterAnsiMode();
         void Vt52Identify();
+        void XTermDeiconifyWindow();
+        void XTermFullScreenEnter();
+        void XTermFullScreenExit();
+        void XTermFullScreenToggle();
+        void XTermIconifyWindow();
+        void XTermLowerToBottom();
+        void XTermMaximizeWindow(bool horizontally, bool vertically);
+        void XTermMoveWindow(int x, int y);
+        void XTermRaiseToFront();
+        void XTermRefreshWindow();
+        void XTermReport(XTermReportType reportType);
+        void XTermResizeTextArea(int columns, int rows);
+        void XTermResizeWindow(int width, int height);
     }
 }

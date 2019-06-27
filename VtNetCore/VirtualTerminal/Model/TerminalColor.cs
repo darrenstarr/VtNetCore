@@ -344,6 +344,14 @@ namespace VtNetCore.VirtualTerminal.Model
             }
         }
 
+        public string XParseColor
+        {
+            get
+            {
+                return string.Format("rgb:{0:X2}/{0:X2}/{0:X2}", Red, Green, Blue);
+            }
+        }
+
         public void Set(int paletteIndex)
         {
             if(Iso8613.TryGetValue(paletteIndex, out TerminalColor colorValue))

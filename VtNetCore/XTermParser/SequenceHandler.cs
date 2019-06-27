@@ -40,6 +40,7 @@
         public int[] Param0 { get; set; } = new int[] { };
         public int[] ValidParams { get; set; } = new int[] { };
         public string CsiCommand { get; set; }
+        public string OscText { get; set; }
         public Action<TerminalSequence, IVirtualTerminalController> Handler { get; set; }
         public Vt52Mode Vt52 { get; set; } = Vt52Mode.Irrelevent;
     }

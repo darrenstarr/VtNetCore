@@ -273,6 +273,20 @@
         }
 
         /// <summary>
+        /// Returns the foreground color as a XParseColor string
+        /// </summary>
+        public string XParseColor
+        {
+            get
+            {
+                if (ForegroundRgb != null)
+                    return ForegroundRgb.XParseColor;
+
+                return (new TerminalColor(ForegroundColor, Bright)).XParseColor;
+            }
+        }
+
+        /// <summary>
         /// Returns the background color as a web color
         /// </summary>
         public string BackgroundWebColor
@@ -283,6 +297,20 @@
                     return BackgroundRgb.WebColor;
 
                 return (new TerminalColor(BackgroundColor, false)).WebColor;
+            }
+        }
+
+        /// <summary>
+        /// Returns the background color as a XParseColor string
+        /// </summary>
+        public string BackgroundXParseColor
+        {
+            get
+            {
+                if (BackgroundRgb != null)
+                    return BackgroundRgb.XParseColor;
+
+                return (new TerminalColor(BackgroundColor, false)).XParseColor;
             }
         }
 

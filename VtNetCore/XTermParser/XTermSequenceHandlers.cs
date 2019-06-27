@@ -209,6 +209,42 @@
             },
             new SequenceHandler
             {
+                Description = "Change VT100 text foreground color to Pt.",
+                SequenceType = SequenceHandler.ESequenceType.OSC,
+                Param0 = new int [] { 10 },
+                Handler = (sequence, controller) =>
+                {
+                    System.Diagnostics.Debug.WriteLine($"(Not implemented) OSC Set RGB foreground color {sequence}");
+                }
+            },
+            new SequenceHandler
+            {
+                Description = "Change VT100 text background color to Pt.",
+                SequenceType = SequenceHandler.ESequenceType.OSC,
+                Param0 = new int [] { 11 },
+                Handler = (sequence, controller) =>
+                {
+                    System.Diagnostics.Debug.WriteLine($"(Not implemented) OSC Set RGB background color {sequence}");
+                }
+            },
+            new SequenceHandler
+            {
+                Description = "Change VT100 text foreground color to Pt. (Query)",
+                SequenceType = SequenceHandler.ESequenceType.OSC,
+                Param0 = new int [] { 10 },
+                OscText = "?",
+                Handler = (sequence, controller) => controller.ReportRGBForegroundColor()
+            },
+            new SequenceHandler
+            {
+                Description = "Change VT100 text background color to Pt. (Query)",
+                SequenceType = SequenceHandler.ESequenceType.OSC,
+                Param0 = new int [] { 11 },
+                OscText = "?",
+                Handler = (sequence, controller) => controller.ReportRGBBackgroundColor()
+            },
+            new SequenceHandler
+            {
                 Description = "Insert Ps (Blank) Character(s) (default = 1)",
                 SequenceType = SequenceHandler.ESequenceType.CSI,
                 CsiCommand = "@",
@@ -977,134 +1013,151 @@
                 SequenceType = SequenceHandler.ESequenceType.CSI,
                 CsiCommand = "t",
                 Query = false,
-                ExactParameterCount = 3,
+                MinimumParameterCount = 1,
                 Handler = (sequence, controller) =>
                 {
                     switch(sequence.Parameters[0])
                     {
                         case 1:
-                            System.Diagnostics.Debug.WriteLine("(Not implemented) De-iconify window");
+                            controller.XTermDeiconifyWindow();
                             break;
                         case 2:
-                            System.Diagnostics.Debug.WriteLine("(Not implemented) Iconify window");
+                            controller.XTermIconifyWindow();
                             break;
                         case 3:
-                            System.Diagnostics.Debug.WriteLine($"(Not implemented) Move windows to x={sequence.Parameters[1]},y={sequence.Parameters[2]}");
+                            if(sequence.Parameters.Count == 3)
+                                controller.XTermMoveWindow(sequence.Parameters[1], sequence.Parameters[2]);
+                            else
+                                System.Diagnostics.Debug.WriteLine($"XTermMoveWindow needs 3 parameters {sequence.ToString()}");
                             break;
                         case 4:
-                            System.Diagnostics.Debug.WriteLine($"(Not implemented) Resize xterm window to h={sequence.Parameters[1]}, w={sequence.Parameters[2]}");
+                            if(sequence.Parameters.Count == 3)
+                                controller.XTermResizeWindow(sequence.Parameters[2], sequence.Parameters[1]);
+                            else
+                                System.Diagnostics.Debug.WriteLine($"XTermResizeWindow needs 3 parameters {sequence.ToString()}");
                             break;
                         case 5:
-                            System.Diagnostics.Debug.WriteLine($"(Not implemented) Raise xterm window to front of the stacking order");
+                            controller.XTermRaiseToFront();
                             break;
                         case 6:
-                            System.Diagnostics.Debug.WriteLine($"(Not implemented) Lower xterm window to bottom of the stacking order");
+                            controller.XTermLowerToBottom();
                             break;
                         case 7:
-                            System.Diagnostics.Debug.WriteLine($"(Not implemented) Refresh xterm window");
+                            controller.XTermRefreshWindow();
                             break;
                         case 8:
-                            System.Diagnostics.Debug.WriteLine($"(Not implemented) Resize text area to h=${sequence.Parameters[1]}, w={sequence.Parameters[2]}");
+                            if(sequence.Parameters.Count == 3)
+                                controller.XTermResizeTextArea(sequence.Parameters[1], sequence.Parameters[2]);
+                            else
+                                System.Diagnostics.Debug.WriteLine($"XTermResizeTextArea needs 3 parameters {sequence.ToString()}");
                             break;
                         case 9:
-                            switch(sequence.Parameters[1])
+                            if(sequence.Parameters.Count >= 2)
                             {
-                                case 0:
-                                    System.Diagnostics.Debug.WriteLine($"(Not implemented) Restore maximized window");
-                                    break;
-                                case 1:
-                                    System.Diagnostics.Debug.WriteLine($"(Not implemented) Maximize window");
-                                    break;
-                                case 2:
-                                    System.Diagnostics.Debug.WriteLine($"(Not implemented) Restore maximized window vertically");
-                                    break;
-                                case 3:
-                                    System.Diagnostics.Debug.WriteLine($"(Not implemented) Restore maximized window horizontally");
-                                    break;
-                                default:
-                                    System.Diagnostics.Debug.WriteLine($"Unknown window maximize mode operation {sequence.ToString()}");
-                                    break;
+                                switch(sequence.Parameters[1])
+                                {
+                                    case 0:
+                                        controller.XTermMaximizeWindow(false, false);
+                                        break;
+                                    case 1:
+                                        controller.XTermMaximizeWindow(true, true);
+                                        break;
+                                    case 2:
+                                        controller.XTermMaximizeWindow(false, true);
+                                        break;
+                                    case 3:
+                                        controller.XTermMaximizeWindow(true, false);
+                                        System.Diagnostics.Debug.WriteLine($"(Not implemented) Restore maximized window horizontally");
+                                        break;
+                                    default:
+                                        System.Diagnostics.Debug.WriteLine($"Unknown window maximize mode operation {sequence.ToString()}");
+                                        break;
+                                }
                             }
+                            else
+                                System.Diagnostics.Debug.WriteLine($"Window maximize mode operation requires 2 parameters {sequence.ToString()}");
                             break;
                         case 10:
-                            switch(sequence.Parameters[1])
+                            if(sequence.Parameters.Count >= 2)
                             {
-                                case 0:
-                                    System.Diagnostics.Debug.WriteLine($"(Not implemented) Undo full-screen mode.");
-                                    break;
-                                case 1:
-                                    System.Diagnostics.Debug.WriteLine($"(Not implemented) Change to full-screen mode.");
-                                    break;
-                                case 2:
-                                    System.Diagnostics.Debug.WriteLine($"(Not implemented) Toggle to full-screen mode.");
-                                    break;
-                                default:
-                                    System.Diagnostics.Debug.WriteLine($"Unknown full screen mode operation {sequence.ToString()}");
-                                    break;
+                                switch(sequence.Parameters[1])
+                                {
+                                    case 0:
+                                        controller.XTermFullScreenExit();
+                                        break;
+                                    case 1:
+                                        controller.XTermFullScreenEnter();
+                                        break;
+                                    case 2:
+                                        controller.XTermFullScreenToggle();
+                                        break;
+                                    default:
+                                        System.Diagnostics.Debug.WriteLine($"Unknown full screen mode operation {sequence.ToString()}");
+                                        break;
+                                }
                             }
+                            else
+                                System.Diagnostics.Debug.WriteLine($"Window full screen mode operation requires 2 parameters {sequence.ToString()}");
                             break;
                         case 11:
-                            System.Diagnostics.Debug.WriteLine($"(Not implemented) Report xterm window state.");
-                            break;
                         case 13:
-                            System.Diagnostics.Debug.WriteLine($"(Not implemented) Report xterm window position???? {sequence.ToString()}");
-                            break;
                         case 14:
-                            System.Diagnostics.Debug.WriteLine($"(Not implemented) Report xterm text area size in pixels???? {sequence.ToString()}");
-                            break;
                         case 15:
-                            System.Diagnostics.Debug.WriteLine($"(Not implemented) Report size of the screen in pixels. {sequence.ToString()}");
-                            break;
                         case 16:
-                            System.Diagnostics.Debug.WriteLine($"(Not implemented) Report xterm character size in pixels. {sequence.ToString()}");
-                            break;
                         case 18:
-                            System.Diagnostics.Debug.WriteLine($"(Not implemented) Report the size of the text area in characters. {sequence.ToString()}");
-                            break;
                         case 19:
-                            System.Diagnostics.Debug.WriteLine($"(Not implemented) Report the size of the screen in characters. {sequence.ToString()}");
-                            break;
                         case 20:
-                            System.Diagnostics.Debug.WriteLine($"(Not implemented) Report xterm window's icon label. {sequence.ToString()}");
-                            break;
                         case 21:
-                            System.Diagnostics.Debug.WriteLine($"(Not implemented) Report xterm window's title. {sequence.ToString()}");
+                            controller.XTermReport((XTermReportType)sequence.Parameters[0]);
                             break;
                         case 22:
-                            switch(sequence.Parameters[1])
+                            if(sequence.Parameters.Count >= 2)
                             {
-                                case 0:
-                                    System.Diagnostics.Debug.WriteLine($"(Not implemented) Save xterm icon and window title on stack. {sequence.ToString()}");
-                                    break;
-                                case 1:
-                                    System.Diagnostics.Debug.WriteLine($"(Not implemented) Save xterm icon title on stack. {sequence.ToString()}");
-                                    break;
-                                case 2:
-                                    System.Diagnostics.Debug.WriteLine($"(Not implemented) Save xterm window title on stack. {sequence.ToString()}");
-                                    break;
-                                default:
-                                    System.Diagnostics.Debug.WriteLine($"Unknown save window title or icon sequence {sequence.ToString()}");
-                                    break;
+                                switch(sequence.Parameters[1])
+                                {
+                                    case 0:
+                                        controller.PushXTermWindowIcon();
+                                        controller.PushXTermWindowTitle();
+                                        break;
+                                    case 1:
+                                        controller.PushXTermWindowIcon();
+                                        break;
+                                    case 2:
+                                        controller.PushXTermWindowTitle();
+                                        break;
+                                    default:
+                                        System.Diagnostics.Debug.WriteLine($"Unknown save window title or icon sequence {sequence.ToString()}");
+                                        break;
+                                }
                             }
+                            else
+                                System.Diagnostics.Debug.WriteLine($"XTerm Icon/Title operation requires 2 parameters {sequence.ToString()}");
                             break;
                         case 23:
-                            switch(sequence.Parameters[1])
+                            if(sequence.Parameters.Count >= 2)
                             {
-                                case 0:
-                                    System.Diagnostics.Debug.WriteLine($"(Not implemented) Restore xterm icon and window title from {sequence.ToString()}");
-                                    break;
-                                case 1:
-                                    System.Diagnostics.Debug.WriteLine($"(Not implemented) Restore xterm icon title from stack. {sequence.ToString()}");
-                                    break;
-                                case 2:
-                                    System.Diagnostics.Debug.WriteLine($"(Not implemented) Restore xterm window title from stack. {sequence.ToString()}");
-                                    break;
-                                default:
-                                    System.Diagnostics.Debug.WriteLine($"Unknown restore window title or icon sequence {sequence.ToString()}");
-                                    break;
+                                switch(sequence.Parameters[1])
+                                {
+                                    case 0:
+                                        controller.PopXTermWindowIcon();
+                                        controller.PopXTermWindowTitle();
+                                        break;
+                                    case 1:
+                                        controller.PopXTermWindowIcon();
+                                        break;
+                                    case 2:
+                                        controller.PopXTermWindowTitle();
+                                        break;
+                                    default:
+                                        System.Diagnostics.Debug.WriteLine($"Unknown restore window title or icon sequence {sequence.ToString()}");
+                                        break;
+                                }
                             }
+                            else
+                                System.Diagnostics.Debug.WriteLine($"XTerm Icon/Title operation requires 2 parameters {sequence.ToString()}");
                             break;
                         case 24:
+                            // TODO : Consider just ignoring this feature... I can't imagine it being overly useful.
                             System.Diagnostics.Debug.WriteLine($"(Not implemented) Resize to Ps lines (DECSLPP) {sequence.ToString()}");
                             break;
                         default:
@@ -1711,7 +1764,25 @@
                 if (sequence.Parameters.Count < 1)
                     throw new Exception("OSC sequence doesn't have any parameters");
 
-                var handler = Handlers.Where(x => x.SequenceType == SequenceHandler.ESequenceType.OSC && x.Param0.Contains(sequence.Parameters[0])).SingleOrDefault();
+                var handler = Handlers
+                    .Where(x => 
+                        x.SequenceType == SequenceHandler.ESequenceType.OSC && 
+                        x.Param0.Contains(sequence.Parameters[0]) &&
+                        x.OscText == sequence.Command
+                    )
+                    .SingleOrDefault();
+
+                if(handler == null)
+                {
+                    handler = Handlers
+                    .Where(x =>
+                        x.SequenceType == SequenceHandler.ESequenceType.OSC &&
+                        x.Param0.Contains(sequence.Parameters[0]) &&
+                        string.IsNullOrEmpty(x.OscText)
+                    )
+                    .SingleOrDefault();
+                }
+
                 if (handler == null)
                     throw new Exception("There are no sequence handlers configured for type OscSequence with param0 = " + sequence.Parameters[0].ToString());
 

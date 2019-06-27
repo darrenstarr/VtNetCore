@@ -3321,5 +3321,141 @@
                 );
             }
         }
+
+        public void PopXTermWindowIcon()
+        {
+            LogController($"(Not implemented) Restore xterm icon from stack.");
+        }
+
+        public void PopXTermWindowTitle()
+        {
+            LogController($"(Not implemented) Restore xterm window title from stack.");
+        }
+
+        public void PushXTermWindowIcon()
+        {
+            LogController($"(Not implemented) Save xterm icon on stack.");
+        }
+
+        public void PushXTermWindowTitle()
+        {
+            LogController($"(Not implemented) Save xterm window title on stack.");
+        }
+
+        public void XTermDeiconifyWindow()
+        {
+            LogController("(Not implemented) De-iconify window");
+        }
+
+        public void XTermFullScreenEnter()
+        {
+            LogController($"(Not implemented) Change to full-screen mode.");
+        }
+        public void XTermFullScreenExit()
+        {
+            LogController($"(Not implemented) Undo full-screen mode.");
+        }
+        public void XTermFullScreenToggle()
+        {
+            LogController($"(Not implemented) Toggle full-screen mode.");
+        }
+
+        public void XTermIconifyWindow()
+        {
+            LogController("(Not implemented) Iconify window");
+        }
+
+        public void XTermLowerToBottom()
+        {
+            LogController($"(Not implemented) Lower xterm window to bottom of the stacking order");
+        }
+
+        public void XTermMaximizeWindow(bool horizontally, bool vertically)
+        {
+            if (!horizontally && !vertically)
+                LogController("(Not implemented) XTerm Restore maximized window");
+            else
+                LogController($"(Not implemented) XTerm maxmimize window horizontally={horizontally}, vertically={vertically}");
+        }
+
+        public void XTermMoveWindow(int x, int y)
+        {
+            LogController($"(Not implemented) Move windows to x={x},y={y}");
+        }
+
+        public void XTermRaiseToFront()
+        {
+            LogController($"(Not implemented) Raise xterm window to front of the stacking order");
+        }
+
+        public void XTermReport(XTermReportType reportType)
+        {
+            switch(reportType)
+            {
+                case XTermReportType.WindowState:
+                    LogController($"(Not implemented) Report xterm window state.");
+                    break;
+                case XTermReportType.WindowPosition:
+                    LogController($"(Not implemented) Report xterm window position????");
+                    break;
+                case XTermReportType.TextAreaPixelSize:
+                    LogController($"(Not implemented) Report xterm text area size in pixels????");
+                    break;
+                case XTermReportType.ScreenPixelSize:
+                    LogController($"(Not implemented) Report size of the screen in pixels.");
+                    break;
+                case XTermReportType.CharacterPixelSize:
+                    LogController($"(Not implemented) Report xterm character size in pixels.");
+                    break;
+                case XTermReportType.TextAreaCharSize:
+                    LogController($"(Not implemented) Report the size of the text area in characters.");
+                    break;
+                case XTermReportType.ScreenCharSize:
+                    LogController($"(Not implemented) Report the size of the screen in characters.");
+                    break;
+                case XTermReportType.WindowIconLabel:
+                    LogController($"(Not implemented) Report xterm window's icon label.");
+                    break;
+                case XTermReportType.WindowTitle:
+                    LogController($"(Not implemented) Report xterm window's title.");
+                    break;
+                default:
+                    LogController($"Unknown XTerm report type {reportType}");
+                    break;
+            }
+        }
+
+        public void XTermRefreshWindow()
+        {
+            LogController($"(Not implemented) Refresh xterm window");
+        }
+
+        public void XTermResizeTextArea(int columns, int rows)
+        {
+            LogController($"(Not implemented) Resize text area to columns=${columns}, rows={rows}");
+        }
+
+        public void XTermResizeWindow(int width, int height)
+        {
+            LogController($"(Not implemented) Resize xterm window to h={height}, w={width}");
+        }
+
+        public void ReportRGBBackgroundColor()
+        {
+            System.Diagnostics.Debug.WriteLine($"(Not implemented) OSC Get RGB background color");
+
+            var report = "\u001b]11;" + CursorState.Attributes.BackgroundXParseColor + "\u0007";
+
+            SendData?.Invoke(this, new SendDataEventArgs { Data = Encoding.UTF8.GetBytes(report) });
+        }
+
+        public void ReportRGBForegroundColor()
+        {
+            System.Diagnostics.Debug.WriteLine($"(Not implemented) OSC Get RGB foreground color");
+
+            var report = "\u001b]10;" + CursorState.Attributes.XParseColor + "\u0007";
+
+            SendData?.Invoke(this, new SendDataEventArgs { Data = Encoding.UTF8.GetBytes(report) });
+        }
     }
 }
