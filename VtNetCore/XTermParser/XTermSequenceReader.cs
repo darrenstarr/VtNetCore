@@ -344,6 +344,7 @@
                     break;
                 case 'E':
                 case '6':
+                case '`':
                     characterSet = ECharacterSet.NorwegianDanish;
                     break;
                 case 'Z':
@@ -357,7 +358,34 @@
                     characterSet = ECharacterSet.Swiss;
                     break;
 
+                case '>':
+                    characterSet = ECharacterSet.DecTechnical;
+                    break;
+
+                case '<':
+                    characterSet = ECharacterSet.DecSupplemental;
+                    break;
+
+                case '%':
+                    var num = stream.Read();
+                    switch (num)
+                    {
+                        case '5':
+                            characterSet = ECharacterSet.DecSupplementalGraphic;
+                            break;
+                        case '6':
+                            characterSet = ECharacterSet.Portuguese;
+                            break;
+                        default:
+                            characterSet = ECharacterSet.USASCII;
+                            break;
+                    }
+                    break;
+
                 default:
+                    characterSet = ECharacterSet.USASCII;
+                    break;
+
                 case 'B':
                     characterSet = ECharacterSet.USASCII;
                     break;

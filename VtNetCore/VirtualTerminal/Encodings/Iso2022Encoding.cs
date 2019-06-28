@@ -7,7 +7,7 @@ namespace VtNetCore.VirtualTerminal.Encodings
 {
     public static class Iso2022Encoding
     {
-        public static readonly Dictionary<Char, Char> C0 = new Dictionary<char, char>
+        public static readonly Dictionary<char, char> C0 = new Dictionary<char, char>
         {
             { '_', ' ' },      // 5/9 - Blank
             { '`', '\u25C6' }, // 6/0 - U+25C6 # BLACK DIAMOND
@@ -43,7 +43,7 @@ namespace VtNetCore.VirtualTerminal.Encodings
             { '~', '\u00B7' }, // 7/14 - U+00B7 # MIDDLE DOT
         };
 
-        public static readonly Dictionary<Char, Char> Latin1 = new Dictionary<char, char>
+        public static readonly Dictionary<char, char> Latin1 = new Dictionary<char, char>
         {
             { '!', '¡' },
             { '"', '¢' },
@@ -142,11 +142,193 @@ namespace VtNetCore.VirtualTerminal.Encodings
             { (char)127, 'ÿ' }
         };
 
+        public static readonly Dictionary<char, char> Finnish = new Dictionary<char, char>
+        {
+            { '\\', 'Ö' },
+            { ']', 'Å' },
+            { '^', 'Ü' },
+            { '`', 'é' },
+            { '{', 'ä' },
+            { '|', 'ö' },
+            { '}', 'å' },
+            { '~', 'ü' },
+        };
+
+        public static readonly Dictionary<char, char> French = new Dictionary<char, char>
+        {
+            { '#', '£' },
+            { '[', '°' },
+            { '\\', 'ç' },
+            { ']', '§' },
+            { '{', 'é' },
+            { '|', 'ù' },
+            { '}', 'è' },
+            { '~', '¨' },
+        };
+
+        public static readonly Dictionary<char, char> FrenchCanadian = new Dictionary<char, char>
+        {
+            { '@', 'à' },
+            { '[', 'â' },
+            { '\\', 'ç' },
+            { ']', 'ê' },
+            { '{', 'é' },
+            { '^', 'î' },
+            { '`', 'ô' },
+            { '|', 'ù' },
+            { '}', 'è' },
+            { '~', 'û' },
+        };
+
+        public static readonly Dictionary<char, char> German = new Dictionary<char, char>
+        {
+            { '@', '§' },
+            { '[', 'Ä' },
+            { '\\', 'Ö' },
+            { ']', 'Ü' },
+            { '{', 'ä' },
+            { '|', 'ö' },
+            { '}', 'ü' },
+            { '~', 'β' },
+        };
+
+        public static readonly Dictionary<char, char> Italian = new Dictionary<char, char>
+        {
+            { '#', '£' },
+            { '@', '§' },
+            { '[', '°' },
+            { '\\', 'ç' },
+            { ']', 'é' },
+            { '`', 'ù' },
+            { '{', 'à' },
+            { '|', 'ò' },
+            { '}', 'è' },
+            { '~', 'ì' },
+        };
+
+        public static readonly Dictionary<char, char> NorwegianDanish = new Dictionary<char, char>
+        {
+            { '[', 'Æ' },
+            { '\\', 'Ø' },
+            { ']', 'Å' },
+            { '{', 'æ' },
+            { '|', 'ø' },
+            { '}', 'å' },
+        };
+
+        public static readonly Dictionary<char, char> Portuguese = new Dictionary<char, char>
+        {
+            { '[', 'Ã' },
+            { '\\', 'Ç' },
+            { ']', 'Õ' },
+            { '{', 'ã' },
+            { '|', 'ç' },
+            { '}', 'õ' },
+        };
+
+        public static readonly Dictionary<char, char> Spanish = new Dictionary<char, char>
+        {
+            { '#', '£' },
+            { '@', '§' },
+            { '[', '¡' },
+            { '\\', 'Ñ' },
+            { ']', '¿' },
+            { '{', '°' },
+            { '|', 'ñ' },
+            { '}', 'ç' },
+        };
+
+        public static readonly Dictionary<char, char> DecTechnical = new Dictionary<char, char>
+        {
+            { (char)0x21, '\u23B7' },
+            { (char)0x22, '\u250C' },
+            { (char)0x23, '\u2500' },
+            { (char)0x24, '\u2320' },
+            { (char)0x25, '\u2321' },
+            { (char)0x26, '\u2502' },
+            { (char)0x27, '\u23A1' },
+            { (char)0x28, '\u23A3' },
+            { (char)0x29, '\u23A4' },
+            { (char)0x2A, '\u23A6' },
+            { (char)0x2B, '\u239B' },
+            { (char)0x2C, '\u239D' },
+            { (char)0x2D, '\u239E' },
+            { (char)0x2E, '\u23A0' },
+            { (char)0x2F, '\u23A8' },
+            { (char)0x30, '\u23AC' },
+            { (char)0x3C, '\u2264' },
+            { (char)0x3D, '\u2260' },
+            { (char)0x3E, '\u2265' },
+            { (char)0x3F, '\u222B' },
+            { (char)0x40, '\u2234' },
+            { (char)0x41, '\u221D' },
+            { (char)0x42, '\u221E' },
+            { (char)0x43, '\u00F7' },
+            { (char)0x44, '\u0394' },
+            { (char)0x45, '\u2207' },
+            { (char)0x46, '\u03A6' },
+            { (char)0x47, '\u0393' },
+            { (char)0x48, '\u223C' },
+            { (char)0x49, '\u2243' },
+            { (char)0x4A, '\u0398' },
+            { (char)0x4B, '\u00D7' },
+            { (char)0x4C, '\u039B' },
+            { (char)0x4D, '\u21D4' },
+            { (char)0x4E, '\u21D2' },
+            { (char)0x4F, '\u2261' },
+            { (char)0x50, '\u03A0' },
+            { (char)0x51, '\u03A8' },
+            { (char)0x53, '\u03A3' },
+            { (char)0x56, '\u221A' },
+            { (char)0x57, '\u03A9' },
+            { (char)0x58, '\u039E' },
+            { (char)0x59, '\u03A5' },
+            { (char)0x5A, '\u2282' },
+            { (char)0x5B, '\u2283' },
+            { (char)0x5C, '\u2229' },
+            { (char)0x5D, '\u222A' },
+            { (char)0x5E, '\u2227' },
+            { (char)0x5F, '\u2228' },
+            { (char)0x60, '\u00AC' },
+            { (char)0x61, '\u03B1' },
+            { (char)0x62, '\u03B2' },
+            { (char)0x63, '\u03C7' },
+            { (char)0x64, '\u03B4' },
+            { (char)0x65, '\u03B5' },
+            { (char)0x66, '\u03C6' },
+            { (char)0x67, '\u03B3' },
+            { (char)0x68, '\u03B7' },
+            { (char)0x69, '\u03B9' },
+            { (char)0x6A, '\u03B8' },
+            { (char)0x6B, '\u03BA' },
+            { (char)0x6C, '\u03BB' },
+            { (char)0x6E, '\u03BD' },
+            { (char)0x6F, '\u2202' },
+            { (char)0x70, '\u03C0' },
+            { (char)0x71, '\u03C8' },
+            { (char)0x72, '\u03C1' },
+            { (char)0x73, '\u03C3' },
+            { (char)0x74, '\u03C4' },
+            { (char)0x76, '\u0192' },
+            { (char)0x77, '\u03C9' },
+            { (char)0x78, '\u03BE' },
+            { (char)0x79, '\u03C5' },
+            { (char)0x7A, '\u03B6' },
+            { (char)0x7B, '\u2190' },
+            { (char)0x7C, '\u2191' },
+            { (char)0x7D, '\u2192' },
+            { (char)0x7E, '\u2193' },
+        };
+
         public static char DecodeChar(char inChar, ECharacterSet characterSet, bool nationalReplacementCharacterSet)
         {
+            char replacement;
+
             switch(characterSet)
             {
                 case ECharacterSet.Latin1:
+                case ECharacterSet.DecSupplemental:
+                case ECharacterSet.DecSupplementalGraphic:
                     if (nationalReplacementCharacterSet)
                     {
                         if (inChar == '#')
@@ -154,14 +336,59 @@ namespace VtNetCore.VirtualTerminal.Encodings
                     }
                     else
                     {
-                        if (Latin1.TryGetValue(inChar, out char latin1Value))
-                            return latin1Value;
+                        if (Latin1.TryGetValue(inChar, out replacement))
+                            return replacement;
                     }
                     return inChar;
 
                 case ECharacterSet.C0:
-                    if (C0.TryGetValue(inChar, out char c0Value))
-                        return c0Value;
+                    if (C0.TryGetValue(inChar, out replacement))
+                        return replacement;
+                    return inChar;
+
+                case ECharacterSet.DecTechnical:
+                    if (DecTechnical.TryGetValue(inChar, out replacement))
+                        return replacement;
+                    return '\uFFFD';
+
+                case ECharacterSet.Finnish:
+                    if (Finnish.TryGetValue(inChar, out replacement))
+                        return replacement;
+                    return inChar;
+
+                case ECharacterSet.French:
+                    if (French.TryGetValue(inChar, out replacement))
+                        return replacement;
+                    return inChar;
+
+                case ECharacterSet.FrenchCanadian:
+                    if (FrenchCanadian.TryGetValue(inChar, out replacement))
+                        return replacement;
+                    return inChar;
+
+                case ECharacterSet.German:
+                    if (German.TryGetValue(inChar, out replacement))
+                        return replacement;
+                    return inChar;
+
+                case ECharacterSet.Italian:
+                    if (Italian.TryGetValue(inChar, out replacement))
+                        return replacement;
+                    return inChar;
+
+                case ECharacterSet.Portuguese:
+                    if (Portuguese.TryGetValue(inChar, out replacement))
+                        return replacement;
+                    return inChar;
+
+                case ECharacterSet.NorwegianDanish:
+                    if (NorwegianDanish.TryGetValue(inChar, out replacement))
+                        return replacement;
+                    return inChar;
+
+                case ECharacterSet.Spanish:
+                    if (Spanish.TryGetValue(inChar, out replacement))
+                        return replacement;
                     return inChar;
 
                 default:

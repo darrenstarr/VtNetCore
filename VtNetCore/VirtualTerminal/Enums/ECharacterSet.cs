@@ -16,6 +16,10 @@
         NorwegianDanish,
         Spanish,
         Swedish,
-        Swiss
+        Swiss,
+        DecTechnical,
+        DecSupplementalGraphic,
+        DecSupplemental,
+        Portuguese
     }
 }
