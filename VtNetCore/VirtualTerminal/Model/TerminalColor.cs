@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.RegularExpressions;
 using VtNetCore.VirtualTerminal.Enums;
 
 namespace VtNetCore.VirtualTerminal.Model
@@ -8,6 +9,8 @@ namespace VtNetCore.VirtualTerminal.Model
     public class TerminalColor
     {
         public uint ARGB { get; set; }
+        private readonly Regex webColorExpression = new Regex(@"^#(?<red>[0-9A-Fa-f]{2})(?<green>[0-9A-Fa-f]{2})(?<blue>[0-9A-Fa-f]{2})$", RegexOptions.Compiled);
+        private readonly Regex rgbiColorExpression = new Regex(@"^rgbi:(?<red>[0-9A-Za-z]{1,4})\/(?<green>[0-9A-Za-z]{1,4})\/(?<blue>[0-9A-Za-z]{1,4})$", RegexOptions.Compiled);
 
         public TerminalColor()
         {
@@ -18,11 +21,28 @@ namespace VtNetCore.VirtualTerminal.Model
             ARGB = other.ARGB;
         }
 
-        public TerminalColor(string webColor)
+        public TerminalColor(string text)
         {
-            Red = Convert.ToUInt32(webColor.Substring(1, 2), 16);
-            Green = Convert.ToUInt32(webColor.Substring(3, 2), 16);
-            Blue = Convert.ToUInt32(webColor.Substring(5, 2), 16);
+            Set(text);
+        }
+
+        private uint ScaledRgbiTextValue(string s)
+        {
+            var v = Convert.ToUInt32(s, 16);
+
+            switch(s.Length)
+            {
+                case 2:
+                    return v;
+                case 1:
+                    return v << 4;
+                case 3:
+                    return v >> 4;
+                case 4:
+                    return v >> 8;
+            }
+
+            throw new Exception("XParseColor invalid color string length. Should never be here.");
         }
 
         public TerminalColor(ETerminalColor color, bool bright)
@@ -365,6 +385,31 @@ namespace VtNetCore.VirtualTerminal.Model
             Red = red;
             Green = green;
             Blue = blue;
+        }
+
+        public void Set(string text)
+        {
+            var m = webColorExpression.Match(text);
+            if (m.Success)
+            {
+                Red = Convert.ToUInt32(m.Groups["red"].Value, 16);
+                Green = Convert.ToUInt32(m.Groups["green"].Value, 16);
+                Blue = Convert.ToUInt32(m.Groups["blue"].Value, 16);
+            }
+            else
+            {
+                m = rgbiColorExpression.Match(text);
+                if (m.Success)
+                {
+                    Red = ScaledRgbiTextValue(m.Groups["red"].Value);
+                    Green = ScaledRgbiTextValue(m.Groups["green"].Value);
+                    Blue = ScaledRgbiTextValue(m.Groups["blue"].Value);
+                }
+                else
+                {
+                    throw new Exception($"Unhandled color string format {text}");
+                }
+            }
         }
 
         public void Set(ETerminalColor termColor, bool bright)

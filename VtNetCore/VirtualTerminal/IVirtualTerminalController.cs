@@ -75,8 +75,8 @@
         void RequestStatusStringSetProtectionAttribute();
         void ReportCursorPosition();
         void ReportExtendedCursorPosition();
-        void ReportRGBBackgroundColor();
-        void ReportRGBForegroundColor();
+        void ReportRgbBackgroundColor();
+        void ReportRgbForegroundColor();
         void RestoreCursor();
         void RestoreEnableNormalBuffer();
         void RestoreEnableSgrMouseMode();
@@ -117,7 +117,9 @@
         void SetLeftAndRightMargins(int left, int right);
         void SetKeypadType(EKeypadType type);
         void SetRgbBackgroundColor(int red, int green, int blue);
+        void SetRgbBackgroundColor(string xParseColor);
         void SetRgbForegroundColor(int red, int green, int blue);
+        void SetRgbForegroundColor(string xParseColor);
         void SetScrollingRegion(int top, int bottom);
         void SetSendFocusInAndFocusOutEvents(bool enabled);
         void SetStartOfGuardedArea();

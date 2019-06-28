@@ -1711,6 +1711,26 @@
                 CursorState.Attributes.BackgroundRgb.Set((uint)red, (uint)green, (uint)blue);
         }
 
+        public void SetRgbForegroundColor(string xParseColor)
+        {
+            LogController($"SetRgbForegroundColor(xParseColor={xParseColor})");
+
+            if (CursorState.Attributes.ForegroundRgb == null)
+                CursorState.Attributes.ForegroundRgb = new TerminalColor(xParseColor);
+            else
+                CursorState.Attributes.ForegroundRgb.Set(xParseColor);
+        }
+
+        public void SetRgbBackgroundColor(string xParseColor)
+        {
+            LogController($"SetRgbBackgroundColor(xParseColor={xParseColor})");
+
+            if (CursorState.Attributes.BackgroundRgb == null)
+                CursorState.Attributes.BackgroundRgb = new TerminalColor(xParseColor);
+            else
+                CursorState.Attributes.BackgroundRgb.Set(xParseColor);
+        }
+
         public void SetIso8613PaletteForeground(int paletteEntry)
         {
             LogController("SetIso8613PaletteForeground(e:" + paletteEntry + ")");
@@ -1978,7 +1998,7 @@
 
         public void UseHighlightMouseTracking(bool enable)
         {
-            LogController("Unimplemented: UseHighlightMouseTracking(enable:" + enable.ToString() + ")");
+            LogController("UseHighlightMouseTracking(enable:" + enable.ToString() + ")");
             HighlightMouseTracking = enable;
             ChangeCount++;
         }
@@ -2544,7 +2564,7 @@
 
         public void EnableSmoothScrollMode(bool enable)
         {
-            LogController("Unimplemented: EnableSmoothScrollMode(enable:" + enable.ToString() + ")");
+            LogController("EnableSmoothScrollMode(enable:" + enable.ToString() + ")");
             SmoothScrollMode = enable;
         }
 
@@ -2587,18 +2607,18 @@
 
         public void EnableAutoRepeatKeys(bool enable)
         {
-            LogController("Unimplemented: EnableAutoRepeatKeys(enable:" + enable.ToString() + ")");
+            LogController("EnableAutoRepeatKeys(enable:" + enable.ToString() + ")");
         }
 
         public void Enable80132Mode(bool enable)
         {
-            LogController("Unimplemented: Enable80132Mode(enable:" + enable.ToString() + ")");
+            LogController("Enable80132Mode(enable:" + enable.ToString() + ")");
             Columns = VisibleColumns;
         }
 
         public void EnableReverseWrapAroundMode(bool enable)
         {
-            LogController("Unimplemented: EnableReverseWrapAroundMode(enable:" + enable.ToString() + ")");
+            LogController("EnableReverseWrapAroundMode(enable:" + enable.ToString() + ")");
             ReverseWrapAroundMode = enable;
         }
 
@@ -2669,13 +2689,13 @@
 
         public void SetLatin1()
         {
-            LogController("Unimplemented: SetLatin1()");
+            LogController("SetLatin1()");
             CursorState.Utf8 = false;
         }
 
         public void SetUTF8()
         {
-            LogController("Unimplemented: SetUTF8()");
+            LogController("SetUTF8()");
             CursorState.Utf8 = true;
         }
 
@@ -3448,18 +3468,18 @@
             LogController($"(Not implemented) Resize xterm window to h={height}, w={width}");
         }
 
-        public void ReportRGBBackgroundColor()
+        public void ReportRgbBackgroundColor()
         {
-            System.Diagnostics.Debug.WriteLine($"(Not implemented) OSC Get RGB background color");
+            LogController($"OSC Get RGB background color");
 
             var report = "\u001b]11;" + CursorState.Attributes.BackgroundXParseColor + "\u0007";
 
             SendData?.Invoke(this, new SendDataEventArgs { Data = Encoding.UTF8.GetBytes(report) });
         }
 
-        public void ReportRGBForegroundColor()
+        public void ReportRgbForegroundColor()
         {
-            System.Diagnostics.Debug.WriteLine($"(Not implemented) OSC Get RGB foreground color");
+            LogController($"OSC Get RGB foreground color");
 
             var report = "\u001b]10;" + CursorState.Attributes.XParseColor + "\u0007";
 

@@ -212,20 +212,14 @@
                 Description = "Change VT100 text foreground color to Pt.",
                 SequenceType = SequenceHandler.ESequenceType.OSC,
                 Param0 = new int [] { 10 },
-                Handler = (sequence, controller) =>
-                {
-                    System.Diagnostics.Debug.WriteLine($"(Not implemented) OSC Set RGB foreground color {sequence}");
-                }
+                Handler = (sequence, controller) => controller.SetRgbForegroundColor(sequence.Command)
             },
             new SequenceHandler
             {
                 Description = "Change VT100 text background color to Pt.",
                 SequenceType = SequenceHandler.ESequenceType.OSC,
                 Param0 = new int [] { 11 },
-                Handler = (sequence, controller) =>
-                {
-                    System.Diagnostics.Debug.WriteLine($"(Not implemented) OSC Set RGB background color {sequence}");
-                }
+                Handler = (sequence, controller) => controller.SetRgbBackgroundColor(sequence.Command)
             },
             new SequenceHandler
             {
@@ -233,7 +227,7 @@
                 SequenceType = SequenceHandler.ESequenceType.OSC,
                 Param0 = new int [] { 10 },
                 OscText = "?",
-                Handler = (sequence, controller) => controller.ReportRGBForegroundColor()
+                Handler = (sequence, controller) => controller.ReportRgbForegroundColor()
             },
             new SequenceHandler
             {
@@ -241,7 +235,7 @@
                 SequenceType = SequenceHandler.ESequenceType.OSC,
                 Param0 = new int [] { 11 },
                 OscText = "?",
-                Handler = (sequence, controller) => controller.ReportRGBBackgroundColor()
+                Handler = (sequence, controller) => controller.ReportRgbBackgroundColor()
             },
             new SequenceHandler
             {
@@ -1077,7 +1071,6 @@
                                         break;
                                     case 3:
                                         controller.XTermMaximizeWindow(true, false);
-                                        System.Diagnostics.Debug.WriteLine($"(Not implemented) Restore maximized window horizontally");
                                         break;
                                     default:
                                         System.Diagnostics.Debug.WriteLine($"Unknown window maximize mode operation {sequence.ToString()}");
