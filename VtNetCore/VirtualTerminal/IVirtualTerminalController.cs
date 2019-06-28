@@ -98,6 +98,7 @@
         void ScrollAcross(int columns);
         void SendDeviceAttributes();
         void SendDeviceAttributesSecondary();
+        void SendDeviceAttributesTertiary();
         void SetAbsoluteRow(int line);
         void SetBracketedPasteMode(bool enable);
         void SetCharacterAttribute(int parameter);

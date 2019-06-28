@@ -274,6 +274,16 @@
             },
             new SequenceHandler
             {
+                Description = "Send Device Attributes (Tertiary DA).",
+                SequenceType = SequenceHandler.ESequenceType.CSI,
+                Equal = true,
+                CsiCommand = "c",
+                ExactParameterCountOrDefault = 1,
+                Param0 = new int [] { 0 },
+                Handler = (sequence, controller) => controller.SendDeviceAttributesTertiary()
+            },
+            new SequenceHandler
+            {
                 Description = "Send Device Attributes (Secondary DA).",
                 SequenceType = SequenceHandler.ESequenceType.CSI,
                 Send = true,
@@ -1697,6 +1707,7 @@
                         x.CsiCommand == sequence.Command &&
                         x.Query == sequence.IsQuery &&
                         x.Send == sequence.IsSend &&
+                        x.Equal == sequence.IsEquals &&
                         x.Bang == sequence.IsBang &&
                         (
                             (
@@ -1761,8 +1772,8 @@
 
             if (sequence is OscSequence)
             {
-                if (sequence.Parameters.Count < 1)
-                    throw new Exception("OSC sequence doesn't have any parameters");
+                if (sequence.Parameters == null || sequence.Parameters.Count < 1)
+                    throw new Exception($"OSC sequence doesn't have any parameters {sequence}");
 
                 var handler = Handlers
                     .Where(x => 

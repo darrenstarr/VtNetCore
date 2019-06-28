@@ -16,6 +16,7 @@
             bool isQuery = false;
             bool isSend = false;
             bool isBang = false;
+            bool isEquals = false;
             char? modifier = null;
 
             int currentParameter = -1;
@@ -32,6 +33,8 @@
                     isSend = true;
                 else if (atStart && next == '!')
                     isBang = true;
+                else if (atStart && next == '=')
+                    isEquals = true;
                 else if (next == ';')
                 {
                     if (currentParameter == -1)
@@ -52,7 +55,7 @@
                     else
                         currentParameter = (currentParameter * 10) + Convert.ToInt32(next - '0');
                 }
-                else if (next == '$' || next == '"' || next == ' ' || next =='\'')
+                else if (next == '$' || next == '"' || next == ' ' || next == '\'')
                 {
                     if (modifier.HasValue)
                         throw new EscapeSequenceException("There appears to be two modifiers in a row", stream.Stacked);
@@ -94,6 +97,7 @@
                         IsQuery = isQuery,
                         IsSend = isSend,
                         IsBang = isBang,
+                        IsEquals = isEquals,
                         Command = (modifier.HasValue ? modifier.Value.ToString() : "") + next.ToString(),
                         ProcessFirst = ProcesFirst.Count > 0 ? ProcesFirst : null
                     };

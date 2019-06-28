@@ -2633,6 +2633,14 @@
             SendData?.Invoke(this, new SendDataEventArgs { Data = Encoding.ASCII.GetBytes(XTermSecondaryAttributes) });
         }
 
+        public static readonly string XTermTeriaryAttributes = "\u001bP!|0125\u001b\\";
+
+        public void SendDeviceAttributesTertiary()
+        {
+            LogController("SendDeviceAttributesTertiary()");
+            SendData?.Invoke(this, new SendDataEventArgs { Data = Encoding.ASCII.GetBytes(XTermTeriaryAttributes) });
+        }
+
         public static readonly byte[] DsrOk = { 0x1B, (byte)'[', (byte)'0', (byte)'n' };
 
         public void DeviceStatusReport()
