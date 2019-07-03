@@ -231,7 +231,7 @@ namespace VtNetCoreUnitTests
             // From LinefeedOutsideDECSTBM
             Push(d, "".STBM(1, 10).LF(10).CUP(20, 1).LF());
 
-            Push(d, "".CUP(10).STBM(9,10).RI());
+            Push(d, "".CUP(10).STBM(9,10).CUP(10).RI());
             Assert.Equal(8, t.ViewPort.CursorPosition.Row);
             Assert.Equal(0, t.ViewPort.CursorPosition.Column);
 
@@ -257,7 +257,7 @@ namespace VtNetCoreUnitTests
             var d = new DataConsumer(t);
 
             // From IndexInDECSTBM
-            Push(d, "".STBM(1, 10).LF(10).CUP(20, 1).LF().CUP(10).STBM(9, 10).RI().RI());
+            Push(d, "".STBM(1, 10).LF(10).CUP(20, 1).LF().CUP(10).STBM(9, 10).CUP(10).RI().RI());
 
             Push(d, "".CUP(25));
             Assert.Equal(24, t.ViewPort.CursorPosition.Row);
@@ -313,7 +313,7 @@ namespace VtNetCoreUnitTests
             var d = new DataConsumer(t);
 
             // From IndexInDECSTBM
-            Push(d, "".STBM(1, 10).LF(10).CUP(20, 1).LF().CUP(10).STBM(9, 10).RI().RI());
+            Push(d, "".STBM(1, 10).LF(10).CUP(20, 1).LF().CUP(10).STBM(9, 10).CUP(10).RI().RI());
 
             Push(d, "".EnableLRMM().STBM(3,10).LRMM(10,40).CUP(10,10).LF());
 
@@ -390,7 +390,7 @@ namespace VtNetCoreUnitTests
             var d = new DataConsumer(t);
 
             // From LinefeedInDECSTBMAndDECSLRM
-            Push(d, "".STBM(1, 10).LF(10).CUP(20, 1).LF().CUP(10).STBM(9, 10).RI().RI().EnableLRMM().STBM(3, 10).LRMM(10, 40).CUP(10, 10).LF());
+            Push(d, "".STBM(1, 10).LF(10).CUP(20, 1).LF().CUP(10).STBM(9, 10).CUP(10).RI().RI().EnableLRMM().STBM(3, 10).LRMM(10, 40).CUP(10, 10).LF());
 
             Push(d, "".IND());
 

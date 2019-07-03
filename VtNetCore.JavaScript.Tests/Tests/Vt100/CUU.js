@@ -8,12 +8,15 @@
         "authors": [
             "Darren Starr <submux@hotmail.com>"
         ],
+        "standards": [
+            "VT100"
+        ],
         "notes": ""
     };
 }
 
 function executeTest() {
-    log.info("Test: CUU—Cursor Up");
+    log.info("Test: " + getTestInformation().name);
 
     let curses = new Curses();
 
@@ -24,28 +27,16 @@ function executeTest() {
     let ok = true;
 
     terminal.push(curses.CUU().getData());
-    log.debug("(r=" + terminal.row + ", c=" + terminal.column + ")");
-    if (!(terminal.column === 5 && terminal.row === 4))
-        ok = false;
-    log.debug("Ok(1)? " + (terminal.column === 5 && terminal.row === 4));
+    ok = TerminalHelpers.checkPosition(terminal, ok, 4, 5);
 
     terminal.push(curses.CUU(3).getData());
-    log.debug("(r=" + terminal.row + ", c=" + terminal.column + ")");
-    if (!(terminal.column === 5 && terminal.row === 1))
-        ok = false;
-    log.debug("Ok(2)? " + (terminal.column === 5 && terminal.row === 1));
+    ok = TerminalHelpers.checkPosition(terminal, ok, 1, 5);
 
     terminal.push(curses.CUU(0).getData());
-    if (!(terminal.column === 5 && terminal.row === 0))
-        ok = false;
-    log.debug("(r=" + terminal.row + ", c=" + terminal.column + ")");
-    log.debug("Ok(3)? " + (terminal.column === 5 && terminal.row === 0));
+    ok = TerminalHelpers.checkPosition(terminal, ok, 0, 5);
 
     terminal.push(curses.CUU().getData());
-    if (!(terminal.column === 5 && terminal.row === 0))
-        ok = false;
-    log.debug("(r=" + terminal.row + ", c=" + terminal.column + ")");
-    log.debug("Ok(4)? " + (terminal.column === 5 && terminal.row === 0));
+    ok = TerminalHelpers.checkPosition(terminal, ok, 0, 5);
    
     log.status("Passed?: " + ok);
 

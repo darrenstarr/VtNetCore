@@ -1,15 +1,12 @@
 ﻿function getTestInformation() {
     return {
-        "name": "CUD—Cursor Down",
-        "features": "CUD",
+        "name": "CHA—Cursor Horizontal Absolute",
+        "features": "CHA",
         "links": [
-            "https://vt100.net/docs/vt510-rm/CUD.html"
+            "https://vt100.net/docs/vt510-rm/CHA.html"
         ],
         "authors": [
             "Darren Starr <submux@hotmail.com>"
-        ],
-        "standards": [
-            "VT100"
         ],
         "notes": ""
     };
@@ -21,18 +18,18 @@ function executeTest() {
     let curses = new Curses();
 
     var terminal = host.newObj(Terminal);
-    terminal.resizeView(80, 25);    
+    terminal.resizeView(80, 25);
 
     let ok = true;
 
-    terminal.push(curses.CUD().getData());
+    terminal.push(curses.LF().getData());
     ok = TerminalHelpers.checkPosition(terminal, ok, 1, 0);
 
-    terminal.push(curses.CUD(3).getData());
-    ok = TerminalHelpers.checkPosition(terminal, ok, 4, 0);
+    terminal.push(curses.CHA(20).getData());
+    ok = TerminalHelpers.checkPosition(terminal, ok, 1, 19);
 
-    terminal.push(curses.CUD(0).getData());
-    ok = TerminalHelpers.checkPosition(terminal, ok, 5, 0);
+    terminal.push(curses.CHA().getData());
+    ok = TerminalHelpers.checkPosition(terminal, ok, 1, 0);
 
     log.status("Passed?: " + ok);
 

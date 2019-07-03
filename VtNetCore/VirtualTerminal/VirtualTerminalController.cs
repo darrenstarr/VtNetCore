@@ -2121,6 +2121,12 @@
             LogController("ClearScrollingRegion()");
             ScrollTop = 0;
             ScrollBottom = -1;
+
+            if (!CursorState.OriginMode)
+            {
+                CursorState.CurrentRow = 0;
+                CursorState.CurrentColumn = 0;
+            }
         }
 
         public void SetAutomaticNewLine(bool enable)
@@ -2166,7 +2172,12 @@
 
                 if (CursorState.OriginMode)
                     CursorState.CurrentRow = ScrollTop;
-            }
+                else
+                {
+                    CursorState.CurrentRow = 0;
+                    CursorState.CurrentColumn = 0;
+                }
+            }            
         }
 
         public void SetLeftAndRightMargins(int left, int right)

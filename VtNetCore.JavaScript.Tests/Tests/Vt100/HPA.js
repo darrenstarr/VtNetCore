@@ -1,15 +1,12 @@
 ﻿function getTestInformation() {
     return {
-        "name": "CUF—Cursor Forward",
-        "features": "CUF",
+        "name": "HPA—Horizontal Position Absolute",
+        "features": "HPA",
         "links": [
-            "https://vt100.net/docs/vt510-rm/CUF.html"
+            "https://vt100.net/docs/vt510-rm/HPA.html"
         ],
         "authors": [
             "Darren Starr <submux@hotmail.com>"
-        ],
-        "standards": [
-            "VT100"
         ],
         "notes": ""
     };
@@ -22,18 +19,17 @@ function executeTest() {
 
     var terminal = host.newObj(Terminal);
     terminal.resizeView(80, 25);
-    terminal.push(curses.CUD().CUD(3).CUD(0).getData());
 
     let ok = true;
 
-    terminal.push(curses.CUF().getData());
-    ok = TerminalHelpers.checkPosition(terminal, ok, 5, 1);
+    terminal.push(curses.HPA(5).getData());
+    ok = TerminalHelpers.checkPosition(terminal, ok, 0, 4);
 
-    terminal.push(curses.CUF(3).getData());
+    terminal.push(curses.CUP(6,7).HPA(5).getData());
     ok = TerminalHelpers.checkPosition(terminal, ok, 5, 4);
 
-    terminal.push(curses.CUF(0).getData());
-    ok = TerminalHelpers.checkPosition(terminal, ok, 5, 5);
+    terminal.push(curses.HPA().getData());
+    ok = TerminalHelpers.checkPosition(terminal, ok, 5, 0);
 
     log.status("Passed?: " + ok);
 

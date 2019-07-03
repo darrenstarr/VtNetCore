@@ -8,6 +8,9 @@
         "authors": [
             "Darren Starr <submux@hotmail.com>"
         ],
+        "standards": [
+            "VT100"
+        ],
         "notes": `
 DECALN or screen alignment pattern fills the contents of the screen
 with the capital letter 'E' in all spaces. In addition, it moves
@@ -17,7 +20,7 @@ the cursor position to "home" or 0,0.
 }
 
 function executeTest() {
-    log.info("Test: DECALN—Screen Alignment Pattern");
+    log.info("Test: " + getTestInformation().name);
 
     let expectedText = "EEEEE\nEEEEE\nEEEEE\nEEEEE\nEEEEE";
 
