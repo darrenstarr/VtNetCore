@@ -489,7 +489,7 @@
         /// Returns the visible text on the screen as per TopRow and the logical rows and columns
         /// </summary>
         /// <returns>The screen text with each line separated by a line feed</returns>
-        internal string GetScreenText()
+        public string GetScreenText()
         {
             string result = "";
 
