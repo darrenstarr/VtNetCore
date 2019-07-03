@@ -12,7 +12,7 @@ dotnet_csproj:
 
 # scripts to run before build
 before_build:
-  - dotnet restore
+  - nuget restore
 
 build_script:
   - dotnet build .\VtNetCore.sln
