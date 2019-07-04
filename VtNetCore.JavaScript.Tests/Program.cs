@@ -3,22 +3,89 @@ using Microsoft.ClearScript.JavaScript;
 using Microsoft.ClearScript.V8;
 using System;
 using System.IO;
+using System.Linq;
 using VtNetCore.VirtualTerminal;
 using VtNetCore.XTermParser;
 
 namespace VtNetCore.JavaScript.Tests
 {
+    public static class Helpers
+    {
+        public static string ToSequenceString(this byte [] seq)
+        {
+            var str = "";
+            for (var i = 0; i < seq.Length; i++)
+            {
+                switch (seq[i])
+                {
+                    case 0: str += "<nil>"; break;
+                    case 1: str += "<soh>"; break;
+                    case 2: str += "<stx>"; break;
+                    case 3: str += "<etx>"; break;
+                    case 4: str += "<eot>"; break;
+                    case 5: str += "<enq>"; break;
+                    case 6: str += "<ack>"; break;
+                    case 7: str += "<bel>"; break;
+                    case 8: str += "<bs>"; break;
+                    case 9: str += "<ht>"; break;
+                    case 10: str += "<lf>"; break;
+                    case 11: str += "<vt>"; break;
+                    case 12: str += "<ff>"; break;
+                    case 13: str += "<cr>"; break;
+                    case 14: str += "<si>"; break;
+                    case 15: str += "<so>"; break;
+                    case 16: str += "<dle>"; break;
+                    case 17: str += "<dc1>"; break;
+                    case 18: str += "<dc2>"; break;
+                    case 19: str += "<dc3>"; break;
+                    case 20: str += "<dc4>"; break;
+                    case 21: str += "<nak>"; break;
+                    case 22: str += "<syn>"; break;
+                    case 23: str += "<etb>"; break;
+                    case 24: str += "<can>"; break;
+                    case 25: str += "<em>"; break;
+                    case 26: str += "<sub>"; break;
+                    case 27: str += "<esc>"; break;
+                    case 28: str += "<fs>"; break;
+                    case 29: str += "<gs>"; break;
+                    case 30: str += "<rs>"; break;
+                    case 31: str += "<us>"; break;
+                    case 127: str += "<del>"; break;
+                    default:
+                        if (seq[i] < 128)
+                        {
+                            str += (char)seq[i];
+                        }
+                        else
+                        {
+                            str += "{" + seq[i].ToString("X2") + "}";
+                        }
+                        break;
+                }
+            }
+            return str;
+        }
+    }
 
     public class Terminal
     {
         VirtualTerminalController Controller;
         DataConsumer Consumer;
 
+        private byte[] SendBuffer = new byte[0];
+
         public Terminal()
         {
             Controller = new VirtualTerminalController();
             Consumer = new DataConsumer(Controller);
             Controller.ResizeView(80, 25);
+
+            Controller.SendData += TerminalSendDataEvent;
+        }
+
+        private void TerminalSendDataEvent(object sender, SendDataEventArgs e)
+        {
+            SendBuffer = SendBuffer.Concat(e.Data).ToArray();
         }
 
         [ScriptMember("push")]
@@ -39,6 +106,14 @@ namespace VtNetCore.JavaScript.Tests
 
         [ScriptMember("resizeView")]
         public void ResizeView(int columns, int rows) => Controller.ResizeView(columns, rows);
+
+        [ScriptMember("getSendBuffer")]
+        public string GetSendBuffer()
+        {
+            var result = SendBuffer;
+            SendBuffer = new byte[0];
+            return result.ToSequenceString();
+        }
     }
 
     public class Log

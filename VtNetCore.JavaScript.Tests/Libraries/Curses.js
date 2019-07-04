@@ -96,7 +96,7 @@
         return this;
     }
 
-    CUP(row=-1, column=-1) {
+    CUP(row = -1, column = -1) {
         this.CSI();
         if (row >= 0) {
             this.pushNum(row);
@@ -109,6 +109,22 @@
 
         this.Text('H');
 
+        return this;
+    }
+
+    DA1() {
+        this.CSI().Text('c');
+
+        return this;
+    }
+
+    DECALN() {
+        this.ESC().Text("#8");
+        return this;
+    }
+
+    DECANM() {
+        this.CSI().Text("?2l");
         return this;
     }
 
@@ -141,6 +157,79 @@
 
     LF() {
         this.Text('\n');
+        return this;
+    }
+
+    Vt52CUU() {
+        this.ESC().Text("A");
+        return this;
+    }
+
+    Vt52CUD() {
+        this.ESC().Text("B");
+        return this;
+    }
+
+    Vt52CUF() {
+        this.ESC().Text("C");
+        return this;
+    }
+
+    Vt52CUB() {
+        this.ESC().Text("D");
+        return this;
+    }
+
+    Vt52SpecialGraphics() {
+        this.ESC().Text("F");
+    }
+
+    Vt52Ascii() {
+        this.ESC().Text("G");
+    }
+
+    Vt52Home() {
+        this.ESC().Text("H");
+        return this;
+    }
+
+    Vt52ReverseLineFeed() {
+        this.ESC().Text("I");
+        return this;
+    }
+
+    Vt52EraseToEndOfScreen() {
+        this.ESC().Text("J");
+        return this;
+    }
+
+    Vt52EraseToEndOfLine() {
+        this.ESC().Text("K");
+        return this;
+    }
+
+    Vt52DirectCursorAddress(row, column) {
+        this.ESC().Text("Y" + String.fromCharCode(row + 31) + String.fromCharCode(column + 31));
+        return this;
+    }
+
+    Vt52Identify() {
+        this.ESC().Text("Z");
+        return this;
+    }
+
+    Vt52EnterAlternateKeypad() {
+        this.ESC().Text("=");
+        return this;
+    }
+
+    Vt52ExitAlternateKeypad() {
+        this.ESC().Text(">");
+        return this;
+    }
+
+    Vt52EnterAnsiMode() {
+        this.ESC().Text("<");
         return this;
     }
 }
