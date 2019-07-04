@@ -107,7 +107,7 @@
     <Content Include="Tests\Vt100\DECALN.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Tests\Vt100\Vt52\DECANM.js">
+    <Content Include="Tests\Vt100\DECANM.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
