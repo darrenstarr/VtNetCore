@@ -9,8 +9,8 @@ namespace VtNetCore.VirtualTerminal.Model
     public class TerminalColor
     {
         public uint ARGB { get; set; }
-        private readonly Regex webColorExpression = new Regex(@"^#(?<red>[0-9A-Fa-f]{2})(?<green>[0-9A-Fa-f]{2})(?<blue>[0-9A-Fa-f]{2})$", RegexOptions.Compiled);
-        private readonly Regex rgbiColorExpression = new Regex(@"^rgbi:(?<red>[0-9A-Za-z]{1,4})\/(?<green>[0-9A-Za-z]{1,4})\/(?<blue>[0-9A-Za-z]{1,4})$", RegexOptions.Compiled);
+        private static readonly Regex webColorExpression = new Regex(@"^#(?<red>[0-9A-Fa-f]{2})(?<green>[0-9A-Fa-f]{2})(?<blue>[0-9A-Fa-f]{2})$", RegexOptions.Compiled);
+        private static readonly Regex rgbiColorExpression = new Regex(@"^rgbi:(?<red>[0-9A-Za-z]{1,4})\/(?<green>[0-9A-Za-z]{1,4})\/(?<blue>[0-9A-Za-z]{1,4})$", RegexOptions.Compiled);
 
         public TerminalColor()
         {
