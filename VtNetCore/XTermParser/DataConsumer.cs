@@ -41,6 +41,21 @@
             Controller = controller;
         }
 
+		public void WriteLine(string text) 
+		{
+			Write(text + Environment.NewLine);
+		}
+
+		public void Write(string text, int start, int length) 
+		{
+			Push(Encoding.UTF8.GetBytes(text.ToCharArray(), start, length));
+		}
+
+		public void Write(string text) 
+		{
+			Push(Encoding.UTF8.GetBytes(text));
+		}
+
         /// <summary>
         /// Consume raw byte data, parse it and then process it through the controller.
         /// </summary>
