@@ -322,9 +322,9 @@
         {
             return
                 "  ForegroundColor: " + ForegroundColor.ToString() + "\n" +
-                "  ForegroundRgb: " + ForegroundRgb == null ? "<null>" : ForegroundRgb.ToString() + "\n" + 
+                "  ForegroundRgb: " + (ForegroundRgb == null ? "<null>" : ForegroundRgb.ToString()) + "\n" + 
                 "  BackgroundColor: " + BackgroundColor.ToString() + "\n" +
-                "  BackgroundRgb: " + BackgroundRgb == null ? "<null>" : BackgroundRgb.ToString() + "\n" +
+                "  BackgroundRgb: " + (BackgroundRgb == null ? "<null>" : BackgroundRgb.ToString()) + "\n" +
                 "  Bright: " + Bright.ToString() + "\n" +
                 "  Standout: " + Standout.ToString() + "\n" +
                 "  Underscore: " + Underscore.ToString() + "\n" +
