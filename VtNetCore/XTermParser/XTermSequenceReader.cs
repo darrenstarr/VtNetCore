@@ -173,6 +173,7 @@
 
                         Parameters.Add(currentParameter);
                         currentParameter = -1;
+                        readingCommand = true;
                     }
                     else if (char.IsDigit(next))
                     {

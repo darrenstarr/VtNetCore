@@ -126,6 +126,12 @@
             };
 
             // !Title
+            // PUSH "\e]2;\a"
+            //   settermprop 4 ""
+            Push(d, "".ChangeWindowTitle(""));
+            Assert.Equal("", windowTitle);
+
+            // !Title
             // PUSH "\e]2;Here is my title\a"
             //   settermprop 4 "Here is my title"
             Push(d, "".ChangeWindowTitle("Here is my title"));
