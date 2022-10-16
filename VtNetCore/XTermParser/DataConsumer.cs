@@ -20,7 +20,7 @@
         /// <summary>
         /// The buffer to hold state for processing and parsing of incoming data
         /// </summary>
-        private XTermInputBuffer InputBuffer { get; set; } = new XTermInputBuffer();
+        protected XTermInputBuffer InputBuffer { get; set; } = new XTermInputBuffer();
 
         /// <summary>
         /// State information for when continuing to process data from a previously starved buffer condition

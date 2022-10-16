@@ -130,10 +130,14 @@
             {
                 var next = stream.Read();
 
-                if (readingCommand)
+                if (readingCommand || next == 0x07 || next == 0x9C) // BEL or ST
                 {
-                    if (next == 0x07 || next == 0x9C)        // BEL or ST
+                    if (next == 0x07 || next == 0x9C) // BEL or ST
                     {
+                        if (currentParameter!=-1)
+                        {
+                            Parameters.Add(currentParameter);
+                        }
                         var osc = new OscSequence
                         {
                             Parameters = Parameters,
