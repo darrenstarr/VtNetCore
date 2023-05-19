@@ -305,6 +305,16 @@
         public EventHandler<SizeEventArgs> SizeChanged;
 
         /// <summary>
+        /// Emitted when a change to the characters on the terminal occurs
+        /// </summary>
+        public event Action<int, int, TerminalAttribute, char> OnCharacterChanged;
+
+        /// <summary>
+        /// Emitted when the buffer is changed
+        /// </summary>
+        public event Action OnScreenBufferChanged;
+
+        /// <summary>
         /// Enables storing of raw text for scripting tools
         /// </summary>
         public bool StoreRawText { get; set; }
@@ -1993,6 +2003,8 @@
             normalBufferTopRow = TopRow;
             TopRow = alternativeBufferTopRow;
 
+            OnScreenBufferChanged?.Invoke();
+
             ChangeCount++;
         }
 
@@ -2805,6 +2817,8 @@
                 character.Attributes = CursorState.Attributes.Clone();
                 character.CombiningCharacters = "";
             }
+
+            OnCharacterChanged(currentRow, currentColumn, attribute, ch);
 
             return character;
         }
