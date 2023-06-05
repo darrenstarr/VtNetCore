@@ -2206,9 +2206,12 @@
                 SetCursorPosition(1, 1);
         }
 
+        public bool InEraseState = false;
+
         public void EraseLine(bool ignoreProtected = true)
         {
             LogController("EraseLine(ignoreProtected: " + ignoreProtected + ")");
+            InEraseState = true;
 
             for (var i = 0; i < Columns; i++)
                 SetCharacter(i, CursorState.CurrentRow, ' ', CursorState.Attributes, ignoreProtected);
@@ -2217,12 +2220,14 @@
             while (line.Count > Columns)
                 line.RemoveAt(line.Count - 1);
 
+            InEraseState = false;
             ChangeCount++;
         }
 
         public void EraseToEndOfLine(bool ignoreProtected=true)
         {
             LogController("EraseToEndOfLine(ignoreProtected: " + ignoreProtected + ")");
+            InEraseState = true;
 
             for (var i = CursorState.CurrentColumn; i < Columns; i++)
                 SetCharacter(i, CursorState.CurrentRow, ' ', CursorState.Attributes, ignoreProtected);
@@ -2243,12 +2248,14 @@
                 );
             }
 
+            InEraseState = false;
             ChangeCount++;
         }
 
         public void EraseToStartOfLine(bool ignoreProtected = true)
         {
             LogController("EraseToStartOfLine(ignoreProtected: " + ignoreProtected + ")");
+            InEraseState = true;
 
             for (var i = 0; i < Columns && i <= CursorState.CurrentColumn; i++)
                 SetCharacter(i, CursorState.CurrentRow, ' ', CursorState.Attributes, ignoreProtected);
@@ -2257,6 +2264,7 @@
             while (line.Count > Columns)
                 line.RemoveAt(line.Count - 1);
 
+            InEraseState = false;
             ChangeCount++;
         }
 
@@ -2264,6 +2272,7 @@
         {
             // TODO : Optimize
             LogController("EraseBelow(ignoreProtected: " + ignoreProtected + ")");
+            InEraseState = true;
 
             for (var y = CursorState.CurrentRow + 1; y < VisibleRows; y++)
             {
@@ -2278,12 +2287,15 @@
 
             for (var x = CursorState.CurrentColumn; x < VisibleColumns; x++)
                 SetCharacter(x, CursorState.CurrentRow, ' ', CursorState.Attributes, ignoreProtected);
+
+            InEraseState = false;
         }
 
         public void EraseAbove(bool ignoreProtected = true)
         {
             // TODO : Optimize
             LogController("EraseAbove(ignoreProtected: " + ignoreProtected + ")");
+            InEraseState = true;
 
             for (var y = CursorState.CurrentRow - 1; y >= 0; y--)
             {
@@ -2297,12 +2309,15 @@
 
             for (var x = 0; x <= CursorState.CurrentColumn; x++)
                 SetCharacter(x, CursorState.CurrentRow, ' ', CursorState.Attributes, ignoreProtected);
+
+            InEraseState = false;
         }
 
         public void DeleteLines(int count)
         {
             // TODO : Verify it works with scroll range
             LogController("DeleteLines(count:" + count.ToString() + ")");
+            InEraseState = true;
 
             if (
                 CursorState.CurrentRow < ScrollTop ||
@@ -2350,6 +2365,7 @@
                 }
             }
 
+            InEraseState = false;
             ChangeCount++;
         }
 
