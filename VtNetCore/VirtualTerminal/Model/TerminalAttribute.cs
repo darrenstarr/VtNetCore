@@ -1,6 +1,8 @@
 ﻿namespace VtNetCore.VirtualTerminal.Model
 {
     using System;
+    using System.Collections.Generic;
+    using System.Linq;
     using VtNetCore.VirtualTerminal.Enums;
 
     /// <summary>
@@ -8,21 +10,21 @@
     /// </summary>
     public class TerminalAttribute
     {
-        private static readonly ushort BrightBit = 0x0040;
-        private static readonly ushort UnderscoreBit = 0x0080;
-        private static readonly ushort StandoutBit = 0x0100;
-        private static readonly ushort BlinkBit = 0x0200;
-        private static readonly ushort ReverseBit = 0x0400;
-        private static readonly ushort HiddenBit = 0x0800;
-        private static readonly ushort ProtectionBits = 0x3000;
+        public TerminalColor ForegroundRgb { get; set; } = TerminalColorsLookup[ETerminalColor.Black];
 
-        private ushort InternalBits =
-            (ushort)ETerminalColor.White |     // ForegroundColor
-            (ushort)ETerminalColor.Black;      // BackgroundColor
+        public TerminalColor BackgroundRgb { get; set; } = TerminalColorsLookup[ETerminalColor.White];
 
-        public TerminalColor ForegroundRgb { get; set; }
-
-        public TerminalColor BackgroundRgb { get; set; }
+        public static readonly Dictionary<ETerminalColor, TerminalColor> TerminalColorsLookup = new Dictionary<ETerminalColor, TerminalColor>()
+        {
+            { ETerminalColor.Black, new TerminalColor(ETerminalColor.Black, false) },
+            { ETerminalColor.Red, new TerminalColor(ETerminalColor.Red, false)  },
+            { ETerminalColor.Green, new TerminalColor(ETerminalColor.Green, false) },
+            { ETerminalColor.Yellow,new TerminalColor(ETerminalColor.Yellow, false)  },
+            { ETerminalColor.Blue, new TerminalColor(ETerminalColor.Blue, false) },
+            { ETerminalColor.Magenta, new TerminalColor(ETerminalColor.Magenta, false) },
+            { ETerminalColor.Cyan, new TerminalColor(ETerminalColor.Cyan, false) },
+            { ETerminalColor.White, new TerminalColor(ETerminalColor.White, true) }
+        };
 
         public override bool Equals(object obj)
         {
@@ -60,8 +62,11 @@
             )
                 return false;
 
-            return
-                InternalBits == other.InternalBits;
+            return Bright == other.Bright &&
+                Standout == other.Standout &&
+                Underscore == other.Underscore &&
+                Blink == other.Blink &&
+                Reverse == other.Reverse;
         }
 
         public override int GetHashCode()
@@ -76,11 +81,11 @@
         {
             get
             {
-                return (ETerminalColor)(InternalBits & 0x7);
+                return TerminalColorsLookup.Single(x => x.Value == ForegroundRgb).Key;
             }
             set
             {
-                InternalBits = (ushort)((InternalBits & 0xFFF8) | (ushort)value);
+                ForegroundRgb = TerminalColorsLookup[value];
             }
         }
 
@@ -92,11 +97,11 @@
         {
             get
             {
-                return (ETerminalColor)((InternalBits >> 3) & 0x7);
+                return TerminalColorsLookup.Single(x => x.Value == BackgroundRgb).Key;
             }
             set
             {
-                InternalBits = (ushort)((InternalBits & 0xFFC7) | ((int)value << 3));
+                BackgroundRgb = TerminalColorsLookup[value];
             }
         }
 
@@ -106,126 +111,38 @@
         /// <remarks>
         /// This is an old naming system and should be udpated
         /// </remarks>
-        public bool Bright
-        {
-            get
-            {
-                return (InternalBits & BrightBit) == BrightBit;
-            }
-            set
-            {
-                if (value)
-                    InternalBits |= BrightBit;
-                else
-                    InternalBits = (ushort)((InternalBits & ~BrightBit) & 0xFFFF);
-            }
-        }
+        public bool Bright { get; set; } = false;
 
         /// <summary>
         /// Unclear what this is
         /// </summary>
         /// TODO : Figure out what Standout text is
-        public bool Standout
-        {
-            get
-            {
-                return (InternalBits & StandoutBit) == StandoutBit;
-            }
-            set
-            {
-                if (value)
-                    InternalBits |= StandoutBit;
-                else
-                    InternalBits = (ushort)((InternalBits & ~StandoutBit) & 0xFFFF);
-            }
-        }
+        public bool Standout { get; set; } = false;
 
         /// <summary>
         /// Sets the text as having a line beneath the character
         /// </summary>
-        public bool Underscore
-        {
-            get
-            {
-                return (InternalBits & UnderscoreBit) == UnderscoreBit;
-            }
-            set
-            {
-                if (value)
-                    InternalBits |= UnderscoreBit;
-                else
-                    InternalBits = (ushort)((InternalBits & ~UnderscoreBit) & 0xFFFF);
-            }
-        }
+        public bool Underscore { get; set; } = false;
 
         /// <summary>
         /// Sets the blink attribute
         /// </summary>
-        public bool Blink
-        {
-            get
-            {
-                return (InternalBits & BlinkBit) == BlinkBit;
-            }
-            set
-            {
-                if (value)
-                    InternalBits |= BlinkBit;
-                else
-                    InternalBits = (ushort)((InternalBits & ~BlinkBit) & 0xFFFF);
-            }
-        }
+        public bool Blink { get; set; } = false;
 
         /// <summary>
         /// Reverses the foreground and the background colors of the text
         /// </summary>
-        public bool Reverse
-        {
-            get
-            {
-                return (InternalBits & ReverseBit) == ReverseBit;
-            }
-            set
-            {
-                if (value)
-                    InternalBits |= ReverseBit;
-                else
-                    InternalBits = (ushort)((InternalBits & ~ReverseBit) & 0xFFFF);
-            }
-        }
+        public bool Reverse { get; set; } = false;
 
         /// <summary>
         /// Specifies that the character should not be displayed.
         /// </summary>
-        public bool Hidden
-        {
-            get
-            {
-                return (InternalBits & HiddenBit) == HiddenBit;
-            }
-            set
-            {
-                if (value)
-                    InternalBits |= HiddenBit;
-                else
-                    InternalBits = (ushort)((InternalBits & ~HiddenBit) & 0xFFFF);
-            }
-        }
+        public bool Hidden { get; set; } = false;
 
         /// <summary>
         /// Specifies that the character should not be erased on SEL and SED operations.
         /// </summary>
-        public int Protected
-        {
-            get
-            {
-                return (InternalBits & ProtectionBits) >> 12;
-            }
-            set
-            {
-                InternalBits = (ushort)((InternalBits & ~ProtectionBits) | ((value & 0x3) << 12));
-            }
-        }
+        public int Protected { get; set; } = 0;
 
         /// <summary>
         /// Returns a deep copy of the attribute
@@ -235,9 +152,15 @@
         {
             return new TerminalAttribute
             {
-                InternalBits = InternalBits,
                 ForegroundRgb = ForegroundRgb == null ? null : new TerminalColor(ForegroundRgb),
-                BackgroundRgb = BackgroundRgb == null ? null : new TerminalColor(BackgroundRgb)
+                BackgroundRgb = BackgroundRgb == null ? null : new TerminalColor(BackgroundRgb),
+                Bright = Bright,
+                Standout = Standout,
+                Underscore = Underscore,
+                Blink = Blink,
+                Reverse = Reverse,
+                Hidden = Hidden,
+                Protected = Protected
             };
         }
 
@@ -251,9 +174,15 @@
             {
                 return new TerminalAttribute
                 {
-                    InternalBits = (ushort)((InternalBits & 0xFFC0) | ((InternalBits & 0x0007) << 3) | ((InternalBits >> 3) & 0x0007)),
                     ForegroundRgb = BackgroundRgb == null ? null : new TerminalColor(BackgroundRgb),
                     BackgroundRgb = ForegroundRgb == null ? null : new TerminalColor(ForegroundRgb),
+                    Bright = Bright,
+                    Standout = Standout,
+                    Underscore = Underscore,
+                    Blink = Blink,
+                    Reverse = Reverse,
+                    Hidden = Hidden,
+                    Protected = Protected
                 };
             }
         }
