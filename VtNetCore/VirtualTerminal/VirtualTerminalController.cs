@@ -44,6 +44,8 @@
 
         private EActiveBuffer ActiveBuffer { get; set; } = EActiveBuffer.Normal;
 
+        public bool IsActiveBufferNormal => ActiveBuffer == EActiveBuffer.Normal;
+
         /// <summary>
         /// The logical top row of the view port. This translates relative to the buffer
         /// </summary>
@@ -840,6 +842,8 @@
             SmoothScrollMode = false;
 
             LastMousePosition.Set(-1, -1);
+
+            OnScreenBufferChanged?.Invoke();
 
             ChangeCount++;
         }
@@ -1986,6 +1990,8 @@
 
             alternativeBufferTopRow = TopRow;
             TopRow = normalBufferTopRow;
+
+            OnScreenBufferChanged?.Invoke();
 
             ChangeCount++;
         }
